@@ -1,32 +1,32 @@
 {
   "schemaVersion": 2,
-  "exportedAt": "2026-11-09T09:40:00+09:00",
-  "checkedAt": "2026-11-09T09:40:00+09:00",
+  "exportedAt": "2026-11-09T01:38:14.136Z",
+  "checkedAt": "2026-11-09T01:38:14.136Z",
   "items": [
     {
       "id": "ebbe21b5-1d8c-47ac-8cc2-6dba1429683e",
       "kind": "profile",
       "data": {
-        "name": "이서윤",
-        "tagline": "공공·대학도서관 사서 지망 · 문헌정보학과 4학년",
-        "headline": "자료를 찾기 쉽게 정리하고, 이용자가 스스로 찾을 수 있도록 돕는 사서가 되고 싶습니다.",
         "bio": "문헌정보학을 공부하며 목록·분류 실습과 도서관 근로, 공공도서관 현장실습을 거쳤습니다. 정확한 메타데이터가 좋은 정보서비스의 출발점이라고 믿고, 이용자 교육과 독서 프로그램으로 그 자료를 사람과 연결하는 일에 관심이 많습니다. 숫자로 확인할 수 있는 결과를 남기는 습관을 가지고 있습니다.",
+        "name": "이서윤",
         "photo": "",
+        "tagline": "공공·대학도서관 사서 지망 · 문헌정보학과 4학년",
         "contacts": {
           "email": "seoyoon.lis@example.com",
           "links": [
             {
-              "label": "블로그",
               "url": "https://example.com/blog",
+              "label": "블로그",
               "public": true
             },
             {
-              "label": "GitHub",
               "url": "https://github.com/example",
+              "label": "GitHub",
               "public": true
             }
           ]
         },
+        "headline": "자료를 찾기 쉽게 정리하고, 이용자가 스스로 찾을 수 있도록 돕는 사서가 되고 싶습니다.",
         "interests": [
           {
             "icon": "📚",
@@ -46,17 +46,17 @@
           }
         ],
         "resumeFile": "",
-        "resumePublic": true,
         "primaryRoles": [
           "public",
           "academic"
-        ]
+        ],
+        "resumePublic": true
       },
       "visibility": "public",
       "status": "published",
       "isSample": true,
       "sort": 0,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "a8c23f0c-e424-4f4e-9e4c-5ac1459018ab",
@@ -64,19 +64,19 @@
       "data": {
         "cid": "organization",
         "name": "정보조직",
-        "description": "KORMARC 목록, KDC·DDC 분류, 메타데이터 작성",
         "roles": {
           "public": "related",
-          "academic": "core",
           "school": "related",
+          "academic": "core",
           "archives": "related"
-        }
+        },
+        "description": "KORMARC 목록, KDC·DDC 분류, 메타데이터 작성"
       },
       "visibility": "public",
       "status": "published",
       "isSample": false,
       "sort": 1,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "9b636969-8650-4fe8-b1bd-43004403ec81",
@@ -84,19 +84,19 @@
       "data": {
         "cid": "reference",
         "name": "참고·정보서비스",
-        "description": "참고질의 응대, 학술DB 검색, 주제 안내 자료",
         "roles": {
           "public": "core",
-          "academic": "core",
           "school": "related",
+          "academic": "core",
           "archives": "related"
-        }
+        },
+        "description": "참고질의 응대, 학술DB 검색, 주제 안내 자료"
       },
       "visibility": "public",
       "status": "published",
       "isSample": false,
       "sort": 2,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "33b16d30-68d3-489e-b27c-af93a36271a0",
@@ -104,18 +104,18 @@
       "data": {
         "cid": "instruction",
         "name": "이용자 교육",
-        "description": "정보활용교육 기획·강의, 교수안 작성",
         "roles": {
           "public": "related",
-          "academic": "core",
-          "school": "core"
-        }
+          "school": "core",
+          "academic": "core"
+        },
+        "description": "정보활용교육 기획·강의, 교수안 작성"
       },
       "visibility": "public",
       "status": "published",
       "isSample": false,
       "sort": 3,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "585d822f-2db8-4f73-8dca-4c3624c98761",
@@ -123,17 +123,17 @@
       "data": {
         "cid": "program",
         "name": "독서·문화 프로그램",
-        "description": "프로그램 기획·홍보·운영·평가",
         "roles": {
           "public": "core",
           "school": "core"
-        }
+        },
+        "description": "프로그램 기획·홍보·운영·평가"
       },
       "visibility": "public",
       "status": "published",
       "isSample": false,
       "sort": 4,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "b5111655-3c34-46bd-91c5-6627169c7c32",
@@ -141,18 +141,18 @@
       "data": {
         "cid": "collection",
         "name": "장서개발·도서관 운영",
-        "description": "장서 선정·평가·폐기, 운영 기획",
         "roles": {
           "public": "core",
-          "academic": "related",
-          "school": "core"
-        }
+          "school": "core",
+          "academic": "related"
+        },
+        "description": "장서 선정·평가·폐기, 운영 기획"
       },
       "visibility": "public",
       "status": "published",
       "isSample": false,
       "sort": 5,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "4b837715-7490-43e8-a024-f455e603d7cd",
@@ -160,17 +160,17 @@
       "data": {
         "cid": "archives",
         "name": "기록관리",
-        "description": "기록물 평가·분류·기술·보존",
         "roles": {
           "academic": "related",
           "archives": "core"
-        }
+        },
+        "description": "기록물 평가·분류·기술·보존"
       },
       "visibility": "public",
       "status": "published",
       "isSample": false,
       "sort": 6,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "9c993ee8-edc3-48d5-b692-bb5e8a373630",
@@ -178,50 +178,59 @@
       "data": {
         "cid": "digital",
         "name": "디지털·데이터",
-        "description": "도서관 시스템, 디지털 아카이브, 이용 통계 분석",
         "roles": {
           "public": "related",
           "academic": "core",
           "archives": "core"
-        }
+        },
+        "description": "도서관 시스템, 디지털 아카이브, 이용 통계 분석"
       },
       "visibility": "public",
       "status": "published",
       "isSample": false,
       "sort": 7,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "9c661d02-37f6-4693-bea9-10b3c770811b",
       "kind": "project",
       "data": {
-        "slug": "kormarc-catalog",
-        "title": "학과 자료실 장서 KORMARC 목록 정리",
-        "summary": "목록이 없던 기증 도서 350건을 KORMARC로 목록화해 OPAC에서 검색되게 만들었습니다.",
-        "type": "실습",
-        "organization": "○○대학교 문헌정보학과 자료실",
-        "startDate": "2024-09",
-        "endDate": "2024-12",
-        "hours": 90,
-        "primarySkill": "organization",
-        "skills": [
-          "organization",
-          "digital"
-        ],
-        "tools": [
-          "KORMARC",
-          "KDC 6판",
-          "KOLAS III"
-        ],
-        "teamSize": 3,
-        "contribution": 40,
         "role": [
           "단행본 목록 레코드 작성(245·260·300·650 필드)",
           "KDC 6판 분류기호 부여와 팀 내 교차 검토",
           "중복·오류 레코드 점검표 작성"
         ],
+        "slug": "kormarc-catalog",
+        "type": "실습",
+        "hours": 90,
+        "title": "학과 자료실 장서 KORMARC 목록 정리",
+        "tools": [
+          "KORMARC",
+          "KDC 6판",
+          "KOLAS III"
+        ],
+        "skills": [
+          "organization",
+          "digital"
+        ],
+        "endDate": "2024-12",
+        "learned": "목록의 일관성은 개인의 숙련보다 팀의 기준과 검토 절차에서 나온다는 것을 배웠습니다.",
+        "metrics": [
+          {
+            "key": "records_cataloged",
+            "unit": "건",
+            "label": "정리한 목록 레코드",
+            "value": 350
+          },
+          {
+            "key": "",
+            "unit": "건",
+            "label": "중복·오류 레코드 수정",
+            "value": 42
+          }
+        ],
+        "outcome": "학과 자료실 장서를 도서관 OPAC에서 검색할 수 있게 되었고, 점검표는 다음 학기 실습 자료로 쓰였습니다.",
         "process": {
-          "problem": "기증받은 전공 도서가 목록 없이 쌓여 있어 학생들이 소장 여부를 확인할 수 없었습니다.",
           "steps": [
             "자료 실사와 기증 대장 대조",
             "목록 작성 기준(필수 필드·주제명 표목) 합의",
@@ -229,600 +238,234 @@
             "교차 검토로 오류 수정",
             "KOLAS III에 반입하고 OPAC 검색 확인"
           ],
+          "problem": "기증받은 전공 도서가 목록 없이 쌓여 있어 학생들이 소장 여부를 확인할 수 없었습니다.",
           "challenge": "같은 책의 판차 구분이 엇갈려 중복 레코드가 생겼습니다. ISBN과 판사항 확인 단계를 점검표에 넣어 해결했습니다."
         },
-        "metrics": [
-          {
-            "label": "정리한 목록 레코드",
-            "value": 350,
-            "unit": "건",
-            "key": "records_cataloged"
-          },
-          {
-            "label": "중복·오류 레코드 수정",
-            "value": 42,
-            "unit": "건",
-            "key": ""
-          }
-        ],
-        "outcome": "학과 자료실 장서를 도서관 OPAC에서 검색할 수 있게 되었고, 점검표는 다음 학기 실습 자료로 쓰였습니다.",
-        "learned": "목록의 일관성은 개인의 숙련보다 팀의 기준과 검토 절차에서 나온다는 것을 배웠습니다.",
+        "summary": "목록이 없던 기증 도서 350건을 KORMARC로 목록화해 OPAC에서 검색되게 만들었습니다.",
         "evidence": [
           {
+            "url": "",
             "type": "image",
             "title": "레코드 작성 화면 캡처",
-            "url": "",
-            "description": "245·650 필드 작성 예(예시라 파일 없음)",
-            "public": true
+            "public": true,
+            "description": "245·650 필드 작성 예(예시라 파일 없음)"
           },
           {
+            "url": "",
             "type": "file",
             "title": "중복·오류 점검표",
-            "url": "",
-            "description": "PDF 2쪽(예시라 파일 없음)",
-            "public": true
+            "public": true,
+            "description": "PDF 2쪽(예시라 파일 없음)"
           }
         ],
         "featured": true,
+        "teamSize": 3,
+        "startDate": "2024-09",
+        "contribution": 40,
+        "organization": "○○대학교 문헌정보학과 자료실",
+        "primarySkill": "organization",
         "featuredOrder": 1
       },
       "visibility": "public",
       "status": "published",
       "isSample": true,
       "sort": 8,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "4840165d-811d-4ef0-99f9-f3e488234273",
       "kind": "project",
       "data": {
-        "slug": "pathfinder",
-        "title": "신입생용 문헌정보학 주제 가이드(패스파인더) 제작",
-        "summary": "신입생이 첫 과제에 쓸 자료와 DB를 한 장에 모은 주제 가이드를 만들었습니다.",
-        "type": "수업",
-        "organization": "정보서비스론",
-        "startDate": "2025-03",
-        "endDate": "2025-06",
-        "hours": 40,
-        "primarySkill": "reference",
-        "skills": [
-          "reference",
-          "instruction"
-        ],
-        "tools": [
-          "Canva"
-        ],
-        "teamSize": 1,
-        "contribution": 100,
         "role": [
           "주제 선정과 이용자 분석(신입생 설문 30명)",
           "단행본·학술DB·웹자원 선정과 평가",
           "가이드 구성과 디자인"
         ],
+        "slug": "pathfinder",
+        "type": "수업",
+        "hours": 40,
+        "title": "신입생용 문헌정보학 주제 가이드(패스파인더) 제작",
+        "tools": [
+          "Canva"
+        ],
+        "skills": [
+          "reference",
+          "instruction"
+        ],
+        "endDate": "2025-06",
+        "learned": "참고서비스는 많은 자료가 아니라 이용자가 다음에 할 일을 알려주는 것이라는 점을 배웠습니다.",
+        "metrics": [
+          {
+            "key": "",
+            "unit": "건",
+            "label": "수록 자료·DB",
+            "value": 48
+          },
+          {
+            "key": "satisfaction",
+            "unit": "점(5점 만점)",
+            "label": "시범 이용 만족도",
+            "value": 4.5
+          }
+        ],
+        "outcome": "담당 교수님 추천으로 학과 홈페이지 신입생 안내 자료에 실렸습니다.",
         "process": {
-          "problem": "신입생들이 첫 보고서 과제에서 검색 포털 결과만 인용하는 경우가 많았습니다.",
           "steps": [
             "신입생 30명 설문으로 어려운 점 파악",
             "자료 유형별 핵심 자료 48건 선정",
             "검색어·검색식 예시 작성",
             "시범 배포 후 의견 반영"
           ],
+          "problem": "신입생들이 첫 보고서 과제에서 검색 포털 결과만 인용하는 경우가 많았습니다.",
           "challenge": "자료가 많을수록 오히려 쓰기 어렵다는 의견이 있어, 유형별 3~5개로 줄이고 “먼저 볼 것” 표시를 넣었습니다."
         },
-        "metrics": [
-          {
-            "label": "수록 자료·DB",
-            "value": 48,
-            "unit": "건",
-            "key": ""
-          },
-          {
-            "label": "시범 이용 만족도",
-            "value": 4.5,
-            "unit": "점(5점 만점)",
-            "key": "satisfaction"
-          }
-        ],
-        "outcome": "담당 교수님 추천으로 학과 홈페이지 신입생 안내 자료에 실렸습니다.",
-        "learned": "참고서비스는 많은 자료가 아니라 이용자가 다음에 할 일을 알려주는 것이라는 점을 배웠습니다.",
+        "summary": "신입생이 첫 과제에 쓸 자료와 DB를 한 장에 모은 주제 가이드를 만들었습니다.",
         "evidence": [
           {
+            "url": "https://example.com/pathfinder",
             "type": "link",
             "title": "주제 가이드 웹 버전",
-            "url": "https://example.com/pathfinder",
-            "description": "예시 링크",
-            "public": true
+            "public": true,
+            "description": "예시 링크"
           },
           {
+            "url": "",
             "type": "file",
             "title": "설문 결과 요약",
-            "url": "",
-            "description": "응답 30명(예시라 파일 없음)",
-            "public": true
+            "public": true,
+            "description": "응답 30명(예시라 파일 없음)"
           }
         ],
         "featured": true,
+        "teamSize": 1,
+        "startDate": "2025-03",
+        "contribution": 100,
+        "organization": "정보서비스론",
+        "primarySkill": "reference",
         "featuredOrder": 2
       },
       "visibility": "public",
       "status": "published",
       "isSample": true,
       "sort": 9,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "b6e5aa37-6dd6-4411-8a9c-af6c1e31e492",
       "kind": "project",
       "data": {
-        "slug": "db-search-class",
-        "title": "신입생 학술DB 검색 교육 운영",
-        "summary": "중앙도서관 근로 중 학술DB 검색 교육 4회를 보조 강사로 운영했습니다.",
-        "type": "실습",
-        "organization": "○○대학교 중앙도서관",
-        "startDate": "2025-03",
-        "endDate": "2025-04",
-        "hours": 24,
-        "primarySkill": "instruction",
-        "skills": [
-          "instruction",
-          "reference"
-        ],
-        "tools": [],
-        "teamSize": 2,
-        "contribution": 50,
         "role": [
           "실습 과제와 검색 시나리오 작성",
           "실습 시간 1:1 검색 지원",
           "만족도 설문 정리"
         ],
+        "slug": "db-search-class",
+        "type": "실습",
+        "hours": 24,
+        "title": "신입생 학술DB 검색 교육 운영",
+        "tools": [],
+        "skills": [
+          "instruction",
+          "reference"
+        ],
+        "endDate": "2025-04",
+        "learned": "교육은 기능 설명보다 학생이 자기 과제를 해결하는 경험을 주는 것이 중요했습니다.",
+        "metrics": [
+          {
+            "key": "participants",
+            "unit": "명",
+            "label": "참여 학생",
+            "value": 62
+          },
+          {
+            "key": "sessions",
+            "unit": "회",
+            "label": "운영 회차",
+            "value": 4
+          },
+          {
+            "key": "satisfaction",
+            "unit": "점(5점 만점)",
+            "label": "만족도",
+            "value": 4.6
+          }
+        ],
+        "outcome": "실습형 시나리오가 다음 학기 교육 자료로 이어졌습니다.",
         "process": {
-          "problem": "기존 교육은 DB 화면 설명 위주라 실습 후 실제 과제에 적용하지 못한다는 의견이 있었습니다.",
           "steps": [
             "학과별 과제 주제로 검색 시나리오 4종 작성",
             "회차별 15명 내외 실습형으로 운영",
             "설문으로 다음 회차 내용 조정"
           ],
+          "problem": "기존 교육은 DB 화면 설명 위주라 실습 후 실제 과제에 적용하지 못한다는 의견이 있었습니다.",
           "challenge": "수준 차이가 커서 기본·심화 시나리오를 나눠 각자 고르게 했습니다."
         },
-        "metrics": [
-          {
-            "label": "참여 학생",
-            "value": 62,
-            "unit": "명",
-            "key": "participants"
-          },
-          {
-            "label": "운영 회차",
-            "value": 4,
-            "unit": "회",
-            "key": "sessions"
-          },
-          {
-            "label": "만족도",
-            "value": 4.6,
-            "unit": "점(5점 만점)",
-            "key": "satisfaction"
-          }
-        ],
-        "outcome": "실습형 시나리오가 다음 학기 교육 자료로 이어졌습니다.",
-        "learned": "교육은 기능 설명보다 학생이 자기 과제를 해결하는 경험을 주는 것이 중요했습니다.",
+        "summary": "중앙도서관 근로 중 학술DB 검색 교육 4회를 보조 강사로 운영했습니다.",
         "evidence": [
           {
+            "url": "",
             "type": "file",
             "title": "검색 시나리오 자료",
-            "url": "",
-            "description": "예시라 파일 없음",
-            "public": true
+            "public": true,
+            "description": "예시라 파일 없음"
           }
-        ]
+        ],
+        "teamSize": 2,
+        "startDate": "2025-03",
+        "contribution": 50,
+        "organization": "○○대학교 중앙도서관",
+        "primarySkill": "instruction"
       },
       "visibility": "public",
       "status": "published",
       "isSample": true,
       "sort": 10,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "d3697426-3bc6-4330-8e9e-4f51bca28858",
-      "kind": "project",
-      "data": {
-        "slug": "kids-reading",
-        "title": "여름 어린이 독서교실 프로그램 기획",
-        "summary": "초등 저학년 대상 8회차 독서교실을 기획하고 운영을 도왔습니다.",
-        "type": "실습",
-        "organization": "○○시립도서관 어린이자료실",
-        "startDate": "2025-07",
-        "endDate": "2025-08",
-        "hours": 80,
-        "primarySkill": "program",
-        "skills": [
-          "program",
-          "collection"
-        ],
-        "tools": [
-          "Canva"
-        ],
-        "teamSize": 4,
-        "contribution": 35,
-        "role": [
-          "회차별 도서 선정과 활동지 제작",
-          "홍보물 제작과 신청 접수",
-          "보호자 만족도 조사"
-        ],
-        "process": {
-          "problem": "방학 중 어린이 이용자는 늘지만 연령에 맞는 정기 프로그램이 부족했습니다.",
-          "steps": [
-            "기존 대출 기록으로 인기 주제 확인",
-            "8회차 주제와 도서 선정",
-            "활동지·홍보물 제작",
-            "운영과 회차별 기록",
-            "보호자 설문과 결과 보고"
-          ],
-          "challenge": "회차가 진행될수록 출석이 줄어, 다음 회차 예고 카드와 개인 독서 기록장을 만들어 출석률을 유지했습니다."
-        },
-        "metrics": [
-          {
-            "label": "참여 어린이",
-            "value": 24,
-            "unit": "명",
-            "key": "participants"
-          },
-          {
-            "label": "운영 회차",
-            "value": 8,
-            "unit": "회",
-            "key": "sessions"
-          },
-          {
-            "label": "보호자 만족도",
-            "value": 4.7,
-            "unit": "점(5점 만점)",
-            "key": "satisfaction"
-          }
-        ],
-        "outcome": "도서관이 다음 해 겨울 독서교실에 같은 구성을 쓰기로 했습니다.",
-        "learned": "프로그램은 기획서보다 운영 중 기록과 조정이 결과를 바꾼다는 것을 배웠습니다.",
-        "evidence": [
-          {
-            "type": "file",
-            "title": "프로그램 기획안",
-            "url": "",
-            "description": "PDF 6쪽(예시라 파일 없음)",
-            "public": true
-          },
-          {
-            "type": "image",
-            "title": "활동 사진",
-            "url": "",
-            "description": "어린이 얼굴은 모자이크 처리",
-            "public": true
-          }
-        ],
-        "featured": true,
-        "featuredOrder": 3
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 11,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "a72af7a4-6a52-45c9-b139-3c5a77c4920b",
-      "kind": "project",
-      "data": {
-        "slug": "loan-analysis",
-        "title": "대출 데이터로 본 장서 이용 분석",
-        "summary": "공개된 도서관 대출 데이터 1만 2천 건으로 주제별 이용률을 분석했습니다.",
-        "type": "개인",
-        "organization": "",
-        "startDate": "2025-09",
-        "endDate": "2025-11",
-        "hours": 50,
-        "primarySkill": "digital",
-        "skills": [
-          "digital",
-          "collection"
-        ],
-        "tools": [
-          "파이썬(pandas)",
-          "엑셀"
-        ],
-        "teamSize": 1,
-        "contribution": 100,
-        "role": [
-          "데이터 정제와 KDC 주류별 집계",
-          "이용률 대비 장서 비율 비교",
-          "결과 보고서 작성"
-        ],
-        "process": {
-          "problem": "장서 구성과 실제 이용이 얼마나 맞는지 숫자로 확인하고 싶었습니다.",
-          "steps": [
-            "공공데이터 대출 기록 내려받기",
-            "KDC 주류별로 정리",
-            "장서 비율과 대출 비율 비교",
-            "결과를 그래프와 보고서로 정리"
-          ],
-          "challenge": "분류기호가 비어 있는 기록이 있어 ISBN으로 보완했습니다."
-        },
-        "metrics": [
-          {
-            "label": "분석한 대출 기록",
-            "value": 12000,
-            "unit": "건",
-            "key": "items_digitized"
-          }
-        ],
-        "outcome": "이용 대비 장서가 많은 주제와 부족한 주제를 표로 정리했습니다.",
-        "learned": "데이터로 장서개발 근거를 만드는 방법을 익혔습니다.",
-        "evidence": [
-          {
-            "type": "link",
-            "title": "분석 보고서",
-            "url": "https://example.com/report",
-            "description": "예시 링크",
-            "public": true
-          }
-        ]
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 12,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "ae6027ad-7a2a-4213-b78e-5a126e20abfa",
-      "kind": "education",
-      "data": {
-        "school": "○○대학교",
-        "major": "문헌정보학과",
-        "minor": "",
-        "startDate": "2023-03",
-        "endDate": "2027-02",
-        "status": "졸업 예정",
-        "gpa": 4.12,
-        "gpaMax": 4.5,
-        "gpaPublic": true,
-        "note": "졸업 논문: 공공도서관 지역 자료 메타데이터 품질 분석"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 14,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "a502b469-cb4f-46aa-96f7-dce6d63f12fd",
-      "kind": "education",
-      "data": {
-        "school": "○○고등학교",
-        "major": "",
-        "startDate": "2020-03",
-        "endDate": "2023-02",
-        "status": "졸업",
-        "gpaPublic": false,
-        "note": ""
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 15,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "5531172a-b517-4656-af6f-ddafd826d01c",
-      "kind": "experience",
-      "data": {
-        "organization": "○○대학교 중앙도서관",
-        "position": "근로장학생",
-        "employmentType": "근로장학생",
-        "startDate": "2024-03",
-        "endDate": "2025-12",
-        "description": "대출·반납 데스크, 서가 정리, 참고데스크 보조, 학술DB 검색 교육 보조"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 16,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "355f898c-456c-45d2-a145-b785a7dc9711",
-      "kind": "experience",
-      "data": {
-        "organization": "○○시립도서관",
-        "position": "어린이자료실 방학 기간 근무",
-        "employmentType": "계약직",
-        "startDate": "2025-07",
-        "endDate": "2025-08",
-        "description": "어린이자료실 운영 보조, 여름 독서교실 진행"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 17,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "abffdd07-38fd-4abd-85e9-5bf89610d696",
-      "kind": "activity",
-      "data": {
-        "title": "□□구립도서관 현장실습",
-        "organization": "□□구립도서관",
-        "type": "현장실습",
-        "role": "실습생",
-        "startDate": "2024-12",
-        "endDate": "2025-01",
-        "hours": 160
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 18,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "6c226138-633e-4b38-939a-1bcdc62e08f0",
-      "kind": "activity",
-      "data": {
-        "title": "대학 기록관 현장실습",
-        "organization": "○○대학교 기록관",
-        "type": "현장실습",
-        "role": "실습생",
-        "startDate": "2025-06",
-        "endDate": "2025-07",
-        "hours": 80
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 19,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "a513e0ce-2416-4b51-b7cd-c6edd63c70b9",
-      "kind": "activity",
-      "data": {
-        "title": "메타데이터 학술 동아리",
-        "organization": "○○대학교 문헌정보학과",
-        "type": "동아리",
-        "role": "회장(2024)",
-        "startDate": "2023-09",
-        "endDate": "2025-06",
-        "hours": 120
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 20,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "10bdce6d-e6f0-49c3-b1bb-5c3e77624369",
-      "kind": "activity",
-      "data": {
-        "title": "작은도서관 독서 봉사",
-        "organization": "△△동 작은도서관",
-        "type": "봉사",
-        "role": "그림책 읽어주기",
-        "startDate": "2024-03",
-        "endDate": "2024-11",
-        "hours": 48
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 21,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "837177fd-73f4-4c55-a28a-3e2d35e3e4e1",
-      "kind": "activity",
-      "data": {
-        "title": "도서관 홍보 서포터즈",
-        "organization": "○○문화재단",
-        "type": "대외활동",
-        "role": "SNS 콘텐츠 제작",
-        "startDate": "2025-03",
-        "endDate": "2025-08",
-        "hours": 40
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 22,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "2b8680d4-71c6-486a-a9d4-50e937f06cd1",
-      "kind": "award",
-      "data": {
-        "title": "문헌정보학과 학술제",
-        "rank": "우수상",
-        "issuer": "○○대학교 문헌정보학과",
-        "date": "2024-11"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 23,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "9c26d652-3909-4c41-a026-f0ed440d0ef9",
-      "kind": "award",
-      "data": {
-        "title": "도서관 이용 활성화 아이디어 공모전",
-        "rank": "장려상",
-        "issuer": "○○시 도서관사업소",
-        "date": "2025-10"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 24,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
-    },
-    {
-      "id": "a026a6a7-266f-4d24-beb4-521dbe0d5869",
-      "kind": "certificate",
-      "data": {
-        "name": "정사서 2급",
-        "issuer": "국립중앙도서관",
-        "status": "예정",
-        "date": "2027-02"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 25,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "b6ee8d32-57cf-4e61-ba81-66d2a6881720",
       "kind": "certificate",
       "data": {
+        "date": "2024-08",
         "name": "컴퓨터활용능력 2급",
         "issuer": "대한상공회의소",
-        "status": "취득",
-        "date": "2024-08"
+        "status": "취득"
       },
       "visibility": "public",
       "status": "published",
       "isSample": true,
       "sort": 26,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "f8292dc3-a779-477f-a5f7-e3716843efe7",
       "kind": "certificate",
       "data": {
+        "date": "2025-02",
         "name": "한국사능력검정시험 2급",
         "issuer": "국사편찬위원회",
-        "status": "취득",
-        "date": "2025-02"
+        "status": "취득"
       },
       "visibility": "public",
       "status": "published",
       "isSample": true,
       "sort": 27,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "ed9a85ed-acc7-45f2-8fcc-5ce84b6a8b31",
       "kind": "language",
       "data": {
+        "date": "2025-05",
         "test": "TOEIC",
         "score": "850",
-        "date": "2025-05",
         "scorePublic": true
       },
       "visibility": "public",
       "status": "published",
       "isSample": true,
       "sort": 28,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "85251e5b-d76a-458f-a516-1d819b4ec404",
@@ -835,7 +478,7 @@
       "status": "published",
       "isSample": true,
       "sort": 29,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "11e1ee8b-6cd1-4208-95ff-2ea9847e0407",
@@ -848,7 +491,7 @@
       "status": "published",
       "isSample": true,
       "sort": 30,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "c3b0e9a9-69fd-4ca7-ab89-dca5df6031ad",
@@ -861,7 +504,364 @@
       "status": "published",
       "isSample": true,
       "sort": 31,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "d3697426-3bc6-4330-8e9e-4f51bca28858",
+      "kind": "project",
+      "data": {
+        "role": [
+          "회차별 도서 선정과 활동지 제작",
+          "홍보물 제작과 신청 접수",
+          "보호자 만족도 조사"
+        ],
+        "slug": "kids-reading",
+        "type": "실습",
+        "hours": 80,
+        "title": "여름 어린이 독서교실 프로그램 기획",
+        "tools": [
+          "Canva"
+        ],
+        "skills": [
+          "program",
+          "collection"
+        ],
+        "endDate": "2025-08",
+        "learned": "프로그램은 기획서보다 운영 중 기록과 조정이 결과를 바꾼다는 것을 배웠습니다.",
+        "metrics": [
+          {
+            "key": "participants",
+            "unit": "명",
+            "label": "참여 어린이",
+            "value": 24
+          },
+          {
+            "key": "sessions",
+            "unit": "회",
+            "label": "운영 회차",
+            "value": 8
+          },
+          {
+            "key": "satisfaction",
+            "unit": "점(5점 만점)",
+            "label": "보호자 만족도",
+            "value": 4.7
+          }
+        ],
+        "outcome": "도서관이 다음 해 겨울 독서교실에 같은 구성을 쓰기로 했습니다.",
+        "process": {
+          "steps": [
+            "기존 대출 기록으로 인기 주제 확인",
+            "8회차 주제와 도서 선정",
+            "활동지·홍보물 제작",
+            "운영과 회차별 기록",
+            "보호자 설문과 결과 보고"
+          ],
+          "problem": "방학 중 어린이 이용자는 늘지만 연령에 맞는 정기 프로그램이 부족했습니다.",
+          "challenge": "회차가 진행될수록 출석이 줄어, 다음 회차 예고 카드와 개인 독서 기록장을 만들어 출석률을 유지했습니다."
+        },
+        "summary": "초등 저학년 대상 8회차 독서교실을 기획하고 운영을 도왔습니다.",
+        "evidence": [
+          {
+            "url": "",
+            "type": "file",
+            "title": "프로그램 기획안",
+            "public": true,
+            "description": "PDF 6쪽(예시라 파일 없음)"
+          },
+          {
+            "url": "",
+            "type": "image",
+            "title": "활동 사진",
+            "public": true,
+            "description": "어린이 얼굴은 모자이크 처리"
+          }
+        ],
+        "featured": true,
+        "teamSize": 4,
+        "startDate": "2025-07",
+        "contribution": 35,
+        "organization": "○○시립도서관 어린이자료실",
+        "primarySkill": "program",
+        "featuredOrder": 3
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 11,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "a72af7a4-6a52-45c9-b139-3c5a77c4920b",
+      "kind": "project",
+      "data": {
+        "role": [
+          "데이터 정제와 KDC 주류별 집계",
+          "이용률 대비 장서 비율 비교",
+          "결과 보고서 작성"
+        ],
+        "slug": "loan-analysis",
+        "type": "개인",
+        "hours": 50,
+        "title": "대출 데이터로 본 장서 이용 분석",
+        "tools": [
+          "파이썬(pandas)",
+          "엑셀"
+        ],
+        "skills": [
+          "digital",
+          "collection"
+        ],
+        "endDate": "2025-11",
+        "learned": "데이터로 장서개발 근거를 만드는 방법을 익혔습니다.",
+        "metrics": [
+          {
+            "key": "items_digitized",
+            "unit": "건",
+            "label": "분석한 대출 기록",
+            "value": 12000
+          }
+        ],
+        "outcome": "이용 대비 장서가 많은 주제와 부족한 주제를 표로 정리했습니다.",
+        "process": {
+          "steps": [
+            "공공데이터 대출 기록 내려받기",
+            "KDC 주류별로 정리",
+            "장서 비율과 대출 비율 비교",
+            "결과를 그래프와 보고서로 정리"
+          ],
+          "problem": "장서 구성과 실제 이용이 얼마나 맞는지 숫자로 확인하고 싶었습니다.",
+          "challenge": "분류기호가 비어 있는 기록이 있어 ISBN으로 보완했습니다."
+        },
+        "summary": "공개된 도서관 대출 데이터 1만 2천 건으로 주제별 이용률을 분석했습니다.",
+        "evidence": [
+          {
+            "url": "https://example.com/report",
+            "type": "link",
+            "title": "분석 보고서",
+            "public": true,
+            "description": "예시 링크"
+          }
+        ],
+        "teamSize": 1,
+        "startDate": "2025-09",
+        "contribution": 100,
+        "organization": "",
+        "primarySkill": "digital"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 12,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "ae6027ad-7a2a-4213-b78e-5a126e20abfa",
+      "kind": "education",
+      "data": {
+        "gpa": 4.12,
+        "note": "졸업 논문: 공공도서관 지역 자료 메타데이터 품질 분석",
+        "major": "문헌정보학과",
+        "minor": "",
+        "gpaMax": 4.5,
+        "school": "○○대학교",
+        "status": "졸업 예정",
+        "endDate": "2027-02",
+        "gpaPublic": true,
+        "startDate": "2023-03"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 14,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "a502b469-cb4f-46aa-96f7-dce6d63f12fd",
+      "kind": "education",
+      "data": {
+        "note": "",
+        "major": "",
+        "school": "○○고등학교",
+        "status": "졸업",
+        "endDate": "2023-02",
+        "gpaPublic": false,
+        "startDate": "2020-03"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 15,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "5531172a-b517-4656-af6f-ddafd826d01c",
+      "kind": "experience",
+      "data": {
+        "endDate": "2025-12",
+        "position": "근로장학생",
+        "startDate": "2024-03",
+        "description": "대출·반납 데스크, 서가 정리, 참고데스크 보조, 학술DB 검색 교육 보조",
+        "organization": "○○대학교 중앙도서관",
+        "employmentType": "근로장학생"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 16,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "355f898c-456c-45d2-a145-b785a7dc9711",
+      "kind": "experience",
+      "data": {
+        "endDate": "2025-08",
+        "position": "어린이자료실 방학 기간 근무",
+        "startDate": "2025-07",
+        "description": "어린이자료실 운영 보조, 여름 독서교실 진행",
+        "organization": "○○시립도서관",
+        "employmentType": "계약직"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 17,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "abffdd07-38fd-4abd-85e9-5bf89610d696",
+      "kind": "activity",
+      "data": {
+        "role": "실습생",
+        "type": "현장실습",
+        "hours": 160,
+        "title": "□□구립도서관 현장실습",
+        "endDate": "2025-01",
+        "startDate": "2024-12",
+        "organization": "□□구립도서관"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 18,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "6c226138-633e-4b38-939a-1bcdc62e08f0",
+      "kind": "activity",
+      "data": {
+        "role": "실습생",
+        "type": "현장실습",
+        "hours": 80,
+        "title": "대학 기록관 현장실습",
+        "endDate": "2025-07",
+        "startDate": "2025-06",
+        "organization": "○○대학교 기록관"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 19,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "a513e0ce-2416-4b51-b7cd-c6edd63c70b9",
+      "kind": "activity",
+      "data": {
+        "role": "회장(2024)",
+        "type": "동아리",
+        "hours": 120,
+        "title": "메타데이터 학술 동아리",
+        "endDate": "2025-06",
+        "startDate": "2023-09",
+        "organization": "○○대학교 문헌정보학과"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 20,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "10bdce6d-e6f0-49c3-b1bb-5c3e77624369",
+      "kind": "activity",
+      "data": {
+        "role": "그림책 읽어주기",
+        "type": "봉사",
+        "hours": 48,
+        "title": "작은도서관 독서 봉사",
+        "endDate": "2024-11",
+        "startDate": "2024-03",
+        "organization": "△△동 작은도서관"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 21,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "837177fd-73f4-4c55-a28a-3e2d35e3e4e1",
+      "kind": "activity",
+      "data": {
+        "role": "SNS 콘텐츠 제작",
+        "type": "대외활동",
+        "hours": 40,
+        "title": "도서관 홍보 서포터즈",
+        "endDate": "2025-08",
+        "startDate": "2025-03",
+        "organization": "○○문화재단"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 22,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "2b8680d4-71c6-486a-a9d4-50e937f06cd1",
+      "kind": "award",
+      "data": {
+        "date": "2024-11",
+        "rank": "우수상",
+        "title": "문헌정보학과 학술제",
+        "issuer": "○○대학교 문헌정보학과"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 23,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "9c26d652-3909-4c41-a026-f0ed440d0ef9",
+      "kind": "award",
+      "data": {
+        "date": "2025-10",
+        "rank": "장려상",
+        "title": "도서관 이용 활성화 아이디어 공모전",
+        "issuer": "○○시 도서관사업소"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 24,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "a026a6a7-266f-4d24-beb4-521dbe0d5869",
+      "kind": "certificate",
+      "data": {
+        "date": "2027-02",
+        "name": "정사서 2급",
+        "issuer": "국립중앙도서관",
+        "status": "예정"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 25,
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "52c6b3ca-efbf-4872-bf3d-e7a721e72c20",
@@ -874,7 +874,7 @@
       "status": "published",
       "isSample": true,
       "sort": 32,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "23fe2fa5-e74d-40db-93d6-622df40bb0c3",
@@ -887,7 +887,7 @@
       "status": "published",
       "isSample": true,
       "sort": 33,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "3c1f0f94-f445-446f-9803-da4c9a58431a",
@@ -900,7 +900,7 @@
       "status": "published",
       "isSample": true,
       "sort": 34,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "1d16468a-4cf8-4fa4-9f33-5ec70e6d82ee",
@@ -913,7 +913,7 @@
       "status": "published",
       "isSample": true,
       "sort": 35,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "c7c1c6c7-cc7b-43aa-8dd1-f21e09029672",
@@ -926,7 +926,7 @@
       "status": "published",
       "isSample": true,
       "sort": 36,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
       "id": "6c9b578d-bcda-499f-a796-b7c44d3f198c",
@@ -939,7 +939,7 @@
       "status": "published",
       "isSample": true,
       "sort": 37,
-      "updatedAt": "2026-11-09T09:40:00+09:00"
+      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     }
   ]
 }
