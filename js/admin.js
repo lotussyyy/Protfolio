@@ -7,7 +7,7 @@ import {
 import { mountPortfolio, esc } from './render.js';
 
 const app = document.getElementById('admin');
-const S = { items: [], notes: {}, tab: 'project', editing: null, dirty: false, lastSaved: null, preview: null };
+const S = { items: [], notes: {}, tab: 'project', editing: null, dirty: false, lastSaved: null, preview: null, returnTo: null };
 const LAST_BACKUP = 'lis-portfolio-last-backup';
 
 // ---------- 대화상자·알림 (페이지 안에서 직접 그림: 브라우저 confirm 대신) ----------
@@ -155,7 +155,7 @@ function renderShell() {
   app.querySelector('.aside').addEventListener('click', async e => {
     const b = e.target.closest('[data-tab]'); if (!b) return;
     if (!(await leaveOk())) return;
-    S.tab = b.dataset.tab; S.editing = null; renderShell();
+    S.tab = b.dataset.tab; S.editing = null; S.returnTo = null; renderShell();
   });
   drawPanel();
 }
@@ -290,7 +290,9 @@ function fieldHTML(f, item) {
     case 'competency': return wrap(`<select id="${id}"><option value="">선택</option>${competencies().map(c => `<option value="${esc(c.data.cid)}" ${c.data.cid === v ? 'selected' : ''}>${esc(c.data.name)}</option>`).join('')}</select>`);
     case 'competencies': return group(`<div class="checks">${competencies().map(c => `<label><input type="checkbox" value="${esc(c.data.cid)}" ${(v || []).includes(c.data.cid) ? 'checked' : ''}> ${esc(c.data.name)}</label>`).join('')}</div>`, '주 역량은 자동으로 포함됩니다.');
     case 'tools': return group(`<div class="checks">${toolsList().map(t => `<label><input type="checkbox" value="${esc(t.data.name)}" ${(v || []).includes(t.data.name) ? 'checked' : ''}> ${esc(t.data.name)}</label>`).join('') || '<span class="muted small">‘스킬’ 메뉴에서 도구를 먼저 등록하세요.</span>'}</div>`, '스킬 막대는 여기서 고른 횟수로 계산됩니다.');
-    case 'projects': return group(`<div class="checks">${projectsList().map(p => `<label><input type="checkbox" value="${esc(p.id)}" ${(v || []).includes(p.id) ? 'checked' : ''}> ${esc(p.data.title)}</label>`).join('') || '<span class="muted small">프로젝트가 없습니다.</span>'}</div>`);
+    case 'projects': return group(`<ul class="projpick">${projectsList().map(p => `<li><label><input type="checkbox" value="${esc(p.id)}" ${(v || []).includes(p.id) ? 'checked' : ''}> ${esc(p.data.title)}</label>
+        <button type="button" class="btn small" data-editproj="${esc(p.id)}" aria-label="${esc(p.data.title)} 프로젝트 수정">수정</button></li>`).join('') || '<li class="muted small">프로젝트가 없습니다.</li>'}</ul>
+      <button type="button" class="btn small" data-newproj>+ 새 프로젝트 만들고 연결</button>`, '체크하면 이 항목 아래에 프로젝트 링크가 붙습니다. ‘수정’을 누르면 프로젝트를 고친 뒤 이 화면으로 돌아옵니다.');
     case 'roles': return group(`<div class="grid2">${ROLES.map(r => `<label class="small">${esc(r.name)}<select data-role="${r.id}"><option value="">해당 없음</option><option value="core" ${(v || {})[r.id] === 'core' ? 'selected' : ''}>● 핵심</option><option value="related" ${(v || {})[r.id] === 'related' ? 'selected' : ''}>○ 관련</option></select></label>`).join('')}</div>`);
     case 'metrics': return group(`<div class="rep" data-rep="metric">${(v || []).map(metricRow).join('')}</div><button type="button" class="btn small" data-add="metric">+ 성과 추가</button>`, '표준 key를 고르면 같은 종류의 성과를 같은 단위로 정리할 수 있습니다.');
     case 'evidence': return group(`<div class="rep" data-rep="ev">${(v || []).map(evRow).join('')}</div><button type="button" class="btn small" data-add="ev">+ 증빙 추가</button>`,
@@ -340,27 +342,38 @@ function drawForm(panel) {
   const draftKey = 'lis-draft-' + item.id;
   const draft = api.store.get(draftKey);
   panel.innerHTML = `<div class="phead"><div><h2>${isProfile ? '프로필' : `${def.label} ${item._new ? '추가' : '수정'}`}${badges(item)}</h2>
-      ${!isProfile ? '<button type="button" class="btn small" data-back>← 목록</button>' : ''}</div></div>
+      ${!isProfile ? `<button type="button" class="btn small" data-back>${S.returnTo ? `← ${esc(KINDS[S.returnTo.item.kind].label)} 편집으로 돌아가기` : '← 목록'}</button>` : ''}</div></div>
+    ${S.returnTo ? `<div class="alert">‘${esc(KINDS[S.returnTo.item.kind].title(S.returnTo.item.data) || KINDS[S.returnTo.item.kind].label)}’ 편집 중에 열었습니다. 저장하거나 취소하면 그 화면으로 돌아갑니다(입력하던 내용은 그대로 남아 있습니다).</div>` : ''}
     ${draft ? `<div class="alert" id="draftbar">저장하지 않은 입력이 이 기기에 남아 있습니다. <button type="button" class="btn small" data-draft="load">불러오기</button> <button type="button" class="btn small" data-draft="drop">버리기</button></div>` : ''}
     ${item.isSample ? `<div class="alert">이 항목은 ‘예시’ 데이터입니다. 실제 내용으로 고쳤다면 <button type="button" class="btn small" data-unsample>예시 해제</button></div>` : ''}
     <div id="errs"></div>
     <form class="form" id="frm" novalidate>
       ${isProfile ? profileFormHTML(item) : def.fields.map(f => fieldHTML(f, item)).join('')}
       ${!isProfile ? `<div class="grid2">
-        <div class="fld"><label for="f-vis">공개 범위</label><select id="f-vis"><option value="public" ${item.visibility === 'public' ? 'selected' : ''}>공개</option><option value="private" ${item.visibility !== 'public' ? 'selected' : ''}>비공개(소유자만)</option></select></div>
-        <div class="fld"><label for="f-status">상태</label><select id="f-status"><option value="published" ${item.status !== 'draft' ? 'selected' : ''}>완성</option><option value="draft" ${item.status === 'draft' ? 'selected' : ''}>초안(공개 화면에 안 보임)</option></select></div></div>
-        <div class="private-box fld"><label for="f-note">🔒 취업 메모 — 항상 비공개</label><textarea id="f-note" placeholder="지원처별 강조점, 면접 예상 질문, 자기소개서에 쓸 문장">${esc(S.notes[item.id] || '')}</textarea></div>` : ''}
+        <div class="fld"><label for="pub-vis">공개 범위</label><select id="pub-vis"><option value="public" ${item.visibility === 'public' ? 'selected' : ''}>공개</option><option value="private" ${item.visibility !== 'public' ? 'selected' : ''}>비공개(소유자만)</option></select></div>
+        <div class="fld"><label for="pub-status">공개 상태</label><select id="pub-status"><option value="published" ${item.status !== 'draft' ? 'selected' : ''}>완성</option><option value="draft" ${item.status === 'draft' ? 'selected' : ''}>초안(공개 화면에 안 보임)</option></select></div></div>
+        <div class="private-box fld"><label for="f-careernote">🔒 취업 메모 — 항상 비공개</label><textarea id="f-careernote" placeholder="지원처별 강조점, 면접 예상 질문, 자기소개서에 쓸 문장">${esc(S.pendingNote?.id === item.id ? S.pendingNote.note : (S.notes[item.id] || ''))}</textarea></div>` : ''}
       <div class="formbar"><button type="submit" class="btn primary">저장</button>${!isProfile ? '<button type="button" class="btn" data-back>취소</button>' : ''}<span class="small muted">저장하면 ${api.MODE === 'demo' ? '이 브라우저의 데모 데이터에' : '바로 공개 사이트에'} 반영됩니다(공개 항목만).</span></div>
     </form>`;
 
+  S.pendingNote = null;
   const frm = panel.querySelector('#frm');
-  const markDirty = () => { S.dirty = true; api.store.set(draftKey, { item: collect(), note: frm.querySelector('#f-note')?.value }); };
+  const markDirty = () => { S.dirty = true; api.store.set(draftKey, { item: collect(), note: frm.querySelector('#f-careernote')?.value }); };
   frm.addEventListener('input', markDirty);
   frm.addEventListener('change', markDirty);
 
   panel.onclick = async e => {
     const b = e.target.closest('button,[data-add]'); if (!b) return;
-    if (b.dataset.back !== undefined) { if (await leaveOk()) { api.store.del(draftKey); S.editing = null; drawPanel(); } return; }
+    if (b.dataset.back !== undefined) { if (await leaveOk()) { api.store.del(draftKey); if (!restoreReturn()) { S.editing = null; drawPanel(); } } return; }
+    if (b.dataset.editproj || b.dataset.newproj !== undefined) {
+      const proj = b.dataset.editproj ? S.items.find(x => x.id === b.dataset.editproj) : null;
+      S.returnTo = { tab: S.tab, item: collect(), note: panel.querySelector('#f-careernote')?.value ?? null, dirty: S.dirty, linkNew: !proj };
+      S.dirty = false;
+      S.tab = 'project';
+      S.editing = proj ? structuredClone(proj) : newItem('project');
+      renderShell();
+      return;
+    }
     if (b.dataset.draft === 'load') { S.editing = draft.item; if (draft.note != null) S.notes[item.id] = draft.note; drawForm(panel); S.dirty = true; return; }
     if (b.dataset.draft === 'drop') { api.store.del(draftKey); panel.querySelector('#draftbar')?.remove(); return; }
     if (b.dataset.unsample !== undefined) { S.editing = { ...collect(), isSample: false }; S.dirty = true; drawForm(panel); toast('예시 표시를 뺐습니다. 저장해야 반영됩니다.'); return; }
@@ -396,6 +409,26 @@ function drawForm(panel) {
   };
 
   frm.onsubmit = async e => { e.preventDefault(); await save(panel, draftKey); };
+}
+
+// 이력 항목 편집 중 '관련 프로젝트'에서 프로젝트를 열었다가 돌아오기
+function restoreReturn(savedProject) {
+  const rt = S.returnTo;
+  if (!rt) return false;
+  S.returnTo = null;
+  const item = rt.item;
+  if (savedProject && savedProject.kind === 'project' && rt.linkNew) {
+    item.data.relatedProjects = [...new Set([...(item.data.relatedProjects || []), savedProject.id])];
+  }
+  S.tab = rt.tab;
+  S.editing = item;
+  S.dirty = rt.dirty || !!(savedProject && rt.linkNew);
+  if (rt.note != null) {
+    // 입력하던 취업 메모를 폼에 다시 채우기 위해 잠시 보관(저장 전까지 DB에는 반영되지 않음)
+    S.pendingNote = { id: item.id, note: rt.note };
+  }
+  renderShell();
+  return true;
 }
 
 function collect() {
@@ -437,8 +470,8 @@ function collect() {
     if (d.featured && !d.featuredOrder) d.featuredOrder = Math.min(3, projectsList().filter(p => p.data.featured && p.id !== item.id).length + 1);
     if (!d.featured) delete d.featuredOrder;
   }
-  item.visibility = panel.querySelector('#f-vis')?.value || item.visibility;
-  item.status = panel.querySelector('#f-status')?.value || item.status;
+  item.visibility = panel.querySelector('#pub-vis')?.value || item.visibility;
+  item.status = panel.querySelector('#pub-status')?.value || item.status;
   return item;
 }
 
@@ -464,7 +497,7 @@ async function save(panel, draftKey) {
     const pii = piiWarnings(item);
     if (pii.length && !(await ask('개인정보가 있는 것 같습니다', `<p>공개 내용에 <b>${esc(pii.join(', '))}</b>로 보이는 값이 있습니다. 포트폴리오에는 넣지 않는 것이 원칙입니다. 그래도 저장할까요?</p>`, '그래도 저장'))) return;
   }
-  const noteEl = panel.querySelector('#f-note');
+  const noteEl = panel.querySelector('#f-careernote');
   const persist = async force => {
     const { _new, ...clean } = item;
     const saved = await api.saveItem(clean, { force });
@@ -473,6 +506,7 @@ async function save(panel, draftKey) {
     api.store.del(draftKey);
     S.dirty = false;
     S.editing = item.kind === 'profile' ? structuredClone(saved) : null;
+    if (restoreReturn(saved)) { toast('저장했습니다. 원래 편집 화면으로 돌아왔습니다.'); return; }
     renderShell();
     toast('저장했습니다.');
   };
