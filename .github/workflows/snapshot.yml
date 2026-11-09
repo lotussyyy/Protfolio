@@ -1,0 +1,30 @@
+name: 공개 스냅샷 저장
+
+on:
+  schedule:
+    - cron: '0 19 * * *'   # 매일 한국 시간 새벽 4시 (UTC 19:00)
+  workflow_dispatch: {}      # Actions 탭에서 직접 실행
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Supabase 공개 데이터 읽기
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: node scripts/snapshot.mjs
+      - name: 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/portfolio.json
+          git diff --cached --quiet || git commit -m "공개 스냅샷 갱신"
+          git push

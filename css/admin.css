@@ -1,0 +1,74 @@
+/* 관리 화면: 편집 모드는 회색 바탕 + 상단 배너로 공개 화면과 한눈에 구분 (F-7.2) */
+body.admin { background: #f3f2ef; }
+.abar { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); }
+.abar-in { max-width: 1200px; margin: 0 auto; padding: 8px 20px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.abar h1 { font-size: 17px; margin: 0 auto 0 0; }
+.edit-banner { background: var(--ink); color: #fff; text-align: center; font-size: 14px; padding: 6px 12px; }
+.alayout { max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 200px 1fr; gap: 20px; align-items: start; }
+.aside { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 2px; }
+.aside button { text-align: left; border: 0; background: none; padding: 8px 12px; border-radius: 6px; min-height: 40px; cursor: pointer; display: flex; justify-content: space-between; }
+.aside button[aria-current='true'] { background: #fff; font-weight: 700; box-shadow: 0 0 0 1px var(--line); }
+.aside .grp { font-size: 12px; color: var(--ink-2); padding: 12px 12px 4px; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 20px 24px; min-width: 0; }
+.panel h2 { margin: 0 0 4px; font-size: 22px; }
+.phead { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.alerts { max-width: 1200px; margin: 12px auto 0; padding: 0 20px; display: grid; gap: 8px; }
+.alert { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--ink); border-radius: 6px; padding: 10px 14px; font-size: 15px; }
+.rows { list-style: none; margin: 0; padding: 0; }
+.rowi { display: flex; gap: 12px; align-items: center; padding: 10px 4px; border-bottom: 1px solid var(--line); }
+.rowi .main { flex: 1; min-width: 0; }
+.rowi .ttl { font-weight: 600; }
+.rowi .meta { font-size: 14px; color: var(--ink-2); }
+.rowi .acts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.badge.lock::before { content: '🔒 '; }
+.form { display: grid; gap: 16px; }
+.fld label, .fld .lbl { display: block; font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+.fld .req { color: #9b1c1c; }
+.fld .help { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.fld input[type=text], .fld input[type=number], .fld input[type=month], .fld input[type=email], .fld input[type=url], .fld input[type=password], .fld select, .fld textarea {
+  width: 100%; border: 1px solid #d6d5d1; border-radius: 6px; padding: 8px 10px; min-height: 42px; background: #fff;
+}
+.fld textarea { min-height: 88px; resize: vertical; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.checks { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.checks label { font-weight: 400; display: inline-flex; gap: 6px; align-items: center; min-height: 36px; margin: 0; }
+.rep { display: grid; gap: 8px; }
+.rep-row { display: grid; gap: 8px; align-items: end; border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: var(--soft); }
+.rep-row.metric { grid-template-columns: 2fr 1fr 1fr 2fr auto; }
+.rep-row.link { grid-template-columns: 1fr 2fr auto auto; }
+.rep-row.interest { grid-template-columns: 80px 1fr auto; }
+.rep-row.ev { grid-template-columns: 110px 1fr 1fr auto; }
+.rep-row.ev .wide { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rep-row input, .rep-row select { width: 100%; border: 1px solid #d6d5d1; border-radius: 6px; padding: 6px 8px; min-height: 38px; background: #fff; }
+.rep-row .lbl { font-size: 12px; color: var(--ink-2); display: block; }
+.private-box { border: 1px dashed var(--ink-2); border-radius: 8px; padding: 12px; background: var(--soft); }
+.formbar { position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--line); margin: 8px -24px -20px; padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; border-radius: 0 0 10px 10px; }
+.errors { border: 1px solid #9b1c1c; color: #7a1414; background: #fdf3f3; border-radius: 8px; padding: 10px 14px; }
+.errors ul { margin: 4px 0 0; padding-left: 20px; }
+.modal { position: fixed; inset: 0; background: rgba(15,15,15,.45); z-index: 100; display: grid; place-items: center; padding: 16px; }
+.modal .box { background: #fff; border-radius: 12px; max-width: 480px; width: 100%; padding: 20px; }
+.modal h2 { margin: 0 0 8px; font-size: 19px; }
+.modal .btns { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 16px; }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 8px; z-index: 120; display: flex; gap: 12px; align-items: center; max-width: calc(100% - 32px); }
+.toast button { background: #fff; color: var(--ink); border: 0; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-weight: 700; }
+.preview-exit { position: fixed; right: 16px; bottom: 16px; z-index: 60; }
+.login { max-width: 400px; margin: 10vh auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 28px; }
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.mini { width: 100%; border-collapse: collapse; font-size: 15px; }
+.mini td, .mini th { border-bottom: 1px solid var(--line); padding: 6px 4px; text-align: left; }
+.mini td.n { text-align: right; font-variant-numeric: tabular-nums; }
+code.box { display: block; background: var(--soft); border-radius: 6px; padding: 8px 10px; word-break: break-all; font-size: 14px; }
+
+@media (max-width: 767px) {
+  .alayout { grid-template-columns: 1fr; padding: 12px; }
+  .aside { position: static; flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .aside .grp { display: none; }
+  .aside button { white-space: nowrap; }
+  .panel { padding: 16px; }
+  .formbar { margin: 8px -16px -16px; padding: 12px 16px; }
+  .grid2, .rep-row.metric, .rep-row.link, .rep-row.ev, .stat-grid { grid-template-columns: 1fr; }
+  .rowi { flex-wrap: wrap; }
+  .rowi .acts { width: 100%; justify-content: flex-start; }
+}
+.rep-row input[type=checkbox], .fld input[type=checkbox] { width: 18px; height: 18px; min-height: 0; padding: 0; flex: none; }
