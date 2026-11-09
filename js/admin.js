@@ -291,8 +291,9 @@ function fieldHTML(f, item) {
     case 'competencies': return group(`<div class="checks">${competencies().map(c => `<label><input type="checkbox" value="${esc(c.data.cid)}" ${(v || []).includes(c.data.cid) ? 'checked' : ''}> ${esc(c.data.name)}</label>`).join('')}</div>`, '주 역량은 자동으로 포함됩니다.');
     case 'tools': return group(`<div class="checks">${toolsList().map(t => `<label><input type="checkbox" value="${esc(t.data.name)}" ${(v || []).includes(t.data.name) ? 'checked' : ''}> ${esc(t.data.name)}</label>`).join('') || '<span class="muted small">‘스킬’ 메뉴에서 도구를 먼저 등록하세요.</span>'}</div>`, '스킬 막대는 여기서 고른 횟수로 계산됩니다.');
     case 'projects': return group(`<ul class="projpick">${projectsList().map(p => `<li><label><input type="checkbox" value="${esc(p.id)}" ${(v || []).includes(p.id) ? 'checked' : ''}> ${esc(p.data.title)}</label>
-        <button type="button" class="btn small" data-editproj="${esc(p.id)}" aria-label="${esc(p.data.title)} 프로젝트 수정">수정</button></li>`).join('') || '<li class="muted small">프로젝트가 없습니다.</li>'}</ul>
-      <button type="button" class="btn small" data-newproj>+ 새 프로젝트 만들고 연결</button>`, '체크하면 이 항목 아래에 프로젝트 링크가 붙습니다. ‘수정’을 누르면 프로젝트를 고친 뒤 이 화면으로 돌아옵니다.');
+        <span class="pp-acts"><button type="button" class="btn small" data-editproj="${esc(p.id)}" aria-label="${esc(p.data.title)} 프로젝트 수정">수정</button>
+        <button type="button" class="btn small danger" data-delproj="${esc(p.id)}" aria-label="${esc(p.data.title)} 프로젝트 삭제">삭제</button></span></li>`).join('') || '<li class="muted small">프로젝트가 없습니다.</li>'}</ul>
+      <button type="button" class="btn small" data-newproj>+ 새 프로젝트 만들고 연결</button>`, '체크하면 이 항목 아래에 프로젝트 링크가 붙고, 체크를 풀면 연결만 끊깁니다. ‘수정’은 프로젝트를 고친 뒤 이 화면으로 돌아오고, ‘삭제’는 프로젝트 자체를 지웁니다.');
     case 'roles': return group(`<div class="grid2">${ROLES.map(r => `<label class="small">${esc(r.name)}<select data-role="${r.id}"><option value="">해당 없음</option><option value="core" ${(v || {})[r.id] === 'core' ? 'selected' : ''}>● 핵심</option><option value="related" ${(v || {})[r.id] === 'related' ? 'selected' : ''}>○ 관련</option></select></label>`).join('')}</div>`);
     case 'metrics': return group(`<div class="rep" data-rep="metric">${(v || []).map(metricRow).join('')}</div><button type="button" class="btn small" data-add="metric">+ 성과 추가</button>`, '표준 key를 고르면 같은 종류의 성과를 같은 단위로 정리할 수 있습니다.');
     case 'evidence': return group(`<div class="rep" data-rep="ev">${(v || []).map(evRow).join('')}</div><button type="button" class="btn small" data-add="ev">+ 증빙 추가</button>`,
@@ -365,6 +366,7 @@ function drawForm(panel) {
   panel.onclick = async e => {
     const b = e.target.closest('button,[data-add]'); if (!b) return;
     if (b.dataset.back !== undefined) { if (await leaveOk()) { api.store.del(draftKey); if (!restoreReturn()) { S.editing = null; drawPanel(); } } return; }
+    if (b.dataset.delproj) { await deleteProjectInForm(b.dataset.delproj); return; }
     if (b.dataset.editproj || b.dataset.newproj !== undefined) {
       const proj = b.dataset.editproj ? S.items.find(x => x.id === b.dataset.editproj) : null;
       S.returnTo = { tab: S.tab, item: collect(), note: panel.querySelector('#f-careernote')?.value ?? null, dirty: S.dirty, linkNew: !proj };
@@ -409,6 +411,45 @@ function drawForm(panel) {
   };
 
   frm.onsubmit = async e => { e.preventDefault(); await save(panel, draftKey); };
+}
+
+// 관련 프로젝트 목록에서 프로젝트 자체를 삭제(편집 중인 내용은 유지, 10초 되돌리기)
+async function deleteProjectInForm(pid) {
+  const proj = S.items.find(x => x.id === pid);
+  if (!proj) return;
+  const usedBy = S.items.filter(i => i.id !== S.editing.id && (i.data.relatedProjects || []).includes(pid)).length;
+  const ok = await ask('프로젝트를 삭제할까요?',
+    `<p><b>${esc(proj.data.title)}</b> 프로젝트 자체를 삭제합니다. 공개 사이트의 프로젝트 목록에서도 사라집니다.${usedBy ? ` 다른 이력 ${usedBy}건에 연결된 링크도 함께 사라집니다.` : ''}</p><p class="small muted">연결만 끊으려면 삭제 대신 체크를 해제하세요. 삭제 후 10초 동안 되돌릴 수 있습니다.</p>`, '프로젝트 삭제', true);
+  if (!ok) return;
+  const panel = app.querySelector('#panel');
+  const keep = () => { const cur = collect(); return { cur, note: panel.querySelector('#f-careernote')?.value ?? null, dirty: S.dirty }; };
+  const redraw = ({ cur, note, dirty }) => {
+    S.editing = cur; S.dirty = dirty;
+    if (note != null) S.pendingNote = { id: cur.id, note };
+    drawForm(app.querySelector('#panel'));
+    app.querySelectorAll('.aside [data-tab]').forEach(btn => {
+      if (KINDS[btn.dataset.tab]) btn.querySelector('.small').textContent = byKind(S.items, btn.dataset.tab).length;
+    });
+  };
+  const before = keep();
+  const wasLinked = (before.cur.data.relatedProjects || []).includes(pid);
+  const projNote = S.notes[pid];
+  try {
+    await api.deleteItem(pid);
+    S.items = S.items.filter(x => x.id !== pid); delete S.notes[pid];
+    before.cur.data.relatedProjects = (before.cur.data.relatedProjects || []).filter(x => x !== pid);
+    redraw(before);
+    toast('프로젝트를 삭제했습니다.', { label: '되돌리기', run: async () => {
+      try {
+        const state = keep();
+        mergeSaved(await api.saveItem({ ...proj, updatedAt: null }, { force: true }));
+        if (projNote) { await api.saveNote(pid, projNote); S.notes[pid] = projNote; }
+        if (wasLinked) state.cur.data.relatedProjects = [...new Set([...(state.cur.data.relatedProjects || []), pid])];
+        redraw(state);
+        toast('되돌렸습니다.');
+      } catch (err) { toast('되돌리지 못했습니다: ' + err.message); }
+    } });
+  } catch (err) { toast('삭제하지 못했습니다: ' + err.message); }
 }
 
 // 이력 항목 편집 중 '관련 프로젝트'에서 프로젝트를 열었다가 돌아오기
