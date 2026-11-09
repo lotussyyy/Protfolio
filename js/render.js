@@ -1,6 +1,6 @@
 // 공개 화면 그리기 (방문자 화면과 관리 화면의 '공개 미리보기'가 같은 코드를 쓴다: F-7.3)
 import {
-  KINDS, ROLES, METRIC_KEYS, byKind, byKindRecent, profileOf, summaryCards, toolUsage,
+  KINDS, ROLES, METRIC_KEYS, PROJECT_TYPES, byKind, byKindRecent, profileOf, summaryCards, toolUsage,
   competencyOrder, fmtMonth, period,
 } from './model.js';
 
@@ -160,6 +160,9 @@ export function mountPortfolio(root, items, opts = {}) {
   const st = { tab: 'all', view: viewPref, type: '', year: '', sort: 'recent', q: '' };
   const inComp = (pr, cid) => pr.data.primarySkill === cid || (pr.data.skills || []).includes(cid);
   const years = [...new Set(projects.map(x => (x.data.startDate || '').slice(0, 4)).filter(Boolean))].sort().reverse();
+  // 기본 유형 순서를 앞에, 직접 입력한 유형(예: 교내 활동)은 뒤에
+  const used = new Set(projects.map(x => x.data.type).filter(Boolean));
+  const types = [...PROJECT_TYPES.filter(t => used.has(t)), ...[...used].filter(t => !PROJECT_TYPES.includes(t)).sort((a, b) => a.localeCompare(b, 'ko'))];
 
   function filtered() {
     const q = st.q.trim().toLowerCase();
@@ -190,7 +193,7 @@ export function mountPortfolio(root, items, opts = {}) {
     </div>
     <div class="toolbar">
       <div class="seg" role="group" aria-label="보기 방식"><button type="button" data-view="gallery">갤러리</button><button type="button" data-view="table">표</button></div>
-      <label class="sr-only" for="f-type">유형</label><select id="f-type"><option value="">모든 유형</option>${['수업', '실습', '대외활동', '개인'].map(t => `<option>${t}</option>`).join('')}</select>
+      <label class="sr-only" for="f-type">유형</label><select id="f-type"><option value="">모든 유형</option>${types.map(t => `<option>${esc(t)}</option>`).join('')}</select>
       <label class="sr-only" for="f-year">연도</label><select id="f-year"><option value="">모든 연도</option>${years.map(y => `<option>${y}</option>`).join('')}</select>
       <label class="sr-only" for="f-sort">정렬</label><select id="f-sort"><option value="recent">최신순</option><option value="name">이름순</option></select>
       <label class="sr-only" for="f-q">검색</label><input id="f-q" type="search" placeholder="제목·도구·역량 검색">

@@ -52,7 +52,7 @@ export const KINDS = {
     fields: [
       { key: 'organization', label: '기관', type: 'text', required: true },
       { key: 'position', label: '직위·업무', type: 'text', required: true },
-      { key: 'employmentType', label: '고용 형태', type: 'select', options: ['인턴', '근로장학생', '아르바이트', '계약직', '기타'] },
+      { key: 'employmentType', label: '고용 형태', type: 'select', options: ['인턴', '근로장학생', '아르바이트', '계약직', '기타'], custom: true },
       monthField('startDate', '시작', true), monthField('endDate', '종료(비우면 진행 중)'),
       { key: 'description', label: '맡은 일(1~2줄)', type: 'textarea' },
       related,
@@ -64,7 +64,7 @@ export const KINDS = {
     fields: [
       { key: 'title', label: '활동명', type: 'text', required: true },
       { key: 'organization', label: '기관', type: 'text' },
-      { key: 'type', label: '유형', type: 'select', options: ['대외활동', '동아리', '봉사', '현장실습'] },
+      { key: 'type', label: '유형', type: 'select', options: ['대외활동', '동아리', '봉사', '현장실습'], custom: true },
       { key: 'role', label: '역할', type: 'text' },
       monthField('startDate', '시작', true), monthField('endDate', '종료'),
       { key: 'hours', label: '활동 시간', type: 'number' },
@@ -107,7 +107,7 @@ export const KINDS = {
     title: d => d.name,
     fields: [
       { key: 'name', label: '이름(프로젝트 도구 목록과 같은 표기)', type: 'text', required: true },
-      { key: 'category', label: '분류', type: 'select', options: ['목록·분류', '시스템', '데이터', '문서·디자인', '기타'] },
+      { key: 'category', label: '분류', type: 'select', options: ['목록·분류', '시스템', '데이터', '문서·디자인', '기타'], custom: true },
     ],
   },
   project: {
@@ -117,7 +117,7 @@ export const KINDS = {
       { key: 'title', label: '제목', type: 'text', required: true },
       { key: 'slug', label: '주소용 이름(영문 소문자·숫자·하이픈)', type: 'slug' },
       { key: 'summary', label: '카드용 한 줄 요약(80자)', type: 'text', max: 80, required: true },
-      { key: 'type', label: '유형', type: 'select', options: PROJECT_TYPES, required: true },
+      { key: 'type', label: '유형', type: 'select', options: PROJECT_TYPES, required: true, custom: true },
       { key: 'organization', label: '수업명·기관', type: 'text' },
       monthField('startDate', '시작', true), monthField('endDate', '종료(비우면 진행 중)'),
       { key: 'hours', label: '투입 시간', type: 'number' },

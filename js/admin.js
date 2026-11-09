@@ -285,7 +285,14 @@ function fieldHTML(f, item) {
     case 'month': return wrap(`<input id="${id}" type="month" value="${esc(v ?? '')}">`);
     case 'textarea': return wrap(`<textarea id="${id}">${esc(v ?? '')}</textarea>`);
     case 'lines': return wrap(`<textarea id="${id}">${esc((v || []).join('\n'))}</textarea>`, '한 줄에 하나씩 적습니다.');
-    case 'select': return wrap(`<select id="${id}"><option value="">선택</option>${f.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`);
+    case 'select': {
+      if (!f.custom) return wrap(`<select id="${id}"><option value="">선택</option>${f.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`);
+      const own = v && !f.options.includes(v);
+      return wrap(`<div class="sel-custom"><select id="${id}" data-custom-select><option value="">선택</option>${f.options.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}
+        <option value="__custom__" ${own ? 'selected' : ''}>직접 입력…</option></select>
+        <input type="text" data-custom-input aria-label="${esc(f.label)} 직접 입력" placeholder="예: 교내 활동" maxlength="20" value="${own ? esc(v) : ''}" ${own ? '' : 'hidden'}></div>`,
+        '목록에 없으면 ‘직접 입력…’을 고르세요.');
+    }
     case 'bool': return `<div class="fld checks" data-key="${f.key}"><label><input id="${id}" type="checkbox" ${v ? 'checked' : ''}> ${esc(f.label)}</label></div>`;
     case 'competency': return wrap(`<select id="${id}"><option value="">선택</option>${competencies().map(c => `<option value="${esc(c.data.cid)}" ${c.data.cid === v ? 'selected' : ''}>${esc(c.data.name)}</option>`).join('')}</select>`);
     case 'competencies': return group(`<div class="checks">${competencies().map(c => `<label><input type="checkbox" value="${esc(c.data.cid)}" ${(v || []).includes(c.data.cid) ? 'checked' : ''}> ${esc(c.data.name)}</label>`).join('')}</div>`, '주 역량은 자동으로 포함됩니다.');
@@ -404,6 +411,11 @@ function drawForm(panel) {
       } catch (err) { toast('올리지 못했습니다: ' + err.message); }
       inp.value = '';
     }
+    if (inp.matches('[data-custom-select]')) {
+      const t = inp.parentElement.querySelector('[data-custom-input]');
+      t.hidden = inp.value !== '__custom__';
+      if (!t.hidden) t.focus();
+    }
     if (inp.matches('[data-role-pick]')) {
       const picked = [...panel.querySelectorAll('[data-role-pick]:checked')];
       if (picked.length > 2) { inp.checked = false; toast('주 희망 직무는 최대 2개입니다.'); }
@@ -501,6 +513,7 @@ function collect() {
       case 'roles': v = Object.fromEntries([...box.querySelectorAll('[data-role]')].filter(s => s.value).map(s => [s.dataset.role, s.value])); break;
       case 'metrics': v = [...box.querySelectorAll('.rep-row')].map(r => ({ label: r.querySelector('[data-f=label]').value.trim(), value: Number(r.querySelector('[data-f=value]').value), unit: r.querySelector('[data-f=unit]').value.trim(), key: r.querySelector('[data-f=key]').value })).filter(m => m.label); break;
       case 'evidence': v = [...box.querySelectorAll('.rep-row')].map(r => ({ type: r.querySelector('[data-f=type]').value, title: r.querySelector('[data-f=title]').value.trim(), url: r.querySelector('[data-f=url]').value.trim(), description: r.querySelector('[data-f=description]').value.trim(), public: r.querySelector('[data-f=public]').checked, piiChecked: r.querySelector('[data-pii]').checked, size: Number(r.dataset.size) || undefined })).filter(x => x.title); break;
+      case 'select': v = el.value === '__custom__' ? box.querySelector('[data-custom-input]').value.trim() : el.value; break;
       default: v = el.value.trim();
     }
     if (f.path) { d[f.path[0]] = d[f.path[0]] || {}; d[f.path[0]][f.path[1]] = v; } else d[f.key] = v;
