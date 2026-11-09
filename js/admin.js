@@ -5,6 +5,7 @@ import {
   validate, piiWarnings, missingCore, slugify, uid, period, fmtMonth, get,
 } from './model.js';
 import { mountPortfolio, esc } from './render.js';
+import { icon, sidebarState } from './icons.js';
 
 const app = document.getElementById('admin');
 const S = { items: [], notes: {}, tab: 'project', editing: null, dirty: false, lastSaved: null, preview: null, returnTo: null };
@@ -64,6 +65,13 @@ async function start() {
   }
   await reload();
   window.addEventListener('hashchange', () => setPreview(location.hash === '#preview'));
+  document.addEventListener('keydown', e => {
+    const shell = app.querySelector('#shell');
+    if (e.key === 'Escape' && shell?.classList.contains('drawer-open') && !document.querySelector('.modal')) {
+      shell.classList.remove('drawer-open');
+      app.querySelector('[data-drawer-open]')?.focus();
+    }
+  });
   window.addEventListener('beforeunload', e => { if (S.dirty) { e.preventDefault(); e.returnValue = ''; } });
   setPreview(location.hash === '#preview');
 }
@@ -101,6 +109,11 @@ async function reload() {
 }
 
 // ---------- 레이아웃 ----------
+const TAB_ICONS = {
+  profile: 'user', project: 'folder', education: 'graduation', experience: 'briefcase', activity: 'users', award: 'award',
+  certificate: 'certificate', language: 'language', tool: 'wrench', competency: 'target', stats: 'chart', backup: 'database',
+};
+const SB_KEY = 'lis-sb-admin';
 const TABS = [
   ['기본', [['profile', '프로필']]],
   ['프로젝트', [['project', '프로젝트']]],
@@ -129,34 +142,77 @@ function alertsHTML() {
   return out.map(t => `<div class="alert">${esc(t)}</div>`).join('');
 }
 
+function tabLabel(id) {
+  for (const [, list] of TABS) for (const [t, l] of list) if (t === id) return l;
+  return '';
+}
+
 function renderShell() {
-  app.innerHTML = `
-    <header class="abar"><div class="abar-in">
-      <h1>포트폴리오 관리</h1>
-      <div class="seg" role="group" aria-label="화면 모드"><button type="button" aria-pressed="true">편집</button><button type="button" data-preview>공개 미리보기</button></div>
-      <span class="small muted" id="saved">${S.lastSaved ? '마지막 저장 ' + S.lastSaved : ''}</span>
-      <a class="btn small" href="index.html" target="_blank" rel="noopener">공개 사이트</a>
-      ${api.MODE === 'supabase' ? '<button type="button" class="btn small" data-logout>로그아웃</button>' : ''}
-    </div><div class="edit-banner">편집 중 — 방문자에게 보이지 않는 화면입니다</div></header>
-    <div class="alerts">${alertsHTML()}</div>
-    <div class="alayout">
-      <nav class="aside" aria-label="관리 메뉴">${TABS.map(([g, list]) => `<span class="grp">${g}</span>${list.map(([id, label]) => {
+  const collapsed = sidebarState.get(SB_KEY);
+  const toggleLabel = collapsed ? '메뉴 펼치기' : '메뉴 접기';
+  app.innerHTML = `<div class="shell${collapsed ? ' collapsed' : ''}" id="shell">
+    <aside class="sb" id="sb" aria-label="관리 메뉴">
+      <div class="sb-head">
+        <span class="sb-avatar">${icon('pencil', 16)}</span>
+        <span class="sb-name">포트폴리오 관리</span>
+        <button type="button" class="sb-toggle desk" data-sb-toggle aria-controls="sb" aria-expanded="${!collapsed}" aria-label="${toggleLabel}" title="${toggleLabel}">${icon(collapsed ? 'expand' : 'collapse')}</button>
+        <button type="button" class="sb-toggle sb-close" data-drawer-close aria-label="메뉴 닫기">${icon('close')}</button>
+      </div>
+      <nav class="sb-nav" aria-label="편집 메뉴">${TABS.map(([g, list]) => `<span class="sb-grp">${g}</span>${list.map(([id, label]) => {
         const n = KINDS[id] ? byKind(S.items, id).length : '';
-        return `<button type="button" data-tab="${id}" aria-current="${S.tab === id}">${label}<span class="muted small">${n}</span></button>`;
+        return `<button type="button" class="sb-link" data-tab="${id}" data-label="${esc(label)}" aria-label="${esc(label)}${n !== '' ? ` ${n}건` : ''}" ${S.tab === id ? 'aria-current="page"' : ''}>${icon(TAB_ICONS[id])}<span class="sb-label">${esc(label)}</span><span class="sb-count">${n}</span></button>`;
       }).join('')}`).join('')}</nav>
-      <main class="panel" id="panel"></main>
-    </div>`;
-  app.querySelector('[data-preview]').onclick = () => go('preview');
+      <div class="sb-foot">
+        <button type="button" class="sb-link" data-preview data-label="공개 미리보기" aria-label="공개 미리보기">${icon('eye')}<span class="sb-label">공개 미리보기</span></button>
+        <a class="sb-link" href="index.html" target="_blank" rel="noopener" data-label="공개 사이트(새 창)" aria-label="공개 사이트 새 창으로 열기">${icon('external')}<span class="sb-label">공개 사이트</span></a>
+        ${api.MODE === 'supabase' ? `<button type="button" class="sb-link" data-logout data-label="로그아웃" aria-label="로그아웃">${icon('logout')}<span class="sb-label">로그아웃</span></button>` : ''}
+      </div>
+    </aside>
+    <div class="sb-backdrop" data-drawer-close></div>
+    <div class="main">
+      <div class="mbar">
+        <button type="button" class="sb-toggle" data-drawer-open aria-controls="sb" aria-expanded="false" aria-label="메뉴 열기">${icon('menu')}</button>
+        <span class="mtitle">포트폴리오 관리</span><span class="mcur">${esc(tabLabel(S.tab))}</span>
+      </div>
+      <header class="abar"><div class="abar-in">
+        <h1>${esc(tabLabel(S.tab))}</h1>
+        <div class="seg" role="group" aria-label="화면 모드"><button type="button" aria-pressed="true">편집</button><button type="button" data-preview>공개 미리보기</button></div>
+        <span class="small muted" id="saved">${S.lastSaved ? '마지막 저장 ' + S.lastSaved : ''}</span>
+      </div><div class="edit-banner">편집 중 — 방문자에게 보이지 않는 화면입니다</div></header>
+      <div class="alerts">${alertsHTML()}</div>
+      <main class="panel apanel" id="panel"></main>
+    </div></div>`;
+
+  const shell = app.querySelector('#shell');
+  const setDrawer = open => {
+    shell.classList.toggle('drawer-open', open);
+    app.querySelector('[data-drawer-open]').setAttribute('aria-expanded', String(open));
+    if (open) (app.querySelector('.sb-link[aria-current]') || app.querySelector('.sb-link')).focus();
+  };
+  app.querySelectorAll('[data-preview]').forEach(b => { b.onclick = async () => { if (await leaveOk()) go('preview'); }; });
   app.querySelector('[data-logout]')?.addEventListener('click', async () => {
     const v = await dialog({ title: '로그아웃', body: '<p>공용 PC라면 ‘모든 기기에서 로그아웃’을 고르세요.</p>', buttons: [{ label: '취소', value: null }, { label: '모든 기기에서', value: 'all' }, { label: '이 기기만', value: 'one', primary: true }] });
     if (!v) return;
     await api.signOut(v === 'all'); location.reload();
   });
-  app.querySelector('.aside').addEventListener('click', async e => {
+  app.querySelector('.sb').addEventListener('click', async e => {
+    if (e.target.closest('[data-sb-toggle]')) {
+      const now = !shell.classList.contains('collapsed');
+      shell.classList.toggle('collapsed', now);
+      sidebarState.set(SB_KEY, now);
+      const b = app.querySelector('[data-sb-toggle]'); const label = now ? '메뉴 펼치기' : '메뉴 접기';
+      b.setAttribute('aria-expanded', String(!now)); b.setAttribute('aria-label', label); b.title = label;
+      b.innerHTML = icon(now ? 'expand' : 'collapse');
+      return;
+    }
+    if (e.target.closest('[data-drawer-close]')) { setDrawer(false); return; }
     const b = e.target.closest('[data-tab]'); if (!b) return;
     if (!(await leaveOk())) return;
     S.tab = b.dataset.tab; S.editing = null; S.returnTo = null; renderShell();
+    if (matchMedia('(max-width: 767px)').matches) window.scrollTo(0, 0);
   });
+  app.querySelector('[data-drawer-open]').onclick = () => setDrawer(true);
+  app.querySelector('.sb-backdrop').onclick = () => setDrawer(false);
   drawPanel();
 }
 
@@ -440,8 +496,8 @@ async function deleteProjectInForm(pid) {
     S.editing = cur; S.dirty = dirty;
     if (note != null) S.pendingNote = { id: cur.id, note };
     drawForm(app.querySelector('#panel'));
-    app.querySelectorAll('.aside [data-tab]').forEach(btn => {
-      if (KINDS[btn.dataset.tab]) btn.querySelector('.small').textContent = byKind(S.items, btn.dataset.tab).length;
+    app.querySelectorAll('.sb [data-tab]').forEach(btn => {
+      if (KINDS[btn.dataset.tab]) btn.querySelector('.sb-count').textContent = byKind(S.items, btn.dataset.tab).length;
     });
   };
   const before = keep();

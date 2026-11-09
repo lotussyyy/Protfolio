@@ -3,13 +3,14 @@ import {
   KINDS, ROLES, METRIC_KEYS, PROJECT_TYPES, byKind, byKindRecent, profileOf, summaryCards, toolUsage,
   competencyOrder, fmtMonth, period,
 } from './model.js';
+import { icon, sidebarState } from './icons.js';
 
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sample = it => (it?.isSample ? '<span class="badge" title="예시 데이터">예시</span>' : '');
 const icons = { file: '📄', image: '🖼️', link: '🔗' };
 const SEC = [
-  ['sec-about', '소개'], ['sec-summary', '요약'], ['sec-resume', '이력'],
-  ['sec-featured', '대표 프로젝트'], ['projects', '전체 프로젝트'],
+  ['sec-about', '소개', 'user'], ['sec-summary', '한눈에 보기', 'grid'], ['sec-resume', '이력', 'timeline'],
+  ['sec-featured', '대표 프로젝트', 'star'], ['projects', '전체 프로젝트', 'folder'],
 ];
 
 function initials(name) { return esc((name || '?').trim().slice(0, 1)); }
@@ -73,13 +74,28 @@ export function mountPortfolio(root, items, opts = {}) {
       </footer>
     </div>`;
 
-  const tocHTML = `<nav class="toc no-print" aria-label="목차"><div class="toc-inner">
-      <span class="toc-name">${esc(p.name || '')}</span>
-      <button class="btn small toc-menu" aria-expanded="false" aria-controls="toc-links">메뉴</button>
-      <div class="toc-links" id="toc-links">${SEC.map(([id, l]) => `<a href="#${id}" data-scroll="${id}">${l}</a>`).join('')}</div>
-    </div></nav>`;
+  // ----- 왼쪽 사이드바 (접으면 아이콘만, 현재 섹션 강조) -----
+  const sbKey = opts.sidebarKey || 'lis-sb-public';
+  const collapsed = sidebarState.get(sbKey);
+  const sidebarHTML = `<aside class="sb" id="sb" aria-label="사이드바">
+      <div class="sb-head">
+        <span class="sb-avatar">${p.photo ? `<img src="${esc(p.photo)}" alt="">` : initials(p.name)}</span>
+        <span class="sb-name">${esc(p.name || '')}</span>
+        <button type="button" class="sb-toggle desk" data-sb-toggle aria-controls="sb" aria-expanded="${!collapsed}" aria-label="${collapsed ? '메뉴 펼치기' : '메뉴 접기'}" title="${collapsed ? '메뉴 펼치기' : '메뉴 접기'}">${icon(collapsed ? 'expand' : 'collapse')}</button>
+        <button type="button" class="sb-toggle sb-close" data-drawer-close aria-label="메뉴 닫기">${icon('close')}</button>
+      </div>
+      <nav class="sb-nav" aria-label="목차">
+        ${SEC.map(([id, l, ic]) => `<a class="sb-link" href="#${id}" data-scroll="${id}" data-nav="${id}" data-label="${esc(l)}" aria-label="${esc(l)}">${icon(ic)}<span class="sb-label">${esc(l)}</span></a>`).join('')}
+      </nav>
+      ${opts.adminHref ? `<div class="sb-foot"><a class="sb-link" href="${esc(opts.adminHref)}" data-label="관리" aria-label="관리">${icon('settings')}<span class="sb-label">관리</span></a></div>` : ''}
+    </aside>`;
+  const mbarHTML = `<div class="mbar no-print">
+      <button type="button" class="sb-toggle" data-drawer-open aria-controls="sb" aria-expanded="false" aria-label="메뉴 열기">${icon('menu')}</button>
+      <span class="mtitle">${esc(p.name || '')}</span><span class="mcur" id="mcur"></span></div>`;
 
-  root.innerHTML = tocHTML + profileHTML + '<div class="detail" id="detail" hidden role="dialog" aria-modal="true" aria-labelledby="d-title"></div>';
+  root.innerHTML = `<div class="shell${collapsed ? ' collapsed' : ''}" id="shell">${sidebarHTML}<div class="sb-backdrop" data-drawer-close></div>
+    <div class="main">${mbarHTML}${profileHTML}</div></div>
+    <div class="detail" id="detail" hidden role="dialog" aria-modal="true" aria-labelledby="d-title"></div>`;
   const $ = s => root.querySelector(s);
 
   // ----- 요약 카드 (F-2) -----
@@ -292,27 +308,70 @@ export function mountPortfolio(root, items, opts = {}) {
     if (sc) {
       e.preventDefault();
       root.querySelector('#' + CSS.escape(sc.dataset.scroll))?.scrollIntoView({ behavior: 'smooth' });
-      $('#toc-links').classList.remove('open');
+      if (sc.dataset.nav) setActive(sc.dataset.nav);
+      setDrawer(false);
       return;
     }
     if (e.target.closest('[data-close]') || e.target === detail) { closeDetail(); return; }
     if (e.target.closest('[data-expand]')) { detail.querySelectorAll('details').forEach(x => { x.open = true; }); return; }
     if (e.target.closest('[data-evidence]')) track('evidence', e.target.closest('[data-evidence]').dataset.evidence);
     if (e.target.closest('[data-resume]')) track('resume', 'resume');
-    const menu = e.target.closest('.toc-menu');
-    if (menu) {
-      const open2 = $('#toc-links').classList.toggle('open');
-      menu.setAttribute('aria-expanded', String(open2));
-    }
+    if (e.target.closest('[data-sb-toggle]')) toggleSidebar();
+    if (e.target.closest('[data-drawer-open]')) setDrawer(true);
+    if (e.target.closest('[data-drawer-close]')) setDrawer(false);
   });
-  const onKey = e => { if (e.key === 'Escape' && !detail.hidden) closeDetail(); };
+
+  // ----- 사이드바 동작 -----
+  const shell = $('#shell');
+  function toggleSidebar() {
+    const now = !shell.classList.contains('collapsed');
+    shell.classList.toggle('collapsed', now);
+    sidebarState.set(sbKey, now);
+    const b = $('[data-sb-toggle]');
+    const label = now ? '메뉴 펼치기' : '메뉴 접기';
+    b.setAttribute('aria-expanded', String(!now)); b.setAttribute('aria-label', label); b.title = label;
+    b.innerHTML = icon(now ? 'expand' : 'collapse');
+  }
+  function setDrawer(open) {
+    if (shell.classList.contains('drawer-open') === open) return;
+    shell.classList.toggle('drawer-open', open);
+    $('[data-drawer-open]').setAttribute('aria-expanded', String(open));
+    if (open) $('.sb-nav .sb-link')?.focus();
+    else if (matchMedia('(max-width: 767px)').matches) $('[data-drawer-open]').focus();
+  }
+  function setActive(id) {
+    root.querySelectorAll('.sb-nav [data-nav]').forEach(a => a.setAttribute('aria-current', String(a.dataset.nav === id)));
+    const label = SEC.find(x => x[0] === id)?.[1] || '';
+    const cur = $('#mcur'); if (cur) cur.textContent = label;
+  }
+  // 내용이 없는 섹션은 메뉴에서도 뺀다
+  SEC.forEach(([id]) => { const sec = root.querySelector('#' + id); const link = root.querySelector(`[data-nav="${id}"]`); if (link) link.hidden = !sec || sec.hidden; });
+  // 스크롤 위치에 맞춰 메뉴 강조
+  const secEls = SEC.map(([id]) => root.querySelector('#' + id)).filter(el => el && !el.hidden);
+  const seen = new Map();
+  let io = null;
+  if ('IntersectionObserver' in window) {
+    io = new IntersectionObserver(entries => {
+      entries.forEach(en => seen.set(en.target.id, en.isIntersecting));
+      const cur = secEls.find(el => seen.get(el.id));
+      if (cur) setActive(cur.id);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    secEls.forEach(el => io.observe(el));
+  }
+  if (secEls[0]) setActive(secEls[0].id);
+
+  const onKey = e => {
+    if (e.key !== 'Escape') return;
+    if (!detail.hidden) closeDetail();
+    else if (shell.classList.contains('drawer-open')) setDrawer(false);
+  };
   document.addEventListener('keydown', onKey);
   const beforePrint = () => root.querySelectorAll('details').forEach(x => { x.open = true; });
   window.addEventListener('beforeprint', beforePrint);
 
   return {
     openProject, closeDetail,
-    destroy() { document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
+    destroy() { io?.disconnect(); document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
   };
 }
 

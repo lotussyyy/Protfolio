@@ -1,7 +1,10 @@
 /* 관리 화면: 편집 모드는 회색 바탕 + 상단 배너로 공개 화면과 한눈에 구분 (F-7.2) */
 body.admin { background: #f3f2ef; }
 .abar { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); }
-.abar-in { max-width: 1200px; margin: 0 auto; padding: 8px 20px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.admin .shell { background: #f3f2ef; }
+.admin .sb { background: #fbfbfa; }
+.apanel { margin: 16px 24px 40px; max-width: 1040px; }
+.abar-in { padding: 10px 24px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
 .abar h1 { font-size: 17px; margin: 0 auto 0 0; }
 .edit-banner { background: var(--ink); color: #fff; text-align: center; font-size: 14px; padding: 6px 12px; }
 .alayout { max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 200px 1fr; gap: 20px; align-items: start; }
@@ -12,7 +15,7 @@ body.admin { background: #f3f2ef; }
 .panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 20px 24px; min-width: 0; }
 .panel h2 { margin: 0 0 4px; font-size: 22px; }
 .phead { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.alerts { max-width: 1200px; margin: 12px auto 0; padding: 0 20px; display: grid; gap: 8px; }
+.alerts { max-width: 1040px; margin: 12px 24px 0; display: grid; gap: 8px; }
 .alert { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--ink); border-radius: 6px; padding: 10px 14px; font-size: 15px; }
 .rows { list-style: none; margin: 0; padding: 0; }
 .rowi { display: flex; gap: 12px; align-items: center; padding: 10px 4px; border-bottom: 1px solid var(--line); }
@@ -61,6 +64,11 @@ body.admin { background: #f3f2ef; }
 code.box { display: block; background: var(--soft); border-radius: 6px; padding: 8px 10px; word-break: break-all; font-size: 14px; }
 
 @media (max-width: 767px) {
+  .abar { position: static; }
+  .apanel { margin: 12px 12px 32px; }
+  .alerts { margin: 12px 12px 0; }
+  .abar-in { padding: 8px 12px; }
+  .abar h1 { display: none; }
   .alayout { grid-template-columns: 1fr; padding: 12px; }
   .aside { position: static; flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
   .aside .grp { display: none; }

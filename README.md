@@ -90,6 +90,7 @@ js/config.js          Supabase 연결 정보 (비우면 데모 모드)
 js/model.js           항목 정의, 공개 범위, 요약 카드·역량 순서 계산, 검증
 js/api.js             데이터 읽기·쓰기(Supabase/데모), 업로드, 통계
 js/render.js          공개 화면 그리기(관리 화면 미리보기와 공용)
+js/icons.js           사이드바 아이콘, 접힘 상태 저장
 js/public.js          공개 화면 시작
 js/admin.js           관리 화면
 data/portfolio.json   공개 스냅샷(매일 자동 갱신, 데모 모드 공개 데이터)
