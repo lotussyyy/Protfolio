@@ -155,7 +155,7 @@ export const RESUME_KINDS = ['education', 'experience', 'activity', 'award', 'ce
 // ---------- 공통 유틸 ----------
 export const get = (obj, path) => path.reduce((o, k) => (o == null ? undefined : o[k]), obj);
 export const fmtMonth = m => (m ? m.replace('-', '.') : '');
-export const period = (s, e) => `${fmtMonth(s)} ~ ${e ? fmtMonth(e) : '진행 중'}`;
+export const period = (s, e) => (!s && !e ? '' : `${fmtMonth(s)} ~ ${e ? fmtMonth(e) : '진행 중'}`);
 export const todayMonth = () => new Date().toISOString().slice(0, 7);
 export const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2) + Date.now().toString(36));
 
@@ -287,26 +287,32 @@ export function missingCore(items) {
 }
 
 // ---------- 검증 (F-6.10, F-7.11) ----------
+// missing: 아직 채우지 않은 칸(저장은 되고, 공개 항목이면 초안으로 둘지 묻는다)
+// errors: 저장 자체를 막는 문제(주소용 이름 형식·중복, 대표 4개 이상)
 export function validate(item, allItems) {
-  const errors = [];
+  const missing = [], errors = [];
   const def = KINDS[item.kind];
   if (def) def.fields.forEach(f => {
     if (!f.required) return;
     const v = f.path ? get(item.data, f.path) : item.data[f.key];
-    if (v == null || v === '' || (Array.isArray(v) && !v.length)) errors.push(`‘${f.label}’을(를) 입력하세요.`);
+    if (v == null || v === '' || (Array.isArray(v) && !v.length)) missing.push(f.label);
   });
   if (item.kind === 'project') {
     const d = item.data;
-    if (!(d.metrics || []).length && !d.outcome) errors.push('결과를 1개 이상 입력하세요(정량 성과 또는 정성 성과).');
+    if (!(d.metrics || []).length && !d.outcome) missing.push('결과(정량 또는 정성 성과)');
     if (d.featured) {
-      if (!(d.evidence || []).length) errors.push('대표 프로젝트에는 증빙이 1개 이상 필요합니다.');
+      if (!(d.evidence || []).length) missing.push('증빙(대표 프로젝트는 1개 이상)');
       const others = allItems.filter(i => i.kind === 'project' && i.id !== item.id && i.data.featured);
       if (others.length >= 3) errors.push('대표 프로젝트는 최대 3개입니다. 다른 대표를 먼저 해제하세요.');
     }
     if (d.slug && !/^[a-z0-9-]+$/.test(d.slug)) errors.push('주소용 이름은 영문 소문자·숫자·하이픈만 쓸 수 있습니다.');
     if (d.slug && allItems.some(i => i.kind === 'project' && i.id !== item.id && i.data.slug === d.slug)) errors.push('같은 주소용 이름을 쓰는 프로젝트가 있습니다.');
   }
-  return errors;
+  if (item.kind === 'profile') {
+    if (!item.data.name) missing.push('이름');
+    if (!item.data.contacts?.email) missing.push('이메일');
+  }
+  return { missing, errors };
 }
 
 const PII = [

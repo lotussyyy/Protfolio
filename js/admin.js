@@ -207,6 +207,7 @@ function badges(it) {
     it.status === 'draft' ? '<span class="badge">초안</span>' : '',
     it.isSample ? '<span class="badge">예시</span>' : '',
     S.notes[it.id] ? '<span class="badge lock">취업 메모</span>' : '',
+    (n => (n ? `<span class="badge" title="아직 채우지 않은 필수 칸">빈 칸 ${n}</span>` : ''))(validate(it, S.items).missing.length),
   ].join('');
 }
 
@@ -531,20 +532,27 @@ function collect() {
 
 async function save(panel, draftKey) {
   const item = collect();
-  const errs = validate(item, S.items);
-  if (item.kind === 'profile') {
-    if (!item.data.name) errs.push('이름을 입력하세요.');
-    if (!item.data.contacts?.email) errs.push('이메일을 입력하세요.');
-  }
-  if (item.kind === 'project') {
+  const { missing, errors: errs } = validate(item, S.items);
+  const willShow = item.visibility === 'public' && item.status !== 'draft';
+  // 공개 증빙의 개인정보 확인은 공개될 때만 저장을 막는다(초안·비공개는 나중에 확인해도 됨)
+  if (item.kind === 'project' && willShow) {
     const unchecked = (item.data.evidence || []).filter(ev => ev.public && !ev.piiChecked);
-    if (unchecked.length) errs.push(`공개 증빙 ‘${unchecked[0].title}’에 ‘제3자 개인정보 없음 확인’을 체크하세요.`);
+    if (unchecked.length) errs.push(`공개 증빙 ‘${unchecked[0].title}’에 ‘제3자 개인정보 없음 확인’을 체크하세요. (지금 확인이 어렵다면 공개 상태를 ‘초안’으로 두고 저장하세요.)`);
   }
   const box = panel.querySelector('#errs');
   if (errs.length) {
     box.innerHTML = `<div class="errors" role="alert" tabindex="-1"><b>저장하지 못했습니다</b><ul>${errs.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`;
     box.firstElementChild.focus();
     return;
+  }
+  if (missing.length && willShow && item.kind !== 'profile') {
+    const v = await dialog({
+      title: '아직 채우지 않은 칸이 있어요',
+      body: `<ul>${missing.map(m => `<li>${esc(m)}</li>`).join('')}</ul><p class="small">‘초안으로 저장’하면 공개 사이트에는 보이지 않고, 다 채운 뒤 공개 상태를 ‘완성’으로 바꾸면 나타납니다.</p>`,
+      buttons: [{ label: '취소', value: null }, { label: '그대로 공개 저장', value: 'publish' }, { label: '초안으로 저장', value: 'draft', primary: true }],
+    });
+    if (!v) return;
+    if (v === 'draft') item.status = 'draft';
   }
   box.innerHTML = '';
   if (item.visibility === 'public') {
@@ -562,7 +570,7 @@ async function save(panel, draftKey) {
     S.editing = item.kind === 'profile' ? structuredClone(saved) : null;
     if (restoreReturn(saved)) { toast('저장했습니다. 원래 편집 화면으로 돌아왔습니다.'); return; }
     renderShell();
-    toast('저장했습니다.');
+    toast(missing.length ? `저장했습니다. 아직 빈 칸 ${missing.length}개: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? ' 외' : ''}` : '저장했습니다.');
   };
   try { await persist(false); }
   catch (err) {

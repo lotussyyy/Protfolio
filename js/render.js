@@ -146,7 +146,7 @@ export function mountPortfolio(root, items, opts = {}) {
         <p class="psum">${esc(pr.data.summary)}</p>
         ${featured && pr.data.role?.[0] ? `<span class="pmeta">맡은 일: ${esc(pr.data.role[0])}</span>` : ''}
         ${tagList(pr)}
-        <span class="pmeta">${esc(period(pr.data.startDate, pr.data.endDate))} · ${esc(pr.data.type || '')}</span>
+        <span class="pmeta">${esc([period(pr.data.startDate, pr.data.endDate), pr.data.type].filter(Boolean).join(' · '))}</span>
       </div></button>`;
 
   const featured = projects.filter(x => x.data.featured).sort((a, b) => (a.data.featuredOrder || 9) - (b.data.featuredOrder || 9)).slice(0, 3);
