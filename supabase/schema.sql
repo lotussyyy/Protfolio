@@ -87,7 +87,15 @@ create policy events_owner_read on public.events for select to authenticated usi
 drop policy if exists events_owner_delete on public.events;
 create policy events_owner_delete on public.events for delete to authenticated using (public.is_owner());
 
--- 6) 증빙 파일 버킷: 공개(누구나 읽기) / 비공개(소유자만)
+-- 6) API 권한: 'Automatically expose new tables'를 끄고 만든 프로젝트에서도 동작하도록 직접 부여
+--    (실제로 누가 무엇을 읽고 쓰는지는 위의 RLS 정책이 정한다)
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on public.items, public.career_notes to authenticated;
+grant insert on public.events to anon, authenticated;
+grant select, delete on public.events to authenticated;
+grant execute on function public.is_owner() to anon, authenticated;
+
+-- 7) 증빙 파일 버킷: 공개(누구나 읽기) / 비공개(소유자만)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
   ('evidence-public', 'evidence-public', true, 10485760, array['application/pdf','image/jpeg','image/png','image/webp']),
