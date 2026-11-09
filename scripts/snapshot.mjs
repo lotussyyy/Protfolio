@@ -12,7 +12,8 @@ if (!url || !key) {
 }
 
 const res = await fetch(`${url.replace(/\/$/, '')}/rest/v1/public_items?select=*`, {
-  headers: { apikey: key, Authorization: `Bearer ${key}` },
+  // 새 공개 키(sb_publishable_…)는 apikey 헤더에만, 예전 anon key(eyJ…)는 Authorization에도 넣는다
+  headers: key.startsWith('eyJ') ? { apikey: key, Authorization: `Bearer ${key}` } : { apikey: key },
 });
 if (!res.ok) {
   console.error(`공개 데이터를 읽지 못했습니다: ${res.status} ${await res.text()}`);

@@ -39,12 +39,12 @@ python3 -m http.server 8000
    select id from auth.users where email = '본인@이메일.com';
    ```
 6. **Authentication → URL Configuration**의 Site URL에 1단계의 포트폴리오 주소를 넣습니다(비밀번호 재설정 메일용).
-7. **Project Settings → API**(또는 Data API)에서 **Project URL**과 **anon public key**를 복사해 `js/config.js`에 넣고 커밋합니다.
+7. **Project Settings → API Keys**에서 **Publishable key**(`sb_publishable_…`)를, **Project Settings → Data API**(또는 프로젝트 홈의 Connect)에서 **Project URL**을 복사해 `js/config.js`에 넣고 커밋합니다. 예전 프로젝트라면 Publishable key 대신 **anon public key**(`eyJ…`)를 써도 됩니다.
    ```js
    supabaseUrl: 'https://xxxx.supabase.co',
-   supabaseAnonKey: 'eyJ...',
+   supabaseAnonKey: 'sb_publishable_...',
    ```
-   anon key는 공개용 키라 저장소에 올려도 됩니다. **service_role 키는 절대 넣지 마세요.**
+   이 키는 공개용이라 저장소에 올려도 됩니다. **Secret key(`sb_secret_…`)나 service_role 키는 절대 넣지 마세요.**
 8. `admin.html`에 로그인 → **백업·설정 → 백업 불러오기**에서 `data/sample-full.json`을 고르면 역량 7개와 예시 데이터로 시작합니다. 예시를 실제 내용으로 고친 뒤 각 항목에서 **예시 해제**를 누르세요. (데모 모드에서 이미 고친 내용이 있으면, 데모에서 받은 JSON 백업을 대신 불러오면 됩니다.)
 
 > 메뉴 이름은 Supabase 화면 개편에 따라 조금 다를 수 있습니다.
@@ -56,7 +56,7 @@ Supabase 무료 프로젝트는 일주일 동안 사용이 적으면 일시정�
 
 1. 저장소 **Settings → Secrets and variables → Actions → New repository secret**
    - `SUPABASE_URL`: 3-7단계의 Project URL
-   - `SUPABASE_ANON_KEY`: 3-7단계의 anon key
+   - `SUPABASE_ANON_KEY`: 3-7단계의 Publishable key(또는 anon key)
 2. **Actions** 탭 → ‘공개 스냅샷 저장’ → **Run workflow**로 한 번 실행해 성공하는지 확인합니다.
 
 이후 매일 한국 시간 새벽 4시에 실행됩니다. 실패하면 GitHub가 메일로 알려 줍니다. 프로젝트가 일시정지되었다면 Supabase 대시보드에서 **Restore**를 누르세요.
@@ -72,8 +72,8 @@ Supabase 무료 프로젝트는 일주일 동안 사용이 적으면 일시정�
 - [ ] 시크릿 창에서 공개 사이트를 열어 비공개 프로젝트·취업 메모·비공개 증빙이 보이지 않는다
 - [ ] 아래 명령의 결과가 `[]`이다(로그인 없이 원본 표를 읽을 수 없음)
   ```bash
-  curl "https://xxxx.supabase.co/rest/v1/items?select=*" -H "apikey: anon키"
-  curl "https://xxxx.supabase.co/rest/v1/career_notes?select=*" -H "apikey: anon키"
+  curl "https://xxxx.supabase.co/rest/v1/items?select=*" -H "apikey: 공개키"
+  curl "https://xxxx.supabase.co/rest/v1/career_notes?select=*" -H "apikey: 공개키"
   ```
 - [ ] 노트북에서 저장한 내용이 휴대폰 관리 화면에서 보인다
 - [ ] 관리 화면 상단에 ‘예시 데이터 n건이 공개 중’ 알림이 없다
