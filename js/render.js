@@ -89,12 +89,18 @@ export function mountPortfolio(root, items, opts = {}) {
       </nav>
       ${opts.adminHref ? `<div class="sb-foot"><a class="sb-link" href="${esc(opts.adminHref)}" data-label="관리" aria-label="관리">${icon('settings')}<span class="sb-label">관리</span></a></div>` : ''}
     </aside>`;
-  const mbarHTML = `<div class="mbar no-print">
-      <button type="button" class="sb-toggle" data-drawer-open aria-controls="sb" aria-expanded="false" aria-label="메뉴 열기">${icon('menu')}</button>
-      <span class="mtitle">${esc(p.name || '')}</span><span class="mcur" id="mcur"></span></div>`;
+  // ----- 상단 고정 헤더 (스크롤하면 아래 그림자) -----
+  const headerHTML = `<header class="topbar no-print" id="topbar">
+      <button type="button" class="sb-toggle mob-only" data-drawer-open aria-controls="sb" aria-expanded="false" aria-label="메뉴 열기">${icon('menu')}</button>
+      <div class="crumb"><span class="tb-name">${esc(p.name || '')}</span><span class="tb-sep" aria-hidden="true">/</span><span class="tb-cur" id="mcur" aria-live="polite"></span></div>
+      <div class="tb-acts">
+        ${contacts.email ? `<a class="btn small" href="mailto:${esc(contacts.email)}" title="${esc(contacts.email)}">연락하기</a>` : ''}
+        ${p.resumeFile ? `<a class="btn small primary" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>이력서</a>` : ''}
+      </div>
+    </header>`;
 
   root.innerHTML = `<div class="shell${collapsed ? ' collapsed' : ''}" id="shell">${sidebarHTML}<div class="sb-backdrop" data-drawer-close></div>
-    <div class="main">${mbarHTML}${profileHTML}</div></div>
+    <div class="main">${headerHTML}${profileHTML}</div></div>
     <div class="detail" id="detail" hidden role="dialog" aria-modal="true" aria-labelledby="d-title"></div>`;
   const $ = s => root.querySelector(s);
 
@@ -360,6 +366,16 @@ export function mountPortfolio(root, items, opts = {}) {
   }
   if (secEls[0]) setActive(secEls[0].id);
 
+  const topbar = $('#topbar');
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { topbar.classList.toggle('scrolled', window.scrollY > 4); ticking = false; });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
   const onKey = e => {
     if (e.key !== 'Escape') return;
     if (!detail.hidden) closeDetail();
@@ -371,7 +387,7 @@ export function mountPortfolio(root, items, opts = {}) {
 
   return {
     openProject, closeDetail,
-    destroy() { io?.disconnect(); document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
+    destroy() { io?.disconnect(); window.removeEventListener('scroll', onScroll); document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
   };
 }
 

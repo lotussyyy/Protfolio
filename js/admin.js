@@ -65,6 +65,17 @@ async function start() {
   }
   await reload();
   window.addEventListener('hashchange', () => setPreview(location.hash === '#preview'));
+  // 상단 고정 헤더: 스크롤을 시작하면 아래 그림자
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const on = window.scrollY > 4;
+      app.querySelectorAll('.abar, .mbar').forEach(el => el.classList.toggle('scrolled', on));
+      ticking = false;
+    });
+  }, { passive: true });
   document.addEventListener('keydown', e => {
     const shell = app.querySelector('#shell');
     if (e.key === 'Escape' && shell?.classList.contains('drawer-open') && !document.querySelector('.modal')) {
@@ -213,6 +224,7 @@ function renderShell() {
   });
   app.querySelector('[data-drawer-open]').onclick = () => setDrawer(true);
   app.querySelector('.sb-backdrop').onclick = () => setDrawer(false);
+  app.querySelectorAll('.abar, .mbar').forEach(el => el.classList.toggle('scrolled', window.scrollY > 4));
   drawPanel();
 }
 

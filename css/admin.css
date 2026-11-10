@@ -1,6 +1,7 @@
 /* 관리 화면: 편집 모드는 회색 바탕 + 상단 배너로 공개 화면과 한눈에 구분 (F-7.2) */
 body.admin { background: #f3f2ef; }
-.abar { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); }
+.abar { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); transition: box-shadow .2s ease; }
+.abar.scrolled { box-shadow: 0 4px 14px rgba(15,15,15,.10); }
 .admin .shell { background: #f3f2ef; }
 .admin .sb { background: #fbfbfa; }
 .apanel { margin: 16px 24px 40px; max-width: 1040px; }
