@@ -26,7 +26,7 @@ async function start() {
     : MODE === 'demo' ? '데모 데이터' : '';
   let app;
   try {
-    app = mountPortfolio(root, res.items, { useHash: true, roleOverride: roleFromUrl(), track, footerNote: note, adminHref: 'admin.html' });
+    app = mountPortfolio(root, res.items, { useHash: true, roleOverride: roleFromUrl(), track, footerNote: note, adminHref: 'admin.html', themeToggle: true });
   } catch (e) {
     console.error(e);
     root.innerHTML = `<div class="page"><p class="empty" style="margin-top:40px">화면을 그리는 중 문제가 생겼습니다. 새로고침(Ctrl+Shift+R) 후에도 같으면 관리 화면에서 최근에 고친 항목을 확인해 주세요.<br><small>${String(e.message || e).replace(/[<>&]/g, '')}</small></p></div>`;

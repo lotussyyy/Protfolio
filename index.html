@@ -12,10 +12,31 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <script>
+    // 화면이 그려지기 전에 테마(Dark Mode)와 움직임 설정(Reduced Motion)을 정해 깜빡임을 막는다
+    (function () {
+      var d = document.documentElement, t = null;
+      try { t = localStorage.getItem('lis-theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      d.dataset.theme = t;
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('motion');
+    })();
+  </script>
 </head>
 <body>
   <a class="sr-only" href="#sec-about">본문으로 건너뛰기</a>
-  <div id="app"><p style="padding:40px;text-align:center;color:#5f5e5a">불러오는 중…</p></div>
+  <div id="app">
+    <!-- Skeleton Loading: 내용이 오기 전 틀을 먼저 보여 준다 -->
+    <div class="skeleton" aria-busy="true" aria-label="불러오는 중">
+      <div class="sk" style="height:180px;margin:0 -24px 0"></div>
+      <div class="sk" style="width:120px;height:120px;border-radius:50%;margin-top:-60px"></div>
+      <div class="sk" style="width:46%;height:44px;margin-top:20px"></div>
+      <div class="sk" style="width:64%;height:20px;margin-top:14px"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:36px">
+        <div class="sk" style="height:110px"></div><div class="sk" style="height:110px"></div><div class="sk" style="height:110px"></div>
+      </div>
+    </div>
+  </div>
   <script type="module" src="js/public.js"></script>
 </body>
 </html>

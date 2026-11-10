@@ -13,6 +13,43 @@ const SEC = [
   ['sec-featured', '대표 프로젝트', 'star'], ['projects', '전체 프로젝트', 'folder'],
 ];
 
+// Split Text: 이름을 글자 단위로 나눠 차례로 떠오르게
+const splitChars = (text, start = 0, step = 0.06) =>
+  [...text].map((c, i) => `<span class="ch" aria-hidden="true" style="--d:${(start + i * step).toFixed(2)}s">${c === ' ' ? ' ' : esc(c)}</span>`).join('');
+// Count-up: 숫자 부분을 감싸 두었다가 화면에 들어오면 0부터 올라가게
+const wrapNums = html => html.replace(/\d+(?:\.\d+)?/g, m => `<span class="count" data-to="${m}">${m}</span>`);
+const motionOn = () => document.documentElement.classList.contains('motion');
+function countUp(el) {
+  const to = Number(el.dataset.to);
+  if (!motionOn() || !isFinite(to) || to === 0 || el.dataset.done) return;
+  el.dataset.done = '1';
+  const dec = (el.dataset.to.split('.')[1] || '').length;
+  const fmt = el.dataset.fmt === 'ko'
+    ? n => n.toLocaleString('ko-KR', { minimumFractionDigits: dec, maximumFractionDigits: dec })
+    : n => n.toFixed(dec);
+  const t0 = performance.now(), dur = 900;
+  const step = now => {
+    const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);   // ease-out
+    el.textContent = fmt(to * e);
+    if (k < 1) requestAnimationFrame(step); else el.textContent = fmt(to);
+  };
+  el.textContent = fmt(0);
+  requestAnimationFrame(step);
+}
+// Toast: 잠깐 떴다 사라지는 알림
+let toastTimer;
+export function showToast(msg) {
+  document.querySelector('.ptoast')?.remove();
+  clearTimeout(toastTimer);
+  const t = document.createElement('div');
+  t.className = 'ptoast'; t.setAttribute('role', 'status');
+  t.innerHTML = `${icon('mail', 18)}<span>${esc(msg)}</span>`;
+  document.body.appendChild(t);
+  toastTimer = setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 220); }, 2500);
+}
+const COMP_ICON = { organization: 'timeline', reference: 'search', instruction: 'users', program: 'star', collection: 'book', archives: 'database', digital: 'chart' };
+const CARD_ICON = { education: 'graduation', experience: 'briefcase', activity: 'users', award: 'award', certificate: 'certificate', tool: 'wrench' };
+
 function initials(name) { return esc((name || '?').trim().slice(0, 1)); }
 function kb(n) { return n > 1048576 ? (n / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(n / 1024)) + 'KB'; }
 function host(u) { try { return new URL(u).hostname; } catch { return ''; } }
@@ -40,30 +77,39 @@ export function mountPortfolio(root, items, opts = {}) {
   // ----- 프로필 영역 -----
   const contacts = p.contacts || {};
   const roleTags = (p.primaryRoles || []).map(r => ROLES.find(x => x.id === r)?.name).filter(Boolean);
+  const nameEnd = +(0.12 + [...(p.name || '이름을 입력하세요')].length * 0.06 + 0.12).toFixed(2);
+  const featuredTarget = items.some(i => i.kind === 'project' && i.data.featured) ? 'sec-featured' : 'projects';
   const profileHTML = `
     <div class="cover" ${p.cover ? `style="background-image:url('${esc(p.cover)}')"` : ''} role="presentation"></div>
     <div class="page">
-      <div class="avatar">${p.photo ? `<img src="${esc(p.photo)}" alt="${esc(p.name)} 프로필 사진">` : initials(p.name)}</div>
-      <h1 class="name">${esc(p.name || '이름을 입력하세요')}${sample(prof)}</h1>
-      <p class="tagline">${esc(p.tagline || '')}</p>
-      ${p.headline ? `<div class="callout"><span class="icon" aria-hidden="true">💡</span><div>${esc(p.headline)}</div></div>` : ''}
-      <div class="cols profile-block">
+      <section class="hero" aria-labelledby="h-name">
+        <div class="avatar" data-rise style="--d:0s">${p.photo ? `<img src="${esc(p.photo)}" alt="${esc(p.name)} 프로필 사진">` : initials(p.name)}</div>
+        ${roleTags.length ? `<p class="eyebrow" data-rise style="--d:.08s"><span class="dot" aria-hidden="true"></span>${esc(roleTags.join(' · '))}</p>` : ''}
+        <h1 class="name" id="h-name" aria-label="${esc(p.name || '이름을 입력하세요')}">${splitChars(p.name || '이름을 입력하세요', 0.12)}${sample(prof)}</h1>
+        <p class="tagline" data-rise style="--d:${nameEnd}s">${esc(p.tagline || '')}</p>
+        ${p.headline ? `<div class="callout" data-rise style="--d:${(nameEnd + 0.1).toFixed(2)}s"><span class="icon" aria-hidden="true">💡</span><div>${esc(p.headline)}</div></div>` : ''}
+        <div class="cta" data-rise style="--d:${(nameEnd + 0.2).toFixed(2)}s">
+          <a class="btn primary" href="#${featuredTarget}" data-scroll="${featuredTarget}">${featuredTarget === 'sec-featured' ? '대표 프로젝트 보기' : '프로젝트 보기'} ${icon('arrow', 18)}</a>
+          ${contacts.email ? `<a class="btn" href="mailto:${esc(contacts.email)}">${icon('mail', 18)} 연락하기</a>` : ''}
+          ${p.resumeFile ? `<a class="btn" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>${icon('download', 18)} 이력서 PDF</a>` : ''}
+        </div>
+      </section>
+      <div class="cols profile-block" data-reveal>
         <div>
           <h2>연락처</h2>
           <ul class="kv">
-            ${contacts.email ? `<li><span class="k">이메일</span> <a href="mailto:${esc(contacts.email)}">${esc(contacts.email)}</a></li>` : ''}
+            ${contacts.email ? `<li><span class="k">이메일</span> <a href="mailto:${esc(contacts.email)}">${esc(contacts.email)}</a><button type="button" class="copy-btn" data-copy="${esc(contacts.email)}" aria-label="이메일 주소 복사">복사</button></li>` : ''}
             ${(contacts.links || []).map(l => `<li><span class="k">${esc(l.label)}</span> <a href="${esc(l.url)}" rel="noopener" target="_blank">${esc(l.url.replace(/^https?:\/\//, ''))}</a></li>`).join('')}
           </ul>
         </div>
         <div>
           ${roleTags.length ? `<h2>희망 직무</h2><div class="tags" style="margin-bottom:14px">${roleTags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
           ${(p.interests || []).length ? `<h2>관심 분야</h2><ul class="interests">${p.interests.map(i => `<li><span aria-hidden="true">${esc(i.icon)}</span>${esc(i.label)}</li>`).join('')}</ul>` : ''}
-          ${p.resumeFile ? `<a class="btn" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>이력서 PDF 받기</a>` : ''}
         </div>
       </div>
       <section id="sec-about" aria-labelledby="h-about">
-        <h2 class="sec-title" id="h-about"><span class="ico" aria-hidden="true">👋</span>소개</h2>
-        ${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}
+        <h2 class="sec-title" id="h-about" data-reveal><span class="ico" aria-hidden="true">👋</span>소개</h2>
+        <div data-reveal>${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}</div>
       </section>
       <section id="sec-summary" aria-labelledby="h-summary"></section>
       <section id="sec-resume" aria-labelledby="h-resume"></section>
@@ -95,6 +141,7 @@ export function mountPortfolio(root, items, opts = {}) {
       <button type="button" class="sb-toggle mob-only" data-drawer-open aria-controls="sb" aria-expanded="false" aria-label="메뉴 열기">${icon('menu')}</button>
       <div class="crumb"><span class="tb-name">${esc(p.name || '')}</span><span class="tb-sep" aria-hidden="true">/</span><span class="tb-cur" id="mcur" aria-live="polite"></span></div>
       <div class="tb-acts">
+        ${opts.themeToggle ? `<button type="button" class="theme-btn" data-theme-toggle aria-pressed="${document.documentElement.dataset.theme === 'dark'}" aria-label="다크 모드" title="다크 모드 켜기/끄기"><span class="sun">${icon('moon', 18)}</span><span class="moon">${icon('sun', 18)}</span></button>` : ''}
         ${contacts.email ? `<a class="btn small" href="mailto:${esc(contacts.email)}" title="${esc(contacts.email)}">연락하기</a>` : ''}
         ${p.resumeFile ? `<a class="btn small primary" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>이력서</a>` : ''}
       </div>
@@ -105,19 +152,71 @@ export function mountPortfolio(root, items, opts = {}) {
     <div class="detail" id="detail" hidden role="dialog" aria-modal="true" aria-labelledby="d-title"></div>`;
   const $ = s => root.querySelector(s);
 
-  // ----- 요약 카드 (F-2) -----
+  // ----- Scroll Reveal: 화면에 들어오면 나타나고, 숫자는 그때 올라간다 -----
+  let revealIO = null;
+  function reveal(container) {
+    const els = [...container.querySelectorAll('[data-reveal]:not(.in)')];
+    if (container.matches?.('[data-reveal]:not(.in)')) els.push(container);
+    const show = el => { el.classList.add('in'); el.querySelectorAll('.count').forEach(countUp); };
+    if (!motionOn() || !('IntersectionObserver' in window)) { els.forEach(el => el.classList.add('in')); return; }
+    if (!revealIO) {
+      revealIO = new IntersectionObserver(entries => entries.forEach(en => {
+        if (en.isIntersecting) { show(en.target); revealIO.unobserve(en.target); }
+      }), { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    }
+    els.forEach(el => revealIO.observe(el));
+  }
+
+  // ----- 3D Tilt: 대표 프로젝트 카드가 마우스를 따라 살짝 기운다(최대 5도) -----
+  const tiltOn = () => motionOn() && matchMedia('(hover: hover) and (pointer: fine)').matches;
+  root.addEventListener('pointermove', e => {
+    const c = e.target.closest?.('.featured .pcard');
+    if (!c || !tiltOn()) return;
+    const r = c.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+    c.style.transition = 'transform .08s linear, box-shadow .3s';
+    c.style.transform = `perspective(900px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 5).toFixed(2)}deg) translateY(-4px)`;
+  });
+  root.addEventListener('pointerout', e => {
+    const c = e.target.closest?.('.featured .pcard');
+    if (!c || c.contains(e.relatedTarget)) return;
+    c.style.transition = 'transform .5s var(--ease-back), box-shadow .3s';   // Spring처럼 제자리로
+    c.style.transform = '';
+  });
+
+  // ----- 요약 카드 (F-2): Bento Grid -----
+  // 첫 카드(학력)는 큰 칸, 나머지는 작은 칸. 카드 수에 맞춰 넓은 칸을 섞어 줄이 비지 않게 한다(4열 기준)
+  function bentoSize(i, n) {
+    const smalls = n - 1;
+    if (i === 0) return smalls === 0 ? ' full' : smalls <= 2 ? ' big flat' : ' big';
+    const j = i - 1;
+    if (smalls === 1) return ' wide';
+    if (smalls === 3) return j === 2 ? ' wide' : '';
+    if (smalls <= 4) return '';
+    const r = smalls - 4, k = j - 4;            // 큰 칸 옆 4칸을 채우고 남은 카드
+    if (k < 0) return '';
+    if (r === 1) return ' full';
+    if (r === 2) return ' wide';
+    if (r === 3) return k === 0 ? ' wide' : '';
+    return '';
+  }
   const cards = summaryCards(items);
   const hasSampleResume = items.some(i => i.isSample && ['education', 'experience', 'activity', 'award', 'certificate', 'language', 'tool'].includes(i.kind));
-  $('#sec-summary').innerHTML = `<h2 class="sec-title" id="h-summary"><span class="ico" aria-hidden="true">📌</span>한눈에 보기</h2>
-    ${cards.length ? `<div class="cards">${cards.map(c => `<a class="card" href="#${c.target}" data-scroll="${c.target}"><div class="label">${esc(c.label)}</div><div class="value">${esc(c.value)}</div><div class="sub">${esc(c.sub)}</div></a>`).join('')}</div>`
+  $('#sec-summary').innerHTML = `<h2 class="sec-title" id="h-summary" data-reveal><span class="ico" aria-hidden="true">📌</span>한눈에 보기</h2>
+    ${cards.length ? `<div class="bento">${cards.map((c, i) => {
+        const size = bentoSize(i, cards.length);
+        return `<a class="card${size}" href="#${c.target}" data-scroll="${c.target}" data-reveal style="--d:${(i * 0.06).toFixed(2)}s">
+          <div class="label">${icon(CARD_ICON[c.id] || 'grid', 18)}${esc(c.label)}</div>
+          <div><div class="value">${wrapNums(esc(c.value))}</div><div class="sub">${esc(c.sub)}</div></div></a>`;
+      }).join('')}</div>`
       : `<p class="empty">${hasSampleResume ? '지금은 예시 데이터만 있어 요약을 계산하지 않습니다. 실제 이력을 등록하면 계산됩니다.' : '이력을 등록하면 요약 카드가 자동으로 계산됩니다.'}</p>`}`;
 
   // ----- 이력 (F-8) -----
   const tl = (kind, row) => {
     const list = byKindRecent(items, kind);
     if (!list.length) return '';
-    return `<h3 class="sub" id="${'sec-' + KINDS[kind].section}">${row.icon} ${KINDS[kind].label}</h3><ol class="timeline">${list.map(it => `
-      <li class="tl"><div class="when">${row.when(it.data)}</div><div class="rail" aria-hidden="true"></div>
+    return `<h3 class="sub" id="${'sec-' + KINDS[kind].section}" data-reveal>${row.icon} ${KINDS[kind].label}</h3><ol class="timeline">${list.map((it, n) => `
+      <li class="tl" data-reveal style="--d:${Math.min(n * 0.08, 0.4).toFixed(2)}s"><div class="when">${row.when(it.data)}</div><div class="rail" aria-hidden="true"></div>
       <div class="what">${row.what(it.data, sample(it))}${kind === 'activity' ? related(it.data) : ''}</div></li>`).join('')}</ol>`;
   };
   const eduHTML = tl('education', {
@@ -143,26 +242,26 @@ export function mountPortfolio(root, items, opts = {}) {
   const certs = byKindRecent(items, 'certificate');
   const langs = byKindRecent(items, 'language');
   const skillsHTML = (tools.length || certs.length || langs.length) ? `<div class="cols">
-      <div>${tools.length ? `<h3 class="sub" id="sec-tools">🛠️ 스킬</h3><ul class="bars">${tools.map(t => {
+      <div>${tools.length ? `<h3 class="sub" id="sec-tools" data-reveal>🛠️ 스킬</h3><ul class="bars">${tools.map((t, idx) => {
         const n = usage.get(t.data.name) || 0;
-        return `<li><span>${esc(t.data.name)}${sample(t)}</span><span class="n">${n ? `프로젝트 ${n}건` : '연결 전'}</span><span class="bar" aria-hidden="true"><span style="width:${(n / maxUse) * 100}%"></span></span></li>`;
+        return `<li data-reveal style="--d:${Math.min(idx * 0.05, 0.4).toFixed(2)}s"><span>${esc(t.data.name)}${sample(t)}</span><span class="n">${n ? `프로젝트 ${n}건` : '연결 전'}</span><span class="bar" aria-hidden="true"><span style="width:${(n / maxUse) * 100}%"></span></span></li>`;
       }).join('')}</ul><p class="small muted">막대 길이 = 그 스킬을 쓴 공개 프로젝트 수</p>` : ''}</div>
-      <div>${certs.length || langs.length ? `<h3 class="sub" id="sec-certificates">📜 자격·어학</h3>
-        <ul class="list-plain">${certs.map(c => `<li><span class="d">${esc(fmtMonth(c.data.date))}</span><span><b>${esc(c.data.name)}</b>${c.data.status === '예정' ? ' <span class="tag">취득 예정</span>' : ''}${sample(c)}<br><span class="small muted">${esc(c.data.issuer || '')}</span></span></li>`).join('')}
-        ${langs.map(l => `<li><span class="d">${esc(fmtMonth(l.data.date))}</span><span><b>${esc(l.data.test)}</b>${l.data.score ? ' ' + esc(l.data.score) : ''}${sample(l)}</span></li>`).join('')}</ul>` : ''}</div>
+      <div>${certs.length || langs.length ? `<h3 class="sub" id="sec-certificates" data-reveal>📜 자격·어학</h3>
+        <ul class="list-plain">${certs.map((c, n) => `<li data-reveal style="--d:${Math.min(n * 0.06, 0.4).toFixed(2)}s"><span class="d">${esc(fmtMonth(c.data.date))}</span><span><b>${esc(c.data.name)}</b>${c.data.status === '예정' ? ' <span class="tag">취득 예정</span>' : ''}${sample(c)}<br><span class="small muted">${esc(c.data.issuer || '')}</span></span></li>`).join('')}
+        ${langs.map(l => `<li data-reveal><span class="d">${esc(fmtMonth(l.data.date))}</span><span><b>${esc(l.data.test)}</b>${l.data.score ? ' ' + esc(l.data.score) : ''}${sample(l)}</span></li>`).join('')}</ul>` : ''}</div>
     </div>` : '';
   const resumeBody = eduHTML + skillsHTML + expHTML + actHTML + awHTML;
-  $('#sec-resume').innerHTML = resumeBody ? `<h2 class="sec-title" id="h-resume"><span class="ico" aria-hidden="true">🗂️</span>이력</h2>${resumeBody}` : '';
+  $('#sec-resume').innerHTML = resumeBody ? `<h2 class="sec-title" id="h-resume" data-reveal><span class="ico" aria-hidden="true">🗂️</span>이력</h2>${resumeBody}` : '';
   if (!resumeBody) $('#sec-resume').hidden = true;
 
   // ----- 프로젝트 카드 -----
-  const cover = (pr, cls = 'pcover') => `<div class="${cls}" ${pr.data.coverImage ? `style="background-image:url('${esc(pr.data.coverImage)}')"` : ''}>${pr.data.coverImage ? '' : esc(compName(pr.data.primarySkill))}</div>`;
+  const cover = (pr, cls = 'pcover') => `<div class="${cls}" ${pr.data.coverImage ? `style="background-image:url('${esc(pr.data.coverImage)}')"` : ''}>${pr.data.coverImage ? '' : `<span class="cv-ico">${icon(COMP_ICON[pr.data.primarySkill] || 'folder', 22)}</span><span class="cv-name">${esc(compName(pr.data.primarySkill) || '프로젝트')}</span>`}</div>`;
   const tagList = pr => {
     const ids = [pr.data.primarySkill, ...(pr.data.skills || []).filter(s => s !== pr.data.primarySkill)].filter(Boolean);
     return `<div class="tags">${ids.map((s, i) => `<span class="tag${i === 0 ? ' main' : ''}">${esc(compName(s))}</span>`).join('')}</div>`;
   };
   const metricLine = m => `${m.label} ${Number(m.value).toLocaleString('ko-KR')}${m.unit || ''}`;
-  const card = (pr, featured) => `<button type="button" class="pcard" data-open="${esc(pr.data.slug)}" aria-label="${esc(pr.data.title || '제목 없음')} 자세히 보기">
+  const card = (pr, featured, n = 0) => `<button type="button" class="pcard" data-open="${esc(pr.data.slug)}" aria-label="${esc(pr.data.title || '제목 없음')} 자세히 보기" data-reveal style="--d:${Math.min(n * 0.05, 0.35).toFixed(2)}s">
       ${cover(pr)}<div class="pbody">
         <span class="ptitle">${esc(pr.data.title || '제목 없음')}${sample(pr)}</span>
         ${featured && pr.data.metrics?.[0] ? `<span class="pkey">${esc(metricLine(pr.data.metrics[0]))}</span>` : ''}
@@ -170,11 +269,12 @@ export function mountPortfolio(root, items, opts = {}) {
         ${featured && pr.data.role?.[0] ? `<span class="pmeta">맡은 일: ${esc(pr.data.role[0])}</span>` : ''}
         ${tagList(pr)}
         <span class="pmeta">${esc([period(pr.data.startDate, pr.data.endDate), pr.data.type].filter(Boolean).join(' · '))}</span>
+        ${featured ? `<span class="more">자세히 보기 ${icon('arrow', 16)}</span>` : ''}
       </div></button>`;
 
   const featured = projects.filter(x => x.data.featured).sort((a, b) => (a.data.featuredOrder || 9) - (b.data.featuredOrder || 9)).slice(0, 3);
-  $('#sec-featured').innerHTML = featured.length ? `<h2 class="sec-title" id="h-featured"><span class="ico" aria-hidden="true">⭐</span>대표 프로젝트</h2>
-    <div class="gallery featured">${featured.map(x => card(x, true)).join('')}</div>` : '';
+  $('#sec-featured').innerHTML = featured.length ? `<h2 class="sec-title" id="h-featured" data-reveal><span class="ico" aria-hidden="true">⭐</span>대표 프로젝트</h2>
+    <div class="gallery featured">${featured.map((x, n) => card(x, true, n)).join('')}</div>` : '';
   if (!featured.length) $('#sec-featured').hidden = true;
 
   // ----- 전체 프로젝트 (F-4) -----
@@ -199,17 +299,23 @@ export function mountPortfolio(root, items, opts = {}) {
 
   function drawList() {
     const list = filtered();
-    $('#plist').innerHTML = !list.length ? '<p class="empty">조건에 맞는 프로젝트가 없습니다.</p>'
-      : st.view === 'gallery' ? `<div class="gallery">${list.map(x => card(x)).join('')}</div>`
+    const filtering = st.tab !== 'all' || st.type || st.year || st.q.trim();
+    $('#plist').innerHTML = !list.length ? `<div class="empty-state" data-reveal>
+          <span class="ico">${icon(filtering ? 'search' : 'folder', 24)}</span>
+          <h3>${filtering ? '조건에 맞는 프로젝트가 없어요' : '아직 공개된 프로젝트가 없어요'}</h3>
+          <p>${filtering ? '다른 역량 탭을 고르거나 검색어·필터를 지워 보세요.' : '프로젝트가 등록되면 여기에 보입니다.'}</p>
+          ${filtering ? '<button type="button" class="btn" data-reset>필터 초기화</button>' : ''}</div>`
+      : st.view === 'gallery' ? `<div class="gallery">${list.map((x, n) => card(x, false, n)).join('')}</div>`
         : `<table class="db"><thead><tr><th scope="col">제목</th><th scope="col">기간</th><th scope="col">유형</th><th scope="col">역량</th><th scope="col">역할</th></tr></thead><tbody>
           ${list.map(pr => `<tr class="row" data-open="${esc(pr.data.slug)}"><td><a href="#p-${esc(pr.data.slug)}" data-open="${esc(pr.data.slug)}"><b>${esc(pr.data.title || '제목 없음')}</b></a>${sample(pr)}</td><td>${esc(period(pr.data.startDate, pr.data.endDate))}</td><td>${esc(pr.data.type || '')}</td><td>${tagList(pr)}</td><td>${esc((pr.data.role || [])[0] || '')}</td></tr>`).join('')}
-          </tbody></table><div class="db-cards">${list.map(x => card(x)).join('')}</div>`;
+          </tbody></table><div class="db-cards">${list.map((x, n) => card(x, false, n)).join('')}</div>`;
     root.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === st.tab)));
     root.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === st.view)));
     $('#pcount').textContent = `${list.length}건`;
+    reveal($('#plist'));
   }
 
-  $('#projects').innerHTML = `<h2 class="sec-title" id="h-projects"><span class="ico" aria-hidden="true">📁</span>전체 프로젝트 <span class="muted small" id="pcount"></span></h2>
+  $('#projects').innerHTML = `<h2 class="sec-title" id="h-projects" data-reveal><span class="ico" aria-hidden="true">📁</span>전체 프로젝트 <span class="muted small" id="pcount"></span></h2>
     <div class="tabs" role="group" aria-label="역량별 보기">
       <button type="button" data-tab="all">전체 ${projects.length}</button>
       ${comps.map(c => `<button type="button" data-tab="${esc(c.data.cid)}">${esc(c.data.name)} ${projects.filter(pr => inComp(pr, c.data.cid)).length}</button>`).join('')}
@@ -259,7 +365,6 @@ export function mountPortfolio(root, items, opts = {}) {
     lastFocus = document.activeElement;
     detail.innerHTML = `<article class="sheet">
       <div class="sheet-bar"><span class="small muted">프로젝트</span><span>
-        <button type="button" class="btn small" data-expand>모두 펼치기</button>
         <button type="button" class="btn small" data-close aria-label="닫기">닫기 ✕</button></span></div>
       ${cover(pr)}
       <div class="sheet-in">
@@ -276,10 +381,10 @@ export function mountPortfolio(root, items, opts = {}) {
         <ul>${(d.role || []).map(r => `<li>${esc(r)}</li>`).join('')}</ul>
         <h2><span aria-hidden="true">🔧</span>과정</h2>
         ${proc.problem ? `<p><b>문제 상황</b><br>${esc(proc.problem)}</p>` : ''}
-        ${(proc.steps || []).length ? `<p><b>진행 단계</b></p>${proc.steps.map((s, i) => `<details class="step"${i === 0 ? ' open' : ''}><summary>${i + 1}. ${esc(s)}</summary></details>`).join('')}` : ''}
+        ${(proc.steps || []).length ? `<p><b>진행 단계</b></p><ol class="stepper">${proc.steps.map((st2, i) => `<li style="--d:${(0.15 + i * 0.08).toFixed(2)}s">${esc(st2)}</li>`).join('')}</ol>` : ''}
         ${proc.challenge ? `<p style="margin-top:16px"><b>어려웠던 점과 해결</b><br>${esc(proc.challenge)}</p>` : ''}
         <h2><span aria-hidden="true">📈</span>결과</h2>
-        ${(d.metrics || []).length ? `<div class="metrics">${d.metrics.map(m => `<div class="metric"><div class="v">${esc(Number(m.value).toLocaleString('ko-KR'))}<span class="small"> ${esc(m.unit || '')}</span></div><div class="l">${esc(m.label)}</div></div>`).join('')}</div>` : ''}
+        ${(d.metrics || []).length ? `<div class="metrics">${d.metrics.map(m => `<div class="metric"><div class="v">${Number.isFinite(Number(m.value)) && m.value !== null && m.value !== '' ? `<span class="count" data-to="${Number(m.value)}" data-fmt="ko">${esc(Number(m.value).toLocaleString('ko-KR'))}</span>` : ''}<span class="small"> ${esc(m.unit || '')}</span></div><div class="l">${esc(m.label)}</div></div>`).join('')}</div>` : ''}
         ${d.outcome ? `<p>${esc(d.outcome)}</p>` : ''}
         ${d.learned ? `<p><b>배운 점</b><br>${esc(d.learned)}</p>` : ''}
         <h2><span aria-hidden="true">📎</span>증빙</h2>
@@ -293,6 +398,7 @@ export function mountPortfolio(root, items, opts = {}) {
     document.body.style.overflow = 'hidden';
     detail.scrollTop = 0;
     detail.querySelector('#d-title').focus();
+    setTimeout(() => detail.querySelectorAll('.metric .count').forEach(countUp), 250);
     track('project', slug);
     if (opts.useHash && !fromHash && location.hash !== '#p-' + slug) history.pushState(null, '', '#p-' + slug);
     return true;
@@ -320,7 +426,18 @@ export function mountPortfolio(root, items, opts = {}) {
       return;
     }
     if (e.target.closest('[data-close]') || e.target === detail) { closeDetail(); return; }
-    if (e.target.closest('[data-expand]')) { detail.querySelectorAll('details').forEach(x => { x.open = true; }); return; }
+    const copy = e.target.closest('[data-copy]');
+    if (copy) {
+      navigator.clipboard?.writeText(copy.dataset.copy).then(() => showToast('이메일 주소를 복사했어요'), () => showToast('복사하지 못했어요. 주소를 직접 선택해 주세요'));
+      if (!navigator.clipboard) showToast('복사하지 못했어요. 주소를 직접 선택해 주세요');
+      return;
+    }
+    if (e.target.closest('[data-reset]')) {
+      Object.assign(st, { tab: 'all', type: '', year: '', q: '' });
+      $('#f-type').value = ''; $('#f-year').value = ''; $('#f-q').value = '';
+      drawList(); return;
+    }
+    if (e.target.closest('[data-theme-toggle]')) { toggleTheme(); return; }
     if (e.target.closest('[data-evidence]')) track('evidence', e.target.closest('[data-evidence]').dataset.evidence);
     if (e.target.closest('[data-resume]')) track('resume', 'resume');
     if (e.target.closest('[data-sb-toggle]')) toggleSidebar();
@@ -367,6 +484,15 @@ export function mountPortfolio(root, items, opts = {}) {
   }
   if (secEls[0]) setActive(secEls[0].id);
 
+  // Dark Mode 전환(선택은 이 브라우저에 기억)
+  function toggleTheme() {
+    const dark = document.documentElement.dataset.theme !== 'dark';
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    try { localStorage.setItem('lis-theme', dark ? 'dark' : 'light'); } catch { /* 없음 */ }
+    $('[data-theme-toggle]')?.setAttribute('aria-pressed', String(dark));
+  }
+  reveal(root);
+
   const topbar = $('#topbar');
   let ticking = false;
   const onScroll = () => {
@@ -388,7 +514,7 @@ export function mountPortfolio(root, items, opts = {}) {
 
   return {
     openProject, closeDetail,
-    destroy() { io?.disconnect(); window.removeEventListener('scroll', onScroll); document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
+    destroy() { io?.disconnect(); revealIO?.disconnect(); window.removeEventListener('scroll', onScroll); document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
   };
 }
 
