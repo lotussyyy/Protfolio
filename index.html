@@ -17,7 +17,7 @@
     (function () {
       var d = document.documentElement, t = null;
       try { t = localStorage.getItem('lis-theme'); } catch (e) {}
-      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (t !== 'light') t = 'dark';   // 처음 방문하면 다크 모드. 해·달 버튼으로 바꾼 선택은 기억한다
       d.dataset.theme = t;
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('motion');
     })();
