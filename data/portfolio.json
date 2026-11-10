@@ -1,63 +1,8 @@
 {
   "schemaVersion": 2,
-  "exportedAt": "2026-11-09T01:38:14.136Z",
-  "checkedAt": "2026-11-09T01:38:14.136Z",
+  "exportedAt": "2026-11-10T01:57:01.246Z",
+  "checkedAt": "2026-11-10T01:57:01.246Z",
   "items": [
-    {
-      "id": "ebbe21b5-1d8c-47ac-8cc2-6dba1429683e",
-      "kind": "profile",
-      "data": {
-        "bio": "문헌정보학을 공부하며 목록·분류 실습과 도서관 근로, 공공도서관 현장실습을 거쳤습니다. 정확한 메타데이터가 좋은 정보서비스의 출발점이라고 믿고, 이용자 교육과 독서 프로그램으로 그 자료를 사람과 연결하는 일에 관심이 많습니다. 숫자로 확인할 수 있는 결과를 남기는 습관을 가지고 있습니다.",
-        "name": "이서윤",
-        "photo": "",
-        "tagline": "공공·대학도서관 사서 지망 · 문헌정보학과 4학년",
-        "contacts": {
-          "email": "seoyoon.lis@example.com",
-          "links": [
-            {
-              "url": "https://example.com/blog",
-              "label": "블로그",
-              "public": true
-            },
-            {
-              "url": "https://github.com/example",
-              "label": "GitHub",
-              "public": true
-            }
-          ]
-        },
-        "headline": "자료를 찾기 쉽게 정리하고, 이용자가 스스로 찾을 수 있도록 돕는 사서가 되고 싶습니다.",
-        "interests": [
-          {
-            "icon": "📚",
-            "label": "독서교육"
-          },
-          {
-            "icon": "🗂️",
-            "label": "메타데이터"
-          },
-          {
-            "icon": "🏛️",
-            "label": "지역 기록"
-          },
-          {
-            "icon": "📊",
-            "label": "이용 데이터"
-          }
-        ],
-        "resumeFile": "",
-        "primaryRoles": [
-          "public",
-          "academic"
-        ],
-        "resumePublic": true
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 0,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
     {
       "id": "a8c23f0c-e424-4f4e-9e4c-5ac1459018ab",
       "kind": "competency",
@@ -677,24 +622,6 @@
       "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
-      "id": "a502b469-cb4f-46aa-96f7-dce6d63f12fd",
-      "kind": "education",
-      "data": {
-        "note": "",
-        "major": "",
-        "school": "○○고등학교",
-        "status": "졸업",
-        "endDate": "2023-02",
-        "gpaPublic": false,
-        "startDate": "2020-03"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 15,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
       "id": "5531172a-b517-4656-af6f-ddafd826d01c",
       "kind": "experience",
       "data": {
@@ -940,6 +867,84 @@
       "isSample": true,
       "sort": 37,
       "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+    },
+    {
+      "id": "ebbe21b5-1d8c-47ac-8cc2-6dba1429683e",
+      "kind": "profile",
+      "data": {
+        "bio": "문헌정보학을 공부하며 목록·분류 실습과 도서관 근로, 공공도서관 현장실습을 거쳤습니다. 정확한 메타데이터가 좋은 정보서비스의 출발점이라고 믿고, 이용자 교육과 독서 프로그램으로 그 자료를 사람과 연결하는 일에 관심이 많습니다. 숫자로 확인할 수 있는 결과를 남기는 습관을 가지고 있습니다.",
+        "name": "박채연",
+        "cover": "",
+        "photo": "",
+        "tagline": "공공·대학도서관 사서 지망 · 문헌정보학과 4학년",
+        "contacts": {
+          "email": "codus02325@gmail.com",
+          "links": [
+            {
+              "url": "https://example.com/blog",
+              "label": "블로그",
+              "public": true
+            },
+            {
+              "url": "https://github.com/example",
+              "label": "GitHub",
+              "public": true
+            }
+          ]
+        },
+        "headline": "자료를 찾기 쉽게 정리하고, 이용자가 스스로 찾을 수 있도록 돕는 사서가 되고 싶습니다.",
+        "interests": [
+          {
+            "icon": "📚",
+            "label": "독서 교육"
+          },
+          {
+            "icon": "🗂️",
+            "label": "MARC/분류"
+          },
+          {
+            "icon": "🏛️",
+            "label": "행사 시획"
+          },
+          {
+            "icon": "📊",
+            "label": "메타데이터"
+          }
+        ],
+        "resumeFile": "",
+        "primaryRoles": [
+          "public",
+          "academic"
+        ],
+        "resumePublic": true
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": true,
+      "sort": 0,
+      "updatedAt": "2026-11-09T01:42:39.891881+00:00"
+    },
+    {
+      "id": "a502b469-cb4f-46aa-96f7-dce6d63f12fd",
+      "kind": "education",
+      "data": {
+        "note": "",
+        "major": ".",
+        "minor": "",
+        "school": "양구여자고등학교",
+        "status": "졸업",
+        "endDate": "2022-02",
+        "gpaPublic": false,
+        "startDate": "2019-03",
+        "relatedProjects": [
+          "44b56ade-88fa-4007-865c-9f3c3a9dbec0"
+        ]
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 15,
+      "updatedAt": "2026-11-09T02:25:21.679603+00:00"
     }
   ]
 }
