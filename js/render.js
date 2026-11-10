@@ -105,6 +105,7 @@ export function mountPortfolio(root, items, opts = {}) {
   const featuredTarget = items.some(i => i.kind === 'project' && i.data.featured) ? 'sec-featured' : 'projects';
   const profileHTML = `
     <div class="page">
+      <div data-view="landing">
       <section class="hero" aria-labelledby="h-name">
         <div class="hero-bg" aria-hidden="true"><div class="hero-bg-layer" data-px="bg">${heroBackdrop()}</div></div>
         <div class="hero-text">
@@ -113,7 +114,7 @@ export function mountPortfolio(root, items, opts = {}) {
           <p class="tagline" data-rise style="--d:${nameEnd}s">${esc(p.tagline || '')}</p>
           ${p.headline ? `<p class="lead" data-rise style="--d:${(nameEnd + 0.1).toFixed(2)}s">${esc(p.headline)}</p>` : ''}
           <div class="cta" data-rise style="--d:${(nameEnd + 0.2).toFixed(2)}s">
-            <a class="btn primary" href="#${featuredTarget}" data-scroll="${featuredTarget}">${featuredTarget === 'sec-featured' ? '대표 프로젝트 보기' : '프로젝트 보기'} ${icon('arrow', 18)}</a>
+            <a class="btn primary" href="#portfolio" data-enter>포트폴리오 살펴보기 ${icon('arrow', 18)}</a>
             ${contacts.email ? `<a class="btn" href="mailto:${esc(contacts.email)}">${icon('mail', 18)} 연락하기</a>` : ''}
             ${p.resumeFile ? `<a class="btn" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>${icon('download', 18)} 이력서 PDF</a>` : ''}
           </div>
@@ -122,7 +123,19 @@ export function mountPortfolio(root, items, opts = {}) {
           <div class="px-fg" data-px="fg">${heroImg ? `<img src="${esc(heroImg)}" alt="${esc(p.cover ? (p.name || '') + ' 포트폴리오 대표 이미지' : (p.name || '') + ' 프로필 사진')}">` : heroIllustration()}</div>
         </figure>
       </section>
-      <div class="cols profile-block" data-reveal>
+      <section class="landing-contact" aria-labelledby="h-contact" data-rise style="--d:${(nameEnd + 0.45).toFixed(2)}s">
+        <h2 id="h-contact">${icon('mail', 18)} 연락하기</h2>
+        <ul class="kv">
+          ${contacts.email ? `<li><span class="k">이메일</span> <a href="mailto:${esc(contacts.email)}">${esc(contacts.email)}</a><button type="button" class="copy-btn" data-copy="${esc(contacts.email)}" aria-label="이메일 주소 복사">복사</button></li>` : '<li class="muted">관리 화면에서 이메일을 입력하면 여기에 보입니다.</li>'}
+          ${(contacts.links || []).map(l => `<li><span class="k">${esc(l.label)}</span> <a href="${esc(l.url)}" rel="noopener" target="_blank">${esc(l.url.replace(/^https?:\/\//, ''))}</a></li>`).join('')}
+        </ul>
+      </section>
+      </div>
+      <div data-view="portfolio" class="pf-view">
+      <section id="sec-about" aria-labelledby="h-about">
+        <h2 class="sec-title" id="h-about" data-reveal><span class="ico" aria-hidden="true">👋</span>소개</h2>
+        <div data-reveal>${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}</div>
+              <div class="cols profile-block" data-reveal>
         <div>
           <h2>연락처</h2>
           <ul class="kv">
@@ -135,9 +148,6 @@ export function mountPortfolio(root, items, opts = {}) {
           ${(p.interests || []).length ? `<h2>관심 분야</h2><ul class="interests">${p.interests.map(i => `<li><span aria-hidden="true">${esc(i.icon)}</span>${esc(i.label)}</li>`).join('')}</ul>` : ''}
         </div>
       </div>
-      <section id="sec-about" aria-labelledby="h-about">
-        <h2 class="sec-title" id="h-about" data-reveal><span class="ico" aria-hidden="true">👋</span>소개</h2>
-        <div data-reveal>${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}</div>
       </section>
       <section id="sec-skills" aria-labelledby="h-skills"></section>
       <section id="sec-summary" aria-labelledby="h-summary"></section>
@@ -145,6 +155,7 @@ export function mountPortfolio(root, items, opts = {}) {
       <section id="sec-featured" aria-labelledby="h-featured"></section>
       <section id="projects" aria-labelledby="h-projects"></section>
       <section id="sec-books" aria-labelledby="h-books"></section>
+      </div>
       <footer class="foot">
         <span>익명 방문 통계를 수집합니다(쿠키·IP 미수집).</span>
         <span>${opts.footerNote ? esc(opts.footerNote) + ' · ' : ''}${opts.adminHref ? `<a href="${esc(opts.adminHref)}">관리</a>` : ''}</span>
@@ -169,7 +180,7 @@ export function mountPortfolio(root, items, opts = {}) {
   // ----- 상단 고정 헤더 (스크롤하면 아래 그림자) -----
   const headerHTML = `<header class="topbar no-print" id="topbar">
       <button type="button" class="sb-toggle mob-only" data-drawer-open aria-controls="sb" aria-expanded="false" aria-label="메뉴 열기">${icon('menu')}</button>
-      <div class="crumb"><span class="tb-name">${esc(p.name || '')}</span><span class="tb-sep" aria-hidden="true">/</span><span class="tb-cur" id="mcur" aria-live="polite"></span></div>
+      <div class="crumb"><button type="button" class="tb-name" data-home title="첫 화면으로">${esc(p.name || '')}</button><span class="tb-sep" aria-hidden="true">/</span><span class="tb-cur" id="mcur" aria-live="polite"></span></div>
       <div class="tb-acts">
         ${opts.themeToggle ? `<button type="button" class="theme-btn" data-theme-toggle aria-pressed="${document.documentElement.dataset.theme === 'dark'}" aria-label="다크 모드" title="다크 모드 켜기/끄기"><span class="sun">${icon('moon', 18)}</span><span class="moon">${icon('sun', 18)}</span></button>` : ''}
         ${contacts.email ? `<a class="btn small" href="mailto:${esc(contacts.email)}" title="${esc(contacts.email)}">연락하기</a>` : ''}
@@ -476,7 +487,7 @@ export function mountPortfolio(root, items, opts = {}) {
     detail.hidden = true;
     detail.innerHTML = '';
     document.body.style.overflow = '';
-    if (opts.useHash && !fromHash && location.hash.startsWith('#p-')) history.pushState(null, '', location.pathname + location.search);
+    if (opts.useHash && !fromHash && location.hash.startsWith('#p-')) history.pushState(null, '', location.pathname + location.search + '#portfolio');
     lastFocus?.focus?.();
   }
 
@@ -484,6 +495,8 @@ export function mountPortfolio(root, items, opts = {}) {
   root.addEventListener('click', e => {
     const open = e.target.closest('[data-open]');
     if (open) { e.preventDefault(); openProject(open.dataset.open); return; }
+    if (e.target.closest('[data-enter]')) { e.preventDefault(); setView('portfolio', { push: true }); return; }
+    if (e.target.closest('[data-home]')) { e.preventDefault(); setView('landing', { push: true }); return; }
     const sc = e.target.closest('[data-scroll]');
     if (sc) {
       e.preventDefault();
@@ -618,6 +631,29 @@ export function mountPortfolio(root, items, opts = {}) {
     try { localStorage.setItem('lis-theme', dark ? 'dark' : 'light'); } catch { /* 없음 */ }
     $('[data-theme-toggle]')?.setAttribute('aria-pressed', String(dark));
   }
+  // ----- 첫 화면(간단한 프로필 + 연락하기) ↔ 포트폴리오(세부 내용) -----
+  let view = '';
+  function setView(v, { push = false, fromHash = false } = {}) {
+    if (v === view) return;
+    const first = !view;
+    view = v;
+    shell.classList.toggle('landing', v === 'landing');
+    if (opts.useHash && push && !fromHash) history.pushState(null, '', location.pathname + location.search + (v === 'portfolio' ? '#portfolio' : ''));
+    if (first) return;
+    setDrawer(false);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    const pv = $('.pf-view');
+    if (v === 'portfolio') {
+      if (motionOn()) { pv.classList.remove('enter'); void pv.offsetWidth; pv.classList.add('enter'); }
+      reveal(pv);
+      $('#h-about')?.setAttribute('tabindex', '-1'); $('#h-about')?.focus({ preventScroll: true });
+      if (secEls[0]) setActive(secEls[0].id);
+      opts.track?.('view', 'portfolio');
+    } else $('[data-enter]')?.focus({ preventScroll: true });
+  }
+  const h0 = opts.useHash ? decodeURIComponent(location.hash.slice(1)) : '';
+  setView(opts.initialView || (h0 ? 'portfolio' : 'landing'));
+
   reveal(root);
 
   // ----- Parallax Scrolling: 첫 화면 배경은 천천히(0.35배 늦게), 앞쪽 이미지는 더 빠르게 -----
@@ -656,7 +692,7 @@ export function mountPortfolio(root, items, opts = {}) {
   window.addEventListener('beforeprint', beforePrint);
 
   return {
-    openProject, closeDetail,
+    openProject, closeDetail, setView, get view() { return view; },
     destroy() { io?.disconnect(); revealIO?.disconnect(); window.removeEventListener('scroll', onScroll); document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
   };
 }

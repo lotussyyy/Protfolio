@@ -505,3 +505,20 @@ body, .sb, .topbar, .card, .pcard, .sheet { transition-property: background-colo
 .bpanel .toc { margin: 0; padding-left: 20px; } .bpanel .toc li { margin: 2px 0; }
 @media (prefers-reduced-motion: reduce) { .btab-ink, .bpanel, .bpanel.on { transition: none; } }
 @media print { .bpanel { opacity: 1; visibility: visible; transform: none; grid-area: auto; } .btabs { display: none; } }
+
+/* ---------- 첫 화면(간단한 프로필 + 연락하기) / 포트폴리오(세부 내용) ---------- */
+.shell.landing [data-view="portfolio"], .shell:not(.landing) [data-view="landing"] { display: none !important; }
+.shell.landing { grid-template-columns: minmax(0, 1fr); }
+.shell.landing .sb, .shell.landing .sb-backdrop, .shell.landing [data-drawer-open], .shell.landing .tb-sep, .shell.landing .tb-cur { display: none; }
+.shell.landing .hero { min-height: min(540px, calc(100svh - 300px)); padding-top: 32px; }
+button.tb-name { appearance: none; background: none; border: 0; padding: 4px 6px; margin-left: -6px; border-radius: 6px; font: inherit; font-weight: 700; color: var(--ink); cursor: pointer; }
+button.tb-name:hover { background: var(--soft); }
+.landing-contact { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 18px 22px; margin: 4px 0 8px; box-shadow: 0 6px 18px var(--shadow); }
+.landing-contact h2 { display: flex; align-items: center; gap: 8px; font-size: 16px; margin: 0 0 8px; }
+.landing-contact .kv { margin: 0; }
+.motion .landing-contact[data-rise] { opacity: 0; animation: rise .6s var(--ease-out) forwards; animation-delay: var(--d, 0s); }
+.motion .pf-view.enter { animation: pf-in .5s var(--ease-out); }
+@keyframes pf-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+#sec-about .profile-block { margin-top: 18px; }
+@media (prefers-reduced-motion: reduce) { .landing-contact[data-rise] { opacity: 1 !important; } }
+@media print { .shell.landing [data-view="portfolio"] { display: block !important; } }
