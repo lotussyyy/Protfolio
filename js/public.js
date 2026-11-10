@@ -24,7 +24,14 @@ async function start() {
   const note = res.source === 'snapshot'
     ? `최신 데이터를 불러오지 못해 ${String(res.checkedAt || '').slice(0, 10)} 기준 내용을 보여드립니다`
     : MODE === 'demo' ? '데모 데이터' : '';
-  const app = mountPortfolio(root, res.items, { useHash: true, roleOverride: roleFromUrl(), track, footerNote: note, adminHref: 'admin.html' });
+  let app;
+  try {
+    app = mountPortfolio(root, res.items, { useHash: true, roleOverride: roleFromUrl(), track, footerNote: note, adminHref: 'admin.html' });
+  } catch (e) {
+    console.error(e);
+    root.innerHTML = `<div class="page"><p class="empty" style="margin-top:40px">화면을 그리는 중 문제가 생겼습니다. 새로고침(Ctrl+Shift+R) 후에도 같으면 관리 화면에서 최근에 고친 항목을 확인해 주세요.<br><small>${String(e.message || e).replace(/[<>&]/g, '')}</small></p></div>`;
+    return;
+  }
 
   const route = () => {
     const h = decodeURIComponent(location.hash.slice(1));

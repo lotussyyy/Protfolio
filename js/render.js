@@ -25,7 +25,8 @@ export function mountPortfolio(root, items, opts = {}) {
   const roles = opts.roleOverride ? [opts.roleOverride] : (p.primaryRoles || []);
   const comps = competencyOrder(byKind(items, 'competency'), roles);
   const compName = id => comps.find(c => c.data.cid === id)?.data.name || id;
-  const projects = byKind(items, 'project');
+  // 주소용 이름(slug)이 없는 프로젝트는 id로 대신한다
+  const projects = byKind(items, 'project').map(pr => (pr.data.slug ? pr : { ...pr, data: { ...pr.data, slug: String(pr.id) } }));
   const bySlug = s => projects.find(x => x.data.slug === s);
   const projLink = id => {
     const pr = projects.find(x => x.id === id);

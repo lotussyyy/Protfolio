@@ -741,4 +741,7 @@ function drawBackup(panel) {
   };
 }
 
-start();
+start().catch(e => {
+  console.error(e);
+  app.innerHTML = `<div class="login"><h1 style="margin-top:0">관리 화면을 열지 못했습니다</h1><p>${esc(e.message || String(e))}</p><p class="small muted">인터넷 연결을 확인하고 새로고침(Ctrl+Shift+R)하세요. Supabase 프로젝트가 일시정지되었다면 Supabase 대시보드에서 재개(Restore)하세요.</p><button class="btn" onclick="location.reload()">다시 시도</button></div>`;
+});

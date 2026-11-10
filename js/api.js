@@ -14,10 +14,19 @@ export const store = {
   del(k) { try { localStorage.removeItem(k); } catch { /* 저장소 없음 */ } },
 };
 
+// 네트워크가 느리거나 막혀 있어도 화면이 '불러오는 중'에서 멈추지 않도록 시간 제한
+export function withTimeout(promise, ms, label = '요청') {
+  let t;
+  return Promise.race([
+    promise.finally(() => clearTimeout(t)),
+    new Promise((_, rej) => { t = setTimeout(() => rej(new Error(`${label} 시간이 초과되었습니다(${ms / 1000}초)`)), ms); }),
+  ]);
+}
+
 let sb = null;
 async function client() {
   if (!sb) {
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    const { createClient } = await withTimeout(import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'), 10000, 'Supabase 연결 도구 불러오기');
     sb = createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
   }
   return sb;
@@ -43,7 +52,7 @@ export async function getPublicData() {
   if (MODE === 'supabase') {
     try {
       const c = await client();
-      const { data, error } = await c.from('public_items').select('*');
+      const { data, error } = await withTimeout(c.from('public_items').select('*'), 8000, '공개 데이터 불러오기');
       if (error) throw error;
       return { items: data.map(fromRow), source: 'live' };
     } catch (e) {
