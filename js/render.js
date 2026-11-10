@@ -29,7 +29,7 @@ export function mountPortfolio(root, items, opts = {}) {
   const bySlug = s => projects.find(x => x.data.slug === s);
   const projLink = id => {
     const pr = projects.find(x => x.id === id);
-    return pr ? `<a href="#p-${esc(pr.data.slug)}" data-open="${esc(pr.data.slug)}">${esc(pr.data.title)}</a>` : '';
+    return pr ? `<a href="#p-${esc(pr.data.slug)}" data-open="${esc(pr.data.slug)}">${esc(pr.data.title || '제목 없음')}</a>` : '';
   };
   const related = d => {
     const links = (d.relatedProjects || []).map(projLink).filter(Boolean);
@@ -130,11 +130,11 @@ export function mountPortfolio(root, items, opts = {}) {
   });
   const actHTML = tl('activity', {
     icon: '🤝', when: d => period(d.startDate, d.endDate),
-    what: (d, s) => `<b>${esc(d.title)}</b>${s}<p>${[d.organization, d.type, d.role, d.hours && `${d.hours}시간`].filter(Boolean).map(esc).join(' · ')}</p>`,
+    what: (d, s) => `<b>${esc(d.title || '제목 없음')}</b>${s}<p>${[d.organization, d.type, d.role, d.hours && `${d.hours}시간`].filter(Boolean).map(esc).join(' · ')}</p>`,
   });
   const awHTML = tl('award', {
     icon: '🏆', when: d => fmtMonth(d.date),
-    what: (d, s) => `<b>${esc(d.title)}${d.rank ? ' ' + esc(d.rank) : ''}</b>${s}<p>${esc(d.issuer || '')}</p>`,
+    what: (d, s) => `<b>${esc(d.title || '제목 없음')}${d.rank ? ' ' + esc(d.rank) : ''}</b>${s}<p>${esc(d.issuer || '')}</p>`,
   });
   const usage = toolUsage(items, true);
   const tools = byKind(items, 'tool').sort((a, b) => (usage.get(b.data.name) || 0) - (usage.get(a.data.name) || 0));
@@ -161,9 +161,9 @@ export function mountPortfolio(root, items, opts = {}) {
     return `<div class="tags">${ids.map((s, i) => `<span class="tag${i === 0 ? ' main' : ''}">${esc(compName(s))}</span>`).join('')}</div>`;
   };
   const metricLine = m => `${m.label} ${Number(m.value).toLocaleString('ko-KR')}${m.unit || ''}`;
-  const card = (pr, featured) => `<button type="button" class="pcard" data-open="${esc(pr.data.slug)}" aria-label="${esc(pr.data.title)} 자세히 보기">
+  const card = (pr, featured) => `<button type="button" class="pcard" data-open="${esc(pr.data.slug)}" aria-label="${esc(pr.data.title || '제목 없음')} 자세히 보기">
       ${cover(pr)}<div class="pbody">
-        <span class="ptitle">${esc(pr.data.title)}${sample(pr)}</span>
+        <span class="ptitle">${esc(pr.data.title || '제목 없음')}${sample(pr)}</span>
         ${featured && pr.data.metrics?.[0] ? `<span class="pkey">${esc(metricLine(pr.data.metrics[0]))}</span>` : ''}
         <p class="psum">${esc(pr.data.summary)}</p>
         ${featured && pr.data.role?.[0] ? `<span class="pmeta">맡은 일: ${esc(pr.data.role[0])}</span>` : ''}
@@ -201,7 +201,7 @@ export function mountPortfolio(root, items, opts = {}) {
     $('#plist').innerHTML = !list.length ? '<p class="empty">조건에 맞는 프로젝트가 없습니다.</p>'
       : st.view === 'gallery' ? `<div class="gallery">${list.map(x => card(x)).join('')}</div>`
         : `<table class="db"><thead><tr><th scope="col">제목</th><th scope="col">기간</th><th scope="col">유형</th><th scope="col">역량</th><th scope="col">역할</th></tr></thead><tbody>
-          ${list.map(pr => `<tr class="row" data-open="${esc(pr.data.slug)}"><td><a href="#p-${esc(pr.data.slug)}" data-open="${esc(pr.data.slug)}"><b>${esc(pr.data.title)}</b></a>${sample(pr)}</td><td>${esc(period(pr.data.startDate, pr.data.endDate))}</td><td>${esc(pr.data.type || '')}</td><td>${tagList(pr)}</td><td>${esc((pr.data.role || [])[0] || '')}</td></tr>`).join('')}
+          ${list.map(pr => `<tr class="row" data-open="${esc(pr.data.slug)}"><td><a href="#p-${esc(pr.data.slug)}" data-open="${esc(pr.data.slug)}"><b>${esc(pr.data.title || '제목 없음')}</b></a>${sample(pr)}</td><td>${esc(period(pr.data.startDate, pr.data.endDate))}</td><td>${esc(pr.data.type || '')}</td><td>${tagList(pr)}</td><td>${esc((pr.data.role || [])[0] || '')}</td></tr>`).join('')}
           </tbody></table><div class="db-cards">${list.map(x => card(x)).join('')}</div>`;
     root.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === st.tab)));
     root.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === st.view)));
@@ -262,7 +262,7 @@ export function mountPortfolio(root, items, opts = {}) {
         <button type="button" class="btn small" data-close aria-label="닫기">닫기 ✕</button></span></div>
       ${cover(pr)}
       <div class="sheet-in">
-        <h1 id="d-title" tabindex="-1">${esc(d.title)}${sample(pr)}</h1>
+        <h1 id="d-title" tabindex="-1">${esc(d.title || '제목 없음')}${sample(pr)}</h1>
         <p class="muted">${esc(d.summary || '')}</p>
         <dl class="props">
           <dt>기간</dt><dd>${esc(period(d.startDate, d.endDate))}${d.hours ? ` · ${esc(d.hours)}시간` : ''}</dd>
@@ -284,8 +284,8 @@ export function mountPortfolio(root, items, opts = {}) {
         <h2><span aria-hidden="true">📎</span>증빙</h2>
         ${(d.evidence || []).length ? `<div class="evid">${d.evidence.map(ev => evidenceHTML(ev, d.slug)).join('')}</div>` : '<p class="muted">공개된 증빙이 없습니다. 요청하시면 제공해 드립니다.</p>'}
         <div class="pager">
-          ${prev ? `<button type="button" class="btn" data-open="${esc(prev.data.slug)}">← ${esc(prev.data.title)}</button>` : '<span></span>'}
-          ${next ? `<button type="button" class="btn" data-open="${esc(next.data.slug)}">${esc(next.data.title)} →</button>` : ''}
+          ${prev ? `<button type="button" class="btn" data-open="${esc(prev.data.slug)}">← ${esc(prev.data.title || '제목 없음')}</button>` : '<span></span>'}
+          ${next ? `<button type="button" class="btn" data-open="${esc(next.data.slug)}">${esc(next.data.title || '제목 없음')} →</button>` : ''}
         </div>
       </div></article>`;
     detail.hidden = false;

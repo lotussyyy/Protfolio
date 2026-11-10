@@ -2,7 +2,7 @@
 import * as api from './api.js';
 import {
   KINDS, ROLES, METRIC_KEYS, PROJECT_TYPES, RESUME_KINDS, byKind, profileOf, publicItems, isVisible,
-  validate, piiWarnings, missingCore, slugify, uid, period, fmtMonth, get,
+  piiWarnings, missingCore, slugify, uid, period, fmtMonth, get,
 } from './model.js';
 import { mountPortfolio, esc } from './render.js';
 import { icon, sidebarState } from './icons.js';
@@ -38,7 +38,7 @@ function toast(msg, action) {
   t.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button">${esc(action.label)}</button>` : ''}`;
   document.body.appendChild(t);
   if (action) t.querySelector('button').onclick = () => { t.remove(); action.run(); };
-  toastTimer = setTimeout(() => t.remove(), action ? 10000 : 3500);
+  toastTimer = setTimeout(() => t.remove(), action ? 10000 : msg.length > 40 ? 8000 : 3500);
 }
 
 // 파일 저장: 다운로드가 막힌 환경(미리보기 링크 등)에서는 복사 창을 띄운다
@@ -275,7 +275,6 @@ function badges(it) {
     it.status === 'draft' ? '<span class="badge">초안</span>' : '',
     it.isSample ? '<span class="badge">예시</span>' : '',
     S.notes[it.id] ? '<span class="badge lock">취업 메모</span>' : '',
-    (n => (n ? `<span class="badge" title="아직 채우지 않은 필수 칸">빈 칸 ${n}</span>` : ''))(validate(it, S.items).missing.length),
   ].join('');
 }
 
@@ -345,7 +344,7 @@ function fieldHTML(f, item) {
   const d = item.data;
   const v = f.path ? get(d, f.path) : d[f.key];
   const id = 'f-' + f.key;
-  const req = f.required ? ' <span class="req" aria-hidden="true">*</span>' : '';
+  const req = ''; // 필수 칸 없음: 어떤 칸이든 비워 두고 저장할 수 있다
   const wrap = (inner, help = '') => `<div class="fld" data-key="${f.key}"><label for="${id}">${esc(f.label)}${req}</label>${inner}${help ? `<div class="help">${help}</div>` : ''}</div>`;
   const group = (inner, help = '') => `<div class="fld" data-key="${f.key}"><span class="lbl">${esc(f.label)}${req}</span>${inner}${help ? `<div class="help">${help}</div>` : ''}</div>`;
   switch (f.type) {
@@ -398,12 +397,12 @@ function profileFormHTML(item) {
   const up = (key, label, accept, help) => `<div class="fld"><label for="pf-${key}">${label}</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="pf-${key}" data-p="${key}" type="text" value="${esc(d[key] || '')}" placeholder="https://… 또는 파일 올리기" style="flex:1;min-width:200px">
     <label class="btn small">파일 올리기<input type="file" accept="${accept}" data-pupload="${key}" hidden></label></div>${help ? `<div class="help">${help}</div>` : ''}</div>`;
   return `
-    <div class="grid2"><div class="fld"><label for="pf-name">이름 <span class="req">*</span></label><input id="pf-name" data-p="name" type="text" value="${esc(d.name || '')}"></div>
+    <div class="grid2"><div class="fld"><label for="pf-name">이름</label><input id="pf-name" data-p="name" type="text" value="${esc(d.name || '')}"></div>
     <div class="fld"><label for="pf-tagline">희망 직무 한 줄</label><input id="pf-tagline" data-p="tagline" type="text" maxlength="40" value="${esc(d.tagline || '')}"></div></div>
     <div class="fld"><label for="pf-headline">한 줄 소개(콜아웃)</label><input id="pf-headline" data-p="headline" type="text" value="${esc(d.headline || '')}"></div>
     <div class="fld"><label for="pf-bio">자기소개(3~5문장)</label><textarea id="pf-bio" data-p="bio" maxlength="600">${esc(d.bio || '')}</textarea></div>
     <div class="fld"><span class="lbl">주 희망 직무(최대 2개)</span><div class="checks">${ROLES.map(r => `<label><input type="checkbox" data-role-pick value="${r.id}" ${(d.primaryRoles || []).includes(r.id) ? 'checked' : ''}> ${esc(r.name)}</label>`).join('')}</div><div class="help">역량 탭 순서와 희망 직무 태그가 이 선택을 따릅니다.</div></div>
-    <div class="fld"><label for="pf-email">이메일 <span class="req">*</span></label><input id="pf-email" data-p="email" type="email" value="${esc(c.email || '')}"><div class="help">전화번호·주소는 입력받지 않습니다(개인정보 기준).</div></div>
+    <div class="fld"><label for="pf-email">이메일</label><input id="pf-email" data-p="email" type="email" value="${esc(c.email || '')}"><div class="help">전화번호·주소는 입력받지 않습니다(개인정보 기준).</div></div>
     <div class="fld"><span class="lbl">링크(블로그·GitHub 등)</span><div class="rep" data-rep="link">${(c.links || []).map(linkRow).join('')}</div><button type="button" class="btn small" data-add="link">+ 링크 추가</button></div>
     <div class="fld"><span class="lbl">관심 분야(최대 4개)</span><div class="rep" data-rep="interest">${(d.interests || []).map(interestRow).join('')}</div><button type="button" class="btn small" data-add="interest">+ 관심 분야 추가</button></div>
     ${up('photo', '프로필 사진', 'image/jpeg,image/png,image/webp')}
@@ -600,29 +599,32 @@ function collect() {
 
 async function save(panel, draftKey) {
   const item = collect();
-  const { missing, errors: errs } = validate(item, S.items);
+  // 필수 칸 없음: 무엇이 비어 있어도 저장한다. 저장을 막던 경우는 자동으로 고치고 알려 준다.
+  const notes = [];
   const willShow = item.visibility === 'public' && item.status !== 'draft';
-  // 공개 증빙의 개인정보 확인은 공개될 때만 저장을 막는다(초안·비공개는 나중에 확인해도 됨)
-  if (item.kind === 'project' && willShow) {
-    const unchecked = (item.data.evidence || []).filter(ev => ev.public && !ev.piiChecked);
-    if (unchecked.length) errs.push(`공개 증빙 ‘${unchecked[0].title}’에 ‘제3자 개인정보 없음 확인’을 체크하세요. (지금 확인이 어렵다면 공개 상태를 ‘초안’으로 두고 저장하세요.)`);
+  if (item.kind === 'project') {
+    const d = item.data;
+    // 주소용 이름: 형식이 틀리면 고치고, 겹치면 뒤에 번호를 붙인다
+    const fixed = d.slug && !/^[a-z0-9-]+$/.test(d.slug) ? slugify(d.slug) : (d.slug || slugify(d.title));
+    let slug = fixed, n = 2;
+    const taken = x => S.items.some(i => i.kind === 'project' && i.id !== item.id && i.data.slug === x);
+    while (taken(slug)) slug = `${fixed}-${n++}`;
+    if (d.slug && slug !== d.slug) notes.push(`주소용 이름을 ‘${slug}’로 바꿨습니다`);
+    d.slug = slug;
+    // 대표 프로젝트는 3개까지: 넘치면 대표 지정만 빼고 저장
+    if (d.featured && S.items.filter(i => i.kind === 'project' && i.id !== item.id && i.data.featured).length >= 3) {
+      d.featured = false; delete d.featuredOrder;
+      notes.push('대표 프로젝트가 이미 3개라 대표 지정은 빼고 저장했습니다');
+    }
+    // 개인정보 확인을 안 한 공개 증빙은 비공개로 두고 저장(공개 사이트에 바로 나가지 않게)
+    if (willShow) {
+      const unchecked = (d.evidence || []).filter(ev => ev.public && !ev.piiChecked);
+      unchecked.forEach(ev => { ev.public = false; });
+      if (unchecked.length) notes.push(`‘제3자 개인정보 없음 확인’을 안 한 증빙 ${unchecked.length}개는 비공개로 저장했습니다`);
+    }
   }
   const box = panel.querySelector('#errs');
-  if (errs.length) {
-    box.innerHTML = `<div class="errors" role="alert" tabindex="-1"><b>저장하지 못했습니다</b><ul>${errs.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`;
-    box.firstElementChild.focus();
-    return;
-  }
-  if (missing.length && willShow && item.kind !== 'profile') {
-    const v = await dialog({
-      title: '아직 채우지 않은 칸이 있어요',
-      body: `<ul>${missing.map(m => `<li>${esc(m)}</li>`).join('')}</ul><p class="small">‘초안으로 저장’하면 공개 사이트에는 보이지 않고, 다 채운 뒤 공개 상태를 ‘완성’으로 바꾸면 나타납니다.</p>`,
-      buttons: [{ label: '취소', value: null }, { label: '그대로 공개 저장', value: 'publish' }, { label: '초안으로 저장', value: 'draft', primary: true }],
-    });
-    if (!v) return;
-    if (v === 'draft') item.status = 'draft';
-  }
-  box.innerHTML = '';
+  if (box) box.innerHTML = '';
   if (item.visibility === 'public') {
     const pii = piiWarnings(item);
     if (pii.length && !(await ask('개인정보가 있는 것 같습니다', `<p>공개 내용에 <b>${esc(pii.join(', '))}</b>로 보이는 값이 있습니다. 포트폴리오에는 넣지 않는 것이 원칙입니다. 그래도 저장할까요?</p>`, '그래도 저장'))) return;
@@ -636,9 +638,10 @@ async function save(panel, draftKey) {
     api.store.del(draftKey);
     S.dirty = false;
     S.editing = item.kind === 'profile' ? structuredClone(saved) : null;
-    if (restoreReturn(saved)) { toast('저장했습니다. 원래 편집 화면으로 돌아왔습니다.'); return; }
+    const msg = ['저장했습니다.', ...notes.map(x => x + '.')].join(' ');
+    if (restoreReturn(saved)) { toast(msg + ' 원래 편집 화면으로 돌아왔습니다.'); return; }
     renderShell();
-    toast(missing.length ? `저장했습니다. 아직 빈 칸 ${missing.length}개: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? ' 외' : ''}` : '저장했습니다.');
+    toast(msg);
   };
   try { await persist(false); }
   catch (err) {
