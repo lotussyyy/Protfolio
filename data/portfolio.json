@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "exportedAt": "2026-11-10T01:57:01.246Z",
-  "checkedAt": "2026-11-10T01:57:01.246Z",
+  "exportedAt": "2026-11-10T17:57:50.118Z",
+  "checkedAt": "2026-11-10T17:57:50.118Z",
   "items": [
     {
       "id": "a8c23f0c-e424-4f4e-9e4c-5ac1459018ab",
@@ -368,49 +368,32 @@
       "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
-      "id": "b6ee8d32-57cf-4e61-ba81-66d2a6881720",
-      "kind": "certificate",
+      "id": "11e1ee8b-6cd1-4208-95ff-2ea9847e0407",
+      "kind": "tool",
       "data": {
-        "date": "2024-08",
-        "name": "컴퓨터활용능력 2급",
-        "issuer": "대한상공회의소",
-        "status": "취득"
+        "name": "KDC 6판",
+        "category": "목록·분류"
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
-      "sort": 26,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "isSample": false,
+      "sort": 30,
+      "updatedAt": "2026-11-10T17:47:58.468842+00:00"
     },
     {
       "id": "f8292dc3-a779-477f-a5f7-e3716843efe7",
       "kind": "certificate",
       "data": {
-        "date": "2025-02",
-        "name": "한국사능력검정시험 2급",
-        "issuer": "국사편찬위원회",
+        "date": "2024-07",
+        "name": "독서지도사 1급",
+        "issuer": "대한자격검정평가원",
         "status": "취득"
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
+      "isSample": false,
       "sort": 27,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "ed9a85ed-acc7-45f2-8fcc-5ce84b6a8b31",
-      "kind": "language",
-      "data": {
-        "date": "2025-05",
-        "test": "TOEIC",
-        "score": "850",
-        "scorePublic": true
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 28,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "updatedAt": "2026-11-10T16:41:48.466681+00:00"
     },
     {
       "id": "85251e5b-d76a-458f-a516-1d819b4ec404",
@@ -421,22 +404,9 @@
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
+      "isSample": false,
       "sort": 29,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "11e1ee8b-6cd1-4208-95ff-2ea9847e0407",
-      "kind": "tool",
-      "data": {
-        "name": "KDC 6판",
-        "category": "목록·분류"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 30,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "updatedAt": "2026-11-10T17:47:52.938502+00:00"
     },
     {
       "id": "c3b0e9a9-69fd-4ca7-ab89-dca5df6031ad",
@@ -447,9 +417,23 @@
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
+      "isSample": false,
       "sort": 31,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "updatedAt": "2026-11-10T17:48:05.199471+00:00"
+    },
+    {
+      "id": "ed9a85ed-acc7-45f2-8fcc-5ce84b6a8b31",
+      "kind": "language",
+      "data": {
+        "date": "2025-05",
+        "test": "TOEIC",
+        "scorePublic": false
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 28,
+      "updatedAt": "2026-11-10T17:48:48.915738+00:00"
     },
     {
       "id": "d3697426-3bc6-4330-8e9e-4f51bca28858",
@@ -601,246 +585,234 @@
       "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
-      "id": "ae6027ad-7a2a-4213-b78e-5a126e20abfa",
-      "kind": "education",
-      "data": {
-        "gpa": 4.12,
-        "note": "졸업 논문: 공공도서관 지역 자료 메타데이터 품질 분석",
-        "major": "문헌정보학과",
-        "minor": "",
-        "gpaMax": 4.5,
-        "school": "○○대학교",
-        "status": "졸업 예정",
-        "endDate": "2027-02",
-        "gpaPublic": true,
-        "startDate": "2023-03"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 14,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "5531172a-b517-4656-af6f-ddafd826d01c",
-      "kind": "experience",
-      "data": {
-        "endDate": "2025-12",
-        "position": "근로장학생",
-        "startDate": "2024-03",
-        "description": "대출·반납 데스크, 서가 정리, 참고데스크 보조, 학술DB 검색 교육 보조",
-        "organization": "○○대학교 중앙도서관",
-        "employmentType": "근로장학생"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 16,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "355f898c-456c-45d2-a145-b785a7dc9711",
-      "kind": "experience",
-      "data": {
-        "endDate": "2025-08",
-        "position": "어린이자료실 방학 기간 근무",
-        "startDate": "2025-07",
-        "description": "어린이자료실 운영 보조, 여름 독서교실 진행",
-        "organization": "○○시립도서관",
-        "employmentType": "계약직"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 17,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "abffdd07-38fd-4abd-85e9-5bf89610d696",
-      "kind": "activity",
-      "data": {
-        "role": "실습생",
-        "type": "현장실습",
-        "hours": 160,
-        "title": "□□구립도서관 현장실습",
-        "endDate": "2025-01",
-        "startDate": "2024-12",
-        "organization": "□□구립도서관"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 18,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "6c226138-633e-4b38-939a-1bcdc62e08f0",
-      "kind": "activity",
-      "data": {
-        "role": "실습생",
-        "type": "현장실습",
-        "hours": 80,
-        "title": "대학 기록관 현장실습",
-        "endDate": "2025-07",
-        "startDate": "2025-06",
-        "organization": "○○대학교 기록관"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 19,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "a513e0ce-2416-4b51-b7cd-c6edd63c70b9",
-      "kind": "activity",
-      "data": {
-        "role": "회장(2024)",
-        "type": "동아리",
-        "hours": 120,
-        "title": "메타데이터 학술 동아리",
-        "endDate": "2025-06",
-        "startDate": "2023-09",
-        "organization": "○○대학교 문헌정보학과"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 20,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "10bdce6d-e6f0-49c3-b1bb-5c3e77624369",
-      "kind": "activity",
-      "data": {
-        "role": "그림책 읽어주기",
-        "type": "봉사",
-        "hours": 48,
-        "title": "작은도서관 독서 봉사",
-        "endDate": "2024-11",
-        "startDate": "2024-03",
-        "organization": "△△동 작은도서관"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 21,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
-      "id": "837177fd-73f4-4c55-a28a-3e2d35e3e4e1",
-      "kind": "activity",
-      "data": {
-        "role": "SNS 콘텐츠 제작",
-        "type": "대외활동",
-        "hours": 40,
-        "title": "도서관 홍보 서포터즈",
-        "endDate": "2025-08",
-        "startDate": "2025-03",
-        "organization": "○○문화재단"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 22,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
       "id": "2b8680d4-71c6-486a-a9d4-50e937f06cd1",
       "kind": "award",
       "data": {
         "date": "2024-11",
-        "rank": "우수상",
-        "title": "문헌정보학과 학술제",
-        "issuer": "○○대학교 문헌정보학과"
+        "rank": "최우수상",
+        "title": "2024학년도 비교과를 알아보자 UCC 공모전",
+        "issuer": "대구대학교 교양교육센터",
+        "relatedProjects": []
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
+      "isSample": false,
       "sort": 23,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "updatedAt": "2026-11-10T16:07:29.880163+00:00"
     },
     {
       "id": "9c26d652-3909-4c41-a026-f0ed440d0ef9",
       "kind": "award",
       "data": {
-        "date": "2025-10",
-        "rank": "장려상",
-        "title": "도서관 이용 활성화 아이디어 공모전",
-        "issuer": "○○시 도서관사업소"
+        "date": "2024-12",
+        "rank": "대상",
+        "title": "DU북클럽",
+        "issuer": "대구대학교 학술정보원",
+        "relatedProjects": []
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
+      "isSample": false,
       "sort": 24,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "updatedAt": "2026-11-10T16:08:54.513529+00:00"
+    },
+    {
+      "id": "a513e0ce-2416-4b51-b7cd-c6edd63c70b9",
+      "kind": "activity",
+      "data": {
+        "role": "한국어 교육",
+        "type": "교내 활동",
+        "hours": null,
+        "title": "외국인 유학생  한국어 학습지원  튜터링 프로그램",
+        "endDate": "2024-05",
+        "startDate": "2024-04",
+        "organization": "대구대학교 국제처",
+        "relatedProjects": []
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 20,
+      "updatedAt": "2026-11-10T16:36:28.732344+00:00"
+    },
+    {
+      "id": "10bdce6d-e6f0-49c3-b1bb-5c3e77624369",
+      "kind": "activity",
+      "data": {
+        "role": "학과 SNS 운영, 홍보물 제작, 학과 게시판 관리",
+        "type": "학과 학생회",
+        "hours": null,
+        "title": "새론학생회",
+        "endDate": "2024-03",
+        "startDate": "2023-03",
+        "organization": "대구대학교 문헌정보학과",
+        "relatedProjects": []
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 21,
+      "updatedAt": "2026-11-10T16:33:48.340747+00:00"
+    },
+    {
+      "id": "6c226138-633e-4b38-939a-1bcdc62e08f0",
+      "kind": "activity",
+      "data": {
+        "role": "보고서 작성",
+        "type": "대외활동",
+        "hours": null,
+        "title": "2024 미래도서관  정책 아이디어  해커톤대회",
+        "endDate": "2024-02",
+        "startDate": "2024-01",
+        "organization": "국립중앙도서관 - 문화체육 관광부,  국가도서관 위원회",
+        "relatedProjects": []
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 19,
+      "updatedAt": "2026-11-10T16:38:39.042433+00:00"
+    },
+    {
+      "id": "5531172a-b517-4656-af6f-ddafd826d01c",
+      "kind": "experience",
+      "data": {
+        "endDate": "2025-02",
+        "position": "근로 장학생",
+        "startDate": "2024-03",
+        "description": "DVD 대출·반납 업무, 스터디룸 예약 관리 및 시설 운영 보조, 도서관 이용자 문의 응대 및 안내, 열람 공간 및 휴게 공간 정돈, 도서관 비품 및 재고 관리, 도서관 행사 운영 보조, 도서 전시 및 북큐레이션 기획·제작",
+        "organization": "대구대학교 학술정보원",
+        "employmentType": "근로장학생",
+        "relatedProjects": []
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 16,
+      "updatedAt": "2026-11-10T16:40:00.109687+00:00"
     },
     {
       "id": "a026a6a7-266f-4d24-beb4-521dbe0d5869",
       "kind": "certificate",
       "data": {
-        "date": "2027-02",
+        "date": "2027-08",
         "name": "정사서 2급",
-        "issuer": "국립중앙도서관",
+        "issuer": "대구대학교",
         "status": "예정"
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
+      "isSample": false,
       "sort": 25,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "updatedAt": "2026-11-10T16:41:44.158985+00:00"
     },
     {
-      "id": "52c6b3ca-efbf-4872-bf3d-e7a721e72c20",
-      "kind": "tool",
+      "id": "ae6027ad-7a2a-4213-b78e-5a126e20abfa",
+      "kind": "education",
       "data": {
-        "name": "더블린 코어",
-        "category": "목록·분류"
+        "note": "",
+        "major": "문헌정보학과",
+        "minor": "",
+        "school": "대구대학교",
+        "status": "재학",
+        "endDate": "2027-08",
+        "gpaPublic": false,
+        "startDate": "2022-03",
+        "relatedProjects": []
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
-      "sort": 32,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "isSample": false,
+      "sort": 14,
+      "updatedAt": "2026-11-10T15:01:01.202839+00:00"
     },
     {
-      "id": "23fe2fa5-e74d-40db-93d6-622df40bb0c3",
-      "kind": "tool",
+      "id": "a502b469-cb4f-46aa-96f7-dce6d63f12fd",
+      "kind": "education",
       "data": {
-        "name": "KOLAS III",
-        "category": "시스템"
+        "note": "",
+        "major": "",
+        "minor": "",
+        "school": "양구여자고등학교",
+        "status": "졸업",
+        "endDate": "2022-02",
+        "gpaPublic": false,
+        "startDate": "2019-03",
+        "relatedProjects": [
+          "44b56ade-88fa-4007-865c-9f3c3a9dbec0"
+        ]
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
-      "sort": 33,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "isSample": false,
+      "sort": 15,
+      "updatedAt": "2026-11-10T15:18:43.035358+00:00"
     },
     {
-      "id": "3c1f0f94-f445-446f-9803-da4c9a58431a",
-      "kind": "tool",
+      "id": "9e131b94-eaa2-4e30-ad8f-c0b694905952",
+      "kind": "award",
       "data": {
-        "name": "DSpace",
-        "category": "시스템"
+        "date": "2024-12",
+        "rank": "대상",
+        "title": "학술정보원 도서관 홍보전",
+        "issuer": "대구대학교 학술정보원",
+        "relatedProjects": []
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
-      "sort": 34,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "isSample": false,
+      "sort": 25,
+      "updatedAt": "2026-11-10T16:09:29.866856+00:00"
     },
     {
-      "id": "1d16468a-4cf8-4fa4-9f33-5ec70e6d82ee",
-      "kind": "tool",
+      "id": "5476392f-da13-4adf-a7c7-3afe691e0890",
+      "kind": "award",
       "data": {
-        "name": "파이썬(pandas)",
-        "category": "데이터"
+        "date": "2023-12",
+        "rank": "최우수상",
+        "title": "2023학년도 <비교과를 알아보자!> 비교과 UCC 공모전",
+        "issuer": "대구대학교 학술정보원",
+        "relatedProjects": []
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
-      "sort": 35,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "isSample": false,
+      "sort": 26,
+      "updatedAt": "2026-11-10T16:27:38.982982+00:00"
+    },
+    {
+      "id": "837177fd-73f4-4c55-a28a-3e2d35e3e4e1",
+      "kind": "activity",
+      "data": {
+        "role": "학과 SNS 운영, 홍보물 제작, 학과 게시판 관리",
+        "type": "학과 학생회",
+        "hours": null,
+        "title": "무구학생회",
+        "endDate": "2023-02",
+        "startDate": "2022-03",
+        "organization": "대구대학교 문헌정보학과",
+        "relatedProjects": []
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 22,
+      "updatedAt": "2026-11-10T16:32:41.341221+00:00"
+    },
+    {
+      "id": "a07e974c-2dfb-40e0-b8b0-dee29b70a3b4",
+      "kind": "certificate",
+      "data": {
+        "date": "2027-02",
+        "name": "컴퓨터활용능력 1급",
+        "issuer": "대한상공회의소",
+        "status": "예정"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 28,
+      "updatedAt": "2026-11-10T16:42:54.975148+00:00"
     },
     {
       "id": "c7c1c6c7-cc7b-43aa-8dd1-f21e09029672",
@@ -851,22 +823,22 @@
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
+      "isSample": false,
       "sort": 36,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "updatedAt": "2026-11-10T17:48:25.356207+00:00"
     },
     {
-      "id": "6c9b578d-bcda-499f-a796-b7c44d3f198c",
+      "id": "1d16468a-4cf8-4fa4-9f33-5ec70e6d82ee",
       "kind": "tool",
       "data": {
-        "name": "Canva",
-        "category": "문서·디자인"
+        "name": "파이썬(pandas)",
+        "category": "데이터"
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
-      "sort": 37,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
+      "isSample": false,
+      "sort": 35,
+      "updatedAt": "2026-11-10T17:48:37.742864+00:00"
     },
     {
       "id": "ebbe21b5-1d8c-47ac-8cc2-6dba1429683e",
@@ -881,13 +853,13 @@
           "email": "codus02325@gmail.com",
           "links": [
             {
-              "url": "https://example.com/blog",
-              "label": "블로그",
+              "url": "https://github.com/lotussyyy",
+              "label": "GitHub",
               "public": true
             },
             {
-              "url": "https://github.com/example",
-              "label": "GitHub",
+              "url": "https://blog.naver.com/lotussyyy",
+              "label": "블로그",
               "public": true
             }
           ]
@@ -920,31 +892,9 @@
       },
       "visibility": "public",
       "status": "published",
-      "isSample": true,
-      "sort": 0,
-      "updatedAt": "2026-11-09T01:42:39.891881+00:00"
-    },
-    {
-      "id": "a502b469-cb4f-46aa-96f7-dce6d63f12fd",
-      "kind": "education",
-      "data": {
-        "note": "",
-        "major": ".",
-        "minor": "",
-        "school": "양구여자고등학교",
-        "status": "졸업",
-        "endDate": "2022-02",
-        "gpaPublic": false,
-        "startDate": "2019-03",
-        "relatedProjects": [
-          "44b56ade-88fa-4007-865c-9f3c3a9dbec0"
-        ]
-      },
-      "visibility": "public",
-      "status": "published",
       "isSample": false,
-      "sort": 15,
-      "updatedAt": "2026-11-09T02:25:21.679603+00:00"
+      "sort": 0,
+      "updatedAt": "2026-11-10T17:35:53.025253+00:00"
     }
   ]
 }
