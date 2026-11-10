@@ -14,7 +14,7 @@ as $$ select exists (select 1 from public.site_owner where id = auth.uid()) $$;
 -- 2) 모든 콘텐츠: 프로필·이력·역량·프로젝트를 한 표에 (kind로 구분)
 create table if not exists public.items (
   id uuid primary key default gen_random_uuid(),
-  kind text not null check (kind in ('profile','education','experience','activity','award','certificate','language','tool','project','competency')),
+  kind text not null check (kind in ('profile','education','experience','activity','award','certificate','language','tool','project','competency','book')),
   data jsonb not null default '{}'::jsonb,
   visibility text not null default 'private' check (visibility in ('public','private')),
   status text not null default 'published' check (status in ('published','draft')),

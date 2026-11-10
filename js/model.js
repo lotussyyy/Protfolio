@@ -135,6 +135,21 @@ export const KINDS = {
       { key: 'featuredOrder', label: '대표 순서(1~3)', type: 'number' },
     ],
   },
+  book: {
+    label: '서평', section: 'books',
+    title: d => d.title,
+    fields: [
+      { key: 'title', label: '책 제목', type: 'text' },
+      { key: 'author', label: '지은이', type: 'text' },
+      { key: 'publisher', label: '출판사', type: 'text' },
+      { key: 'year', label: '출간 연도', type: 'number' },
+      { key: 'kdc', label: 'KDC 분류기호', type: 'text' },
+      { key: 'intro', label: '소개(책 내용 요약)', type: 'textarea' },
+      { key: 'toc', label: '목차(한 줄에 하나)', type: 'lines' },
+      { key: 'review', label: '서평(나의 감상·추천 이유)', type: 'textarea' },
+      { key: 'readDate', label: '읽은 때(YYYY-MM)', type: 'text' },
+    ],
+  },
   competency: {
     label: '역량', section: 'competencies',
     title: d => d.name,

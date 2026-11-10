@@ -122,12 +122,12 @@ async function reload() {
 // ---------- 레이아웃 ----------
 const TAB_ICONS = {
   profile: 'user', project: 'folder', education: 'graduation', experience: 'briefcase', activity: 'users', award: 'award',
-  certificate: 'certificate', language: 'language', tool: 'wrench', competency: 'target', stats: 'chart', backup: 'database',
+  certificate: 'certificate', language: 'language', tool: 'wrench', competency: 'target', book: 'book', stats: 'chart', backup: 'database',
 };
 const SB_KEY = 'lis-sb-admin';
 const TABS = [
   ['기본', [['profile', '프로필']]],
-  ['프로젝트', [['project', '프로젝트']]],
+  ['프로젝트', [['project', '프로젝트'], ['book', '서평']]],
   ['이력', RESUME_KINDS.map(k => [k, KINDS[k].label])],
   ['설정', [['competency', '역량·직무'], ['stats', '방문 통계'], ['backup', '백업·설정']]],
 ];
@@ -406,7 +406,7 @@ function profileFormHTML(item) {
     <div class="fld"><span class="lbl">링크(블로그·GitHub 등)</span><div class="rep" data-rep="link">${(c.links || []).map(linkRow).join('')}</div><button type="button" class="btn small" data-add="link">+ 링크 추가</button></div>
     <div class="fld"><span class="lbl">관심 분야(최대 4개)</span><div class="rep" data-rep="interest">${(d.interests || []).map(interestRow).join('')}</div><button type="button" class="btn small" data-add="interest">+ 관심 분야 추가</button></div>
     ${up('photo', '프로필 사진', 'image/jpeg,image/png,image/webp')}
-    ${up('cover', '커버 이미지(비우면 회색)', 'image/jpeg,image/png,image/webp')}
+    ${up('cover', '첫 화면 이미지(비우면 프로필 사진, 둘 다 없으면 기본 그림)', 'image/jpeg,image/png,image/webp')}
     ${up('resumeFile', '이력서 PDF', 'application/pdf', '연락처·주소를 뺀 공개용 판본을 올리세요.')}
     <div class="fld checks"><label><input type="checkbox" data-p="resumePublic" ${d.resumePublic !== false ? 'checked' : ''}> 이력서 다운로드 버튼 공개</label></div>`;
 }
@@ -649,6 +649,10 @@ async function save(panel, draftKey) {
       const v = await dialog({ title: '다른 기기에서 수정된 항목', body: '<p>편집을 시작한 뒤 다른 기기에서 이 항목이 저장되었습니다. 지금 내용으로 덮어쓸까요, 아니면 다른 기기의 내용을 불러올까요?</p>', buttons: [{ label: '다시 불러오기', value: 'reload' }, { label: '덮어쓰기', value: 'force', primary: true }] });
       if (v === 'force') { try { await persist(true); } catch (e2) { toast('저장하지 못했습니다: ' + e2.message); } }
       if (v === 'reload') { await reload(); S.editing = structuredClone(S.items.find(x => x.id === item.id)) || null; S.dirty = false; renderShell(); }
+      return;
+    }
+    if (/items_kind_check/.test(err.message || '')) {
+      await dialog({ title: '서평 저장 준비가 필요합니다', body: '<p>Supabase 대시보드 → SQL Editor에서 저장소의 <code>supabase/migrations_002_books.sql</code> 내용을 붙여 넣고 Run을 한 번 누르세요. 그다음 다시 저장하면 됩니다.</p>', buttons: [{ label: '확인', value: 'ok', primary: true }] });
       return;
     }
     toast('저장하지 못했습니다: ' + (err.message || err));

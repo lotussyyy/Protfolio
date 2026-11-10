@@ -50,6 +50,10 @@ python3 -m http.server 8000
 > 메뉴 이름은 Supabase 화면 개편에 따라 조금 다를 수 있습니다.
 > Supabase 보안 점검(Advisors)이 `public_items` 뷰를 ‘security definer view’로 표시할 수 있습니다. 공개 항목만 골라 보여 주려고 의도한 설정입니다.
 
+### 3-1. 서평 기능 켜기 (이미 Supabase를 연결했다면 한 번만)
+
+`supabase/migrations_002_books.sql` 내용을 Supabase → SQL Editor에 붙여 넣고 **Run**을 누르세요. 이 작업 전에 서평을 저장하면 관리 화면이 안내 창을 띄웁니다. 처음부터 `schema.sql`로 만든 경우에는 필요 없습니다.
+
 ## 4. 매일 자동 스냅샷 (무료 요금제 일시정지 대비)
 
 Supabase 무료 프로젝트는 일주일 동안 사용이 적으면 일시정지됩니다. 매일 한 번 공개 데이터를 읽어 `data/portfolio.json`에 저장하는 작업이 들어 있어, 접속을 유지하고 DB에 접속하지 못할 때 방문자에게 보여 줄 대체 데이터를 만듭니다.

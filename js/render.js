@@ -9,8 +9,8 @@ export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;'
 const sample = it => (it?.isSample ? '<span class="badge" title="예시 데이터">예시</span>' : '');
 const icons = { file: '📄', image: '🖼️', link: '🔗' };
 const SEC = [
-  ['sec-about', '소개', 'user'], ['sec-summary', '한눈에 보기', 'grid'], ['sec-resume', '이력', 'timeline'],
-  ['sec-featured', '대표 프로젝트', 'star'], ['projects', '전체 프로젝트', 'folder'],
+  ['sec-about', '소개', 'user'], ['sec-skills', '할 수 있는 일', 'target'], ['sec-summary', '한눈에 보기', 'grid'], ['sec-resume', '이력', 'timeline'],
+  ['sec-featured', '대표 프로젝트', 'star'], ['projects', '전체 프로젝트', 'folder'], ['sec-books', '서평', 'book'],
 ];
 
 // Split Text: 이름을 글자 단위로 나눠 차례로 떠오르게
@@ -50,6 +50,29 @@ export function showToast(msg) {
 const COMP_ICON = { organization: 'timeline', reference: 'search', instruction: 'users', program: 'star', collection: 'book', archives: 'database', digital: 'chart' };
 const CARD_ICON = { education: 'graduation', experience: 'briefcase', activity: 'users', award: 'award', certificate: 'certificate', tool: 'wrench' };
 
+// Hero 이미지가 없을 때 쓰는 그림: 서가와 펼친 책(선이 그려지는 Line Drawing)
+// 첫 화면 배경(Parallax 뒤층): 점 격자 + 옅은 서가 선. 장식이므로 스크린리더에서 숨긴다
+function heroBackdrop() {
+  const spines = [[40, 70, 18], [62, 50, 14], [80, 86, 22], [106, 60, 12], [700, 40, 20], [724, 76, 16], [744, 56, 24], [772, 90, 14]];
+  return `<svg class="hero-bd" viewBox="0 0 820 520" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-width="1.5">
+    <circle cx="640" cy="120" r="150"/><circle cx="140" cy="430" r="110"/>
+    ${spines.map(([x, h, w]) => `<rect x="${x}" y="${300 - h}" width="${w}" height="${h + 160}" rx="3"/>`).join('')}
+    <path d="M20 460h200M680 460h130"/>
+  </svg>`;
+}
+function heroIllustration() {
+  const books = [[40, 70, 24], [68, 52, 18], [90, 82, 26], [120, 60, 20], [144, 74, 16], [164, 48, 22], [190, 66, 18], [212, 88, 24], [240, 58, 20]];
+  const d = i => `style="--d:${(0.6 + i * 0.07).toFixed(2)}s"`;
+  return `<svg class="hero-ill" viewBox="0 0 300 300" role="img" aria-label="서가와 펼친 책 그림" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="22" y="40" width="256" height="220" rx="14" class="frame" />
+    ${books.map(([x, h, w], i) => `<rect class="draw" pathLength="1" ${d(i)} x="${x}" y="${150 - h}" width="${w}" height="${h}" rx="3"/>`).join('')}
+    <path class="draw" pathLength="1" ${d(9)} d="M34 150h232"/>
+    <path class="draw" pathLength="1" ${d(10)} d="M150 236c-22-14-50-16-78-12v-48c28-4 56-2 78 12 22-14 50-16 78-12v48c-28-4-56-2-78 12z"/>
+    <path class="draw" pathLength="1" ${d(11)} d="M150 188v48"/>
+    <path class="draw" pathLength="1" ${d(12)} d="M86 192c16-2 32 0 46 6M86 206c16-2 32 0 46 6M168 198c14-6 30-8 46-6M168 212c14-6 30-8 46-6"/>
+  </svg>`;
+}
+
 function initials(name) { return esc((name || '?').trim().slice(0, 1)); }
 function kb(n) { return n > 1048576 ? (n / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(n / 1024)) + 'KB'; }
 function host(u) { try { return new URL(u).hostname; } catch { return ''; } }
@@ -78,21 +101,26 @@ export function mountPortfolio(root, items, opts = {}) {
   const contacts = p.contacts || {};
   const roleTags = (p.primaryRoles || []).map(r => ROLES.find(x => x.id === r)?.name).filter(Boolean);
   const nameEnd = +(0.12 + [...(p.name || '이름을 입력하세요')].length * 0.06 + 0.12).toFixed(2);
+  const heroImg = p.cover || p.photo || '';
   const featuredTarget = items.some(i => i.kind === 'project' && i.data.featured) ? 'sec-featured' : 'projects';
   const profileHTML = `
-    <div class="cover" ${p.cover ? `style="background-image:url('${esc(p.cover)}')"` : ''} role="presentation"></div>
     <div class="page">
       <section class="hero" aria-labelledby="h-name">
-        <div class="avatar" data-rise style="--d:0s">${p.photo ? `<img src="${esc(p.photo)}" alt="${esc(p.name)} 프로필 사진">` : initials(p.name)}</div>
-        ${roleTags.length ? `<p class="eyebrow" data-rise style="--d:.08s"><span class="dot" aria-hidden="true"></span>${esc(roleTags.join(' · '))}</p>` : ''}
-        <h1 class="name" id="h-name" aria-label="${esc(p.name || '이름을 입력하세요')}">${splitChars(p.name || '이름을 입력하세요', 0.12)}${sample(prof)}</h1>
-        <p class="tagline" data-rise style="--d:${nameEnd}s">${esc(p.tagline || '')}</p>
-        ${p.headline ? `<div class="callout" data-rise style="--d:${(nameEnd + 0.1).toFixed(2)}s"><span class="icon" aria-hidden="true">💡</span><div>${esc(p.headline)}</div></div>` : ''}
-        <div class="cta" data-rise style="--d:${(nameEnd + 0.2).toFixed(2)}s">
-          <a class="btn primary" href="#${featuredTarget}" data-scroll="${featuredTarget}">${featuredTarget === 'sec-featured' ? '대표 프로젝트 보기' : '프로젝트 보기'} ${icon('arrow', 18)}</a>
-          ${contacts.email ? `<a class="btn" href="mailto:${esc(contacts.email)}">${icon('mail', 18)} 연락하기</a>` : ''}
-          ${p.resumeFile ? `<a class="btn" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>${icon('download', 18)} 이력서 PDF</a>` : ''}
+        <div class="hero-bg" aria-hidden="true"><div class="hero-bg-layer" data-px="bg">${heroBackdrop()}</div></div>
+        <div class="hero-text">
+          ${roleTags.length ? `<p class="eyebrow" data-rise style="--d:0s"><span class="dot" aria-hidden="true"></span>${esc(roleTags.join(' · '))}</p>` : ''}
+          <h1 class="name" id="h-name" aria-label="${esc(p.name || '이름을 입력하세요')}">${splitChars(p.name || '이름을 입력하세요', 0.12)}${sample(prof)}</h1>
+          <p class="tagline" data-rise style="--d:${nameEnd}s">${esc(p.tagline || '')}</p>
+          ${p.headline ? `<p class="lead" data-rise style="--d:${(nameEnd + 0.1).toFixed(2)}s">${esc(p.headline)}</p>` : ''}
+          <div class="cta" data-rise style="--d:${(nameEnd + 0.2).toFixed(2)}s">
+            <a class="btn primary" href="#${featuredTarget}" data-scroll="${featuredTarget}">${featuredTarget === 'sec-featured' ? '대표 프로젝트 보기' : '프로젝트 보기'} ${icon('arrow', 18)}</a>
+            ${contacts.email ? `<a class="btn" href="mailto:${esc(contacts.email)}">${icon('mail', 18)} 연락하기</a>` : ''}
+            ${p.resumeFile ? `<a class="btn" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>${icon('download', 18)} 이력서 PDF</a>` : ''}
+          </div>
         </div>
+        <figure class="hero-media" style="--d:${(nameEnd + 0.3).toFixed(2)}s">
+          <div class="px-fg" data-px="fg">${heroImg ? `<img src="${esc(heroImg)}" alt="${esc(p.cover ? (p.name || '') + ' 포트폴리오 대표 이미지' : (p.name || '') + ' 프로필 사진')}">` : heroIllustration()}</div>
+        </figure>
       </section>
       <div class="cols profile-block" data-reveal>
         <div>
@@ -111,10 +139,12 @@ export function mountPortfolio(root, items, opts = {}) {
         <h2 class="sec-title" id="h-about" data-reveal><span class="ico" aria-hidden="true">👋</span>소개</h2>
         <div data-reveal>${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}</div>
       </section>
+      <section id="sec-skills" aria-labelledby="h-skills"></section>
       <section id="sec-summary" aria-labelledby="h-summary"></section>
       <section id="sec-resume" aria-labelledby="h-resume"></section>
       <section id="sec-featured" aria-labelledby="h-featured"></section>
       <section id="projects" aria-labelledby="h-projects"></section>
+      <section id="sec-books" aria-labelledby="h-books"></section>
       <footer class="foot">
         <span>익명 방문 통계를 수집합니다(쿠키·IP 미수집).</span>
         <span>${opts.footerNote ? esc(opts.footerNote) + ' · ' : ''}${opts.adminHref ? `<a href="${esc(opts.adminHref)}">관리</a>` : ''}</span>
@@ -183,6 +213,43 @@ export function mountPortfolio(root, items, opts = {}) {
     c.style.transition = 'transform .5s var(--ease-back), box-shadow .3s';   // Spring처럼 제자리로
     c.style.transform = '';
   });
+
+  // ----- 할 수 있는 일: Bento Grid (핵심 역량은 큰 카드, 나머지는 작은 카드) -----
+  {
+    const projs = items.filter(i => i.kind === 'project');
+    const projsOf = cid => projs.filter(pr => pr.data.primarySkill === cid || (pr.data.skills || []).includes(cid));
+    const roleScore = c => Math.max(0, ...roles.map(r => ((c.data.roles || {})[r] === 'core' ? 2 : (c.data.roles || {})[r] === 'related' ? 1 : 0)));
+    const shown = comps.filter(c => projsOf(c.data.cid).length > 0 || roleScore(c) === 2)
+      .map((c, i) => ({ c, i, score: roleScore(c), n: projsOf(c.data.cid).length }))
+      .sort((x, y) => y.score - x.score || y.n - x.n || x.i - y.i).slice(0, 6);
+    // 큰 카드: 핵심 역량(직무 중요도 '핵심') 중 프로젝트가 많은 순으로 최대 2개. 카드가 4개 미만이면 큰 카드 없이 같은 크기
+    const nb = shown.length < 4 ? 0 : Math.min(shown.length === 6 ? 2 : 1, shown.filter(x => x.score === 2).length || 1);
+    const big = shown.slice(0, nb), small = shown.slice(nb);
+    // 4열 기준 빈칸 없이 채우기: 남는 칸 수에 따라 마지막 작은 카드를 넓힌다
+    const ns = small.length, r = nb ? ns % 4 : 0;
+    const dSize = j => (nb === 2 ? '' : r === 1 && j === ns - 1 ? ' full' : r === 2 && j >= ns - 2 ? ' wide' : r === 3 && j === ns - 1 ? ' wide' : '');
+    const tWide = j => (ns % 2 === 1 && j === ns - 1 ? ' t-wide' : '');   // 태블릿(2열)에서 홀수면 마지막 카드를 한 줄로
+    const card = ({ c, n }, cls, k) => {
+      const isBig = cls.includes('big');
+      const list = isBig ? projsOf(c.data.cid).slice(0, 3) : [];
+      return `<div class="svc-cell${cls}" data-reveal style="--d:${(k * 0.07).toFixed(2)}s">
+        <button type="button" class="svc-card" data-comp="${esc(c.data.cid)}" aria-label="${esc(c.data.name)}: ${esc(c.data.description || '')}. 관련 프로젝트 ${n}건 보기">
+          <span class="svc-ico">${icon(COMP_ICON[c.data.cid] || 'target', isBig ? 28 : 22)}</span>
+          <span class="svc-title">${esc(c.data.name)}${isBig ? '<span class="svc-core">핵심 역량</span>' : ''}</span>
+          <span class="svc-desc">${esc(c.data.description || '')}</span>
+          ${list.length ? `<span class="svc-list">${list.map(pr => `<span>${esc(pr.data.title || '')}</span>`).join('')}</span>` : ''}
+          <span class="svc-foot">${n ? `프로젝트 ${n}건` : '준비 중'} ${icon('arrow', 16)}</span>
+        </button></div>`;
+    };
+    if (shown.length) {
+      // 큰 카드 2개일 때(6장): 큰1 왼쪽 위, 큰2 오른쪽 아래로 엇갈리게 배치 (DOM 순서 = 큰1, 작은1·2, 큰2, 작은3·4)
+      const order = nb === 2 ? [[big[0], ' big b1'], [small[0], ' s1'], [small[1], ' s2'], [big[1], ' big b2'], [small[2], ' s3'], [small[3], ' s4']]
+        : [...big.map(x => [x, ' big']), ...small.map((x, j) => [x, dSize(j) + tWide(j)])];
+      $('#sec-skills').innerHTML = `<h2 class="sec-title" id="h-skills" data-reveal><span class="ico" aria-hidden="true">🧭</span>할 수 있는 일</h2>
+        <p class="sec-sub muted" data-reveal>희망 직무에서 핵심인 역량은 큰 카드로 보여 줍니다. 카드를 누르면 그 역량의 프로젝트로 이동합니다.</p>
+        <div class="svc${nb ? ' svc-bento' : ''}${nb === 2 ? ' two-big' : ''}">${order.map(([x, cls], k) => card(x, cls, k)).join('')}</div>`;
+    } else $('#sec-skills').hidden = true;
+  }
 
   // ----- 요약 카드 (F-2): Bento Grid -----
   // 첫 카드(학력)는 큰 칸, 나머지는 작은 칸. 카드 수에 맞춰 넓은 칸을 섞어 줄이 비지 않게 한다(4열 기준)
@@ -438,6 +505,15 @@ export function mountPortfolio(root, items, opts = {}) {
       drawList(); return;
     }
     if (e.target.closest('[data-theme-toggle]')) { toggleTheme(); return; }
+    const svc = e.target.closest('[data-comp]');
+    if (svc) {
+      Object.assign(st, { tab: svc.dataset.comp, type: '', year: '', q: '' });
+      $('#f-type').value = ''; $('#f-year').value = ''; $('#f-q').value = '';
+      drawList();
+      root.querySelector('#projects').scrollIntoView({ behavior: 'smooth' });
+      setActive('projects');
+      return;
+    }
     if (e.target.closest('[data-evidence]')) track('evidence', e.target.closest('[data-evidence]').dataset.evidence);
     if (e.target.closest('[data-resume]')) track('resume', 'resume');
     if (e.target.closest('[data-sb-toggle]')) toggleSidebar();
@@ -468,6 +544,57 @@ export function mountPortfolio(root, items, opts = {}) {
     const label = SEC.find(x => x[0] === id)?.[1] || '';
     const cur = $('#mcur'); if (cur) cur.textContent = label;
   }
+  // ----- 서평: 책마다 소개 · 목차 · 서평 Tabs (표시 막대가 미끄러지고 내용은 서서히 바뀜) -----
+  const books = items.filter(i => i.kind === 'book').sort((a, b) => (b.data.readDate || '').localeCompare(a.data.readDate || '') || (a.sort || 0) - (b.sort || 0));
+  if (books.length) {
+    const shade = t => { let h = 0; for (const ch of t || '') h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h % 4; };
+    const TAB = [['intro', '소개'], ['toc', '목차'], ['review', '서평']];
+    $('#sec-books').innerHTML = `<h2 class="sec-title" id="h-books" data-reveal><span class="ico" aria-hidden="true">📚</span>서평</h2>
+      <div class="books">${books.map((b, i) => {
+        const d = b.data, meta = [d.author, d.publisher, d.year].filter(Boolean).map(esc).join(' · ');
+        const body = {
+          intro: d.intro ? `<p>${esc(d.intro)}</p>` : '<p class="muted">소개가 없습니다.</p>',
+          toc: (d.toc || []).length ? `<ol class="toc">${d.toc.map(t => `<li>${esc(t)}</li>`).join('')}</ol>` : '<p class="muted">목차가 없습니다.</p>',
+          review: d.review ? `${d.review.split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('')}${d.readDate ? `<p class="muted small">${esc(fmtMonth(d.readDate))} 읽음</p>` : ''}` : '<p class="muted">서평이 없습니다.</p>',
+        };
+        return `<article class="book" data-reveal style="--d:${(i % 3 * 0.08).toFixed(2)}s">
+          <div class="book-head">
+            <div class="book-cover s${shade(d.title)}" aria-hidden="true"><span>${esc(d.title || '')}</span></div>
+            <div class="book-meta"><h3>${esc(d.title || '제목 없음')}${sample(b)}</h3>${meta ? `<p class="muted">${meta}</p>` : ''}${d.kdc ? `<span class="tag">KDC ${esc(d.kdc)}</span>` : ''}</div>
+          </div>
+          <div class="btabs" role="tablist" aria-label="${esc(d.title || '책')} 정보">
+            ${TAB.map(([k, l], j) => `<button type="button" role="tab" id="bt-${i}-${k}" aria-controls="bp-${i}-${k}" aria-selected="${j === 0}" tabindex="${j === 0 ? 0 : -1}">${l}</button>`).join('')}
+            <span class="btab-ink" aria-hidden="true"></span>
+          </div>
+          <div class="bpanels">${TAB.map(([k], j) => `<div class="bpanel${j === 0 ? ' on' : ''}" role="tabpanel" id="bp-${i}-${k}" aria-labelledby="bt-${i}-${k}" tabindex="0"${j ? ' aria-hidden="true"' : ''}>${body[k]}</div>`).join('')}</div>
+        </article>`;
+      }).join('')}</div>`;
+    const placeInk = tl => {
+      const on = tl.querySelector('[aria-selected="true"]'), ink = tl.querySelector('.btab-ink');
+      if (on && ink) { ink.style.width = on.offsetWidth + 'px'; ink.style.transform = `translateX(${on.offsetLeft}px)`; }
+    };
+    const selectTab = (btn, focus) => {
+      const tl = btn.closest('.btabs'), card = tl.closest('.book');
+      tl.querySelectorAll('[role="tab"]').forEach(t => { const on = t === btn; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
+      card.querySelectorAll('.bpanel').forEach(pn => { const on = pn.id === btn.getAttribute('aria-controls'); pn.classList.toggle('on', on); pn.setAttribute('aria-hidden', String(!on)); });
+      placeInk(tl);
+      if (focus) btn.focus();
+    };
+    const sb = $('#sec-books');
+    sb.addEventListener('click', e => { const t = e.target.closest('[role="tab"]'); if (t) selectTab(t); });
+    sb.addEventListener('keydown', e => {
+      const t = e.target.closest('[role="tab"]'); if (!t) return;
+      const tabs = [...t.parentElement.querySelectorAll('[role="tab"]')], k = tabs.indexOf(t);
+      const next = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: tabs.length - 1 }[e.key];
+      if (next === undefined) return;
+      e.preventDefault(); selectTab(tabs[(next + tabs.length) % tabs.length], true);
+    });
+    const tls = [...sb.querySelectorAll('.btabs')];
+    requestAnimationFrame(() => tls.forEach(placeInk));
+    if ('ResizeObserver' in window) { const ro = new ResizeObserver(() => tls.forEach(placeInk)); tls.forEach(t => ro.observe(t)); }
+    document.fonts?.ready.then(() => tls.forEach(placeInk));
+  } else $('#sec-books').hidden = true;
+
   // 내용이 없는 섹션은 메뉴에서도 뺀다
   SEC.forEach(([id]) => { const sec = root.querySelector('#' + id); const link = root.querySelector(`[data-nav="${id}"]`); if (link) link.hidden = !sec || sec.hidden; });
   // 스크롤 위치에 맞춰 메뉴 강조
@@ -493,12 +620,28 @@ export function mountPortfolio(root, items, opts = {}) {
   }
   reveal(root);
 
+  // ----- Parallax Scrolling: 첫 화면 배경은 천천히(0.35배 늦게), 앞쪽 이미지는 더 빠르게 -----
+  const pxBg = $('[data-px="bg"]'), pxFg = $('[data-px="fg"]'), heroEl = $('.hero');
+  const parallax = () => {
+    if (!heroEl || !motionOn()) return;
+    const y = window.scrollY, h = heroEl.offsetTop + heroEl.offsetHeight;
+    if (y > h + 200) return;                                   // 첫 화면을 지나면 계산하지 않는다
+    const fgRate = matchMedia('(max-width: 1023px)').matches ? 0.08 : 0.2;
+    if (pxBg) pxBg.style.transform = `translate3d(0, ${(y * 0.35).toFixed(1)}px, 0)`;
+    if (pxFg) pxFg.style.transform = `translate3d(0, ${(-y * fgRate).toFixed(1)}px, 0)`;
+  };
+
   const topbar = $('#topbar');
   let ticking = false;
   const onScroll = () => {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(() => { topbar.classList.toggle('scrolled', window.scrollY > 4); ticking = false; });
+    requestAnimationFrame(() => {
+      topbar.classList.toggle('scrolled', window.scrollY > 4); parallax();
+      // 맨 아래까지 내리면 마지막 섹션(서평 등)을 강조
+      if (secEls.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) setActive(secEls[secEls.length - 1].id);
+      ticking = false;
+    });
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
