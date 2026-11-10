@@ -26,7 +26,7 @@ export const METRIC_KEYS = [
 
 const monthField = (key, label, required) => ({ key, label, type: 'month', required });
 
-// 이력 항목에 공통으로 붙는 필드
+// 활동 항목에만 붙는 필드(관련 프로젝트 연결)
 const related = { key: 'relatedProjects', label: '관련 프로젝트', type: 'projects' };
 
 export const KINDS = {
@@ -43,7 +43,6 @@ export const KINDS = {
       { key: 'gpaMax', label: '만점', type: 'number', step: '0.1' },
       { key: 'gpaPublic', label: '학점 공개', type: 'bool' },
       { key: 'note', label: '한 줄 메모(졸업 논문·주요 이수 과목)', type: 'text' },
-      related,
     ],
   },
   experience: {
@@ -55,7 +54,6 @@ export const KINDS = {
       { key: 'employmentType', label: '고용 형태', type: 'select', options: ['인턴', '근로장학생', '아르바이트', '계약직', '기타'], custom: true },
       monthField('startDate', '시작', true), monthField('endDate', '종료(비우면 진행 중)'),
       { key: 'description', label: '맡은 일(1~2줄)', type: 'textarea' },
-      related,
     ],
   },
   activity: {
@@ -79,7 +77,6 @@ export const KINDS = {
       { key: 'rank', label: '등급', type: 'text' },
       { key: 'issuer', label: '주최·수여 기관', type: 'text' },
       monthField('date', '수상일', true),
-      related,
     ],
   },
   certificate: {

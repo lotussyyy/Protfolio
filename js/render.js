@@ -118,7 +118,7 @@ export function mountPortfolio(root, items, opts = {}) {
     if (!list.length) return '';
     return `<h3 class="sub" id="${'sec-' + KINDS[kind].section}">${row.icon} ${KINDS[kind].label}</h3><ol class="timeline">${list.map(it => `
       <li class="tl"><div class="when">${row.when(it.data)}</div><div class="rail" aria-hidden="true"></div>
-      <div class="what">${row.what(it.data, sample(it))}${related(it.data)}</div></li>`).join('')}</ol>`;
+      <div class="what">${row.what(it.data, sample(it))}${kind === 'activity' ? related(it.data) : ''}</div></li>`).join('')}</ol>`;
   };
   const eduHTML = tl('education', {
     icon: '🎓', when: d => period(d.startDate, d.endDate),
