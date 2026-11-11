@@ -78,64 +78,62 @@ function heroBackdrop() {
     <path d="M20 460h200M680 460h130"/>
   </svg>`;
 }
-// 소개 옆 캐릭터: 긴 흑갈색 웨이브 머리·앞머리, 남색 V넥 니트 + 줄무늬 셔츠. 책을 안고 손을 흔들며 인사(3D 느낌 음영)
+// 소개 옆 캐릭터: 3D 토이 피규어 스타일 정면 흉상(치비 비율, 무표정, 눈썹·아이라인 없음).
+// 사진 기준: 흰 단색 배경, 밝은 피부, 흑갈색 긴 생머리·시스루 앞머리(젤리 레진 질감), 남색 V넥 니트 + 흰 셔츠 깃(무늬 없음, 래커 광택). 글자 없음
 function aboutCharacter() {
-  return `<svg class="me-char" viewBox="0 30 320 370" role="img" aria-label="책을 안고 손을 흔들며 인사하는 캐릭터 그림">
+  return `<svg class="me-char" viewBox="0 0 300 360" role="img" aria-label="정면을 바라보는 3D 토이 피규어 스타일의 캐릭터 초상">
     <defs>
-      <radialGradient id="mc-skin" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#fff1e8"/><stop offset=".55" stop-color="#fbdccb"/><stop offset="1" stop-color="#eebda6"/></radialGradient>
-      <radialGradient id="mc-hand" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#ffece2"/><stop offset="1" stop-color="#efc0a9"/></radialGradient>
-      <linearGradient id="mc-hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3128"/><stop offset=".5" stop-color="#3a251d"/><stop offset="1" stop-color="#26170f"/></linearGradient>
-      <radialGradient id="mc-hairtop" cx="40%" cy="20%" r="80%"><stop offset="0" stop-color="#6b4a3c"/><stop offset=".45" stop-color="#432b21"/><stop offset="1" stop-color="#2b1a12"/></radialGradient>
-      <linearGradient id="mc-knit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a4a72"/><stop offset=".6" stop-color="#26335a"/><stop offset="1" stop-color="#1a2443"/></linearGradient>
-      <linearGradient id="mc-sleeve" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1f2a4c"/><stop offset=".5" stop-color="#3a4a72"/><stop offset="1" stop-color="#1f2a4c"/></linearGradient>
-      <linearGradient id="mc-book" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3f7a68"/><stop offset="1" stop-color="#244a3f"/></linearGradient>
-      <pattern id="mc-stripe" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fbfbfd"/><rect width="1.4" height="5" fill="#c9d3e6"/></pattern>
+      <radialGradient id="mc-skin" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#fbe6da"/><stop offset=".7" stop-color="#f6d6c5"/><stop offset="1" stop-color="#ecc2ad"/></radialGradient>
+      <linearGradient id="mc-hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f2a22"/><stop offset=".55" stop-color="#2f1d16"/><stop offset="1" stop-color="#22140e"/></linearGradient>
+      <radialGradient id="mc-hairglow" cx="50%" cy="30%" r="55%"><stop offset="0" stop-color="#8a604d" stop-opacity=".55"/><stop offset="1" stop-color="#8a604d" stop-opacity="0"/></radialGradient>
+      <linearGradient id="mc-knit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c3d66"/><stop offset="1" stop-color="#1b2645"/></linearGradient>
+      <radialGradient id="mc-iris" cx="50%" cy="55%" r="50%"><stop offset="0" stop-color="#7a4a30"/><stop offset=".6" stop-color="#4a2a1a"/><stop offset="1" stop-color="#24130b"/></radialGradient>
+      <radialGradient id="mc-ao" cx="50%" cy="0%" r="60%"><stop offset="0" stop-color="#b98a74" stop-opacity=".35"/><stop offset="1" stop-color="#b98a74" stop-opacity="0"/></radialGradient>
+      <filter id="mc-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
+      <clipPath id="mc-frame"><rect x="0" y="0" width="300" height="360" rx="22"/></clipPath>
     </defs>
-    <ellipse cx="160" cy="250" rx="140" ry="140" class="mc-halo"/>
-    <g class="mc-bubble">
-      <path d="M22 42h104a14 14 0 0 1 14 14v14a14 14 0 0 1-14 14H70l-12 12 2-12H22a14 14 0 0 1-14-14V56a14 14 0 0 1 14-14z" class="mc-bub"/>
-      <text x="74" y="69" text-anchor="middle" class="mc-bub-t">안녕하세요!</text>
+    <g clip-path="url(#mc-frame)">
+      <rect width="300" height="360" fill="#ffffff"/>
+      <ellipse cx="150" cy="352" rx="120" ry="14" fill="#000" opacity=".05"/>
+      <!-- 뒷머리 -->
+      <path d="M150 34C68 34 30 96 32 172c2 70-6 120 2 188h232c8-68 0-118 2-188 2-76-36-138-118-138z" fill="url(#mc-hair)"/>
+      <!-- 어깨·니트(무늬 없는 래커 광택) -->
+      <path d="M62 360c2-50 28-80 88-82 60 2 86 32 88 82z" fill="url(#mc-knit)"/>
+      <ellipse cx="100" cy="306" rx="22" ry="9" fill="#fff" opacity=".16" filter="url(#mc-soft)"/>
+      <ellipse cx="200" cy="306" rx="22" ry="9" fill="#fff" opacity=".16" filter="url(#mc-soft)"/>
+      <rect x="138" y="258" width="24" height="30" rx="10" fill="#e9bba5"/>
+      <path d="M134 282l16 30 16-30z" fill="#ffffff"/>
+      <path d="M138 279l-14 14 22 4zM162 279l14 14-22 4z" fill="#ffffff" stroke="#e4e7ee" stroke-width="1"/>
+      <path d="M131 284l19 36 19-36" fill="none" stroke="#3a4c7a" stroke-width="4" stroke-linejoin="round"/>
+      <!-- 큰 둥근 얼굴(볼이 통통한 넓은 얼굴, 작은 턱) -->
+      <path d="M150 66c74 0 106 52 104 112-2 56-44 92-104 92S48 234 46 178C44 118 76 66 150 66z" fill="url(#mc-skin)"/>
+      <ellipse cx="150" cy="150" rx="100" ry="26" fill="url(#mc-ao)"/>
+      <!-- 볼: 사진처럼 아주 옅게 -->
+      <ellipse cx="88" cy="226" rx="16" ry="9" fill="#f2a99b" opacity=".22"/><ellipse cx="212" cy="226" rx="16" ry="9" fill="#f2a99b" opacity=".22"/>
+      <!-- 큰 눈: 흰자 + 갈색 홍채(바깥이 짙고 가운데가 밝은 그라디언트) + 광택. 아이라인 없음 -->
+      ${[108, 192].map(x => `<g>
+        <ellipse cx="${x}" cy="196" rx="25" ry="27" fill="#ffffff"/>
+        <circle cx="${x}" cy="198" r="21.5" fill="url(#mc-iris)"/>
+        <circle cx="${x}" cy="199" r="9" fill="#140a06"/>
+        <ellipse cx="${x - 8}" cy="188" rx="7" ry="8" fill="#fff" opacity=".95"/>
+        <circle cx="${x + 9}" cy="209" r="3" fill="#fff" opacity=".7"/>
+        <path d="M${x - 19} 186a26 24 0 0 1 38 0" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>
+        <path d="M${x - 20} 166q20-10 40 0" fill="none" stroke="#e2b29c" stroke-width="1.2" opacity=".6"/>
+      </g>`).join('')}
+      <!-- 코: 아주 작은 홈 / 입: 거의 보이지 않는 선 -->
+      <path d="M147 230q3 3 6 0" fill="none" stroke="#dca58f" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M142 247h16" stroke="#d8a591" stroke-width="1.6" stroke-linecap="round" opacity=".75"/>
+      <!-- 앞머리(시스루, 젤리 레진: 속이 은은히 밝고 가장자리에 빛) -->
+      <path d="M46 176C42 98 90 46 150 46S258 98 254 176C250 168 242 160 232 156Q229 158 218 166Q207 158 204 150Q201 162 190 170Q179 162 176 146Q173 158 162 166Q153 158 150 142Q147 158 138 166Q127 158 124 146Q121 162 110 170Q99 162 96 150Q93 158 82 166Q71 158 68 156C58 160 50 168 46 176Z" fill="url(#mc-hair)"/>
+      <path d="M46 176C42 98 90 46 150 46S258 98 254 176C250 168 242 160 232 156Q229 158 218 166Q207 158 204 150Q201 162 190 170Q179 162 176 146Q173 158 162 166Q153 158 150 142Q147 158 138 166Q127 158 124 146Q121 162 110 170Q99 162 96 150Q93 158 82 166Q71 158 68 156C58 160 50 168 46 176Z" fill="url(#mc-hairglow)"/>
+      <path d="M150 48v40M118 56c-10 22-16 46-18 74M182 56c10 22 16 46 18 74" fill="none" stroke="#1a0f0a" stroke-width="1.4" opacity=".35"/>
+      <path d="M86 84c18-22 42-32 64-32s46 10 64 32" fill="none" stroke="#c99a84" stroke-width="5" stroke-linecap="round" opacity=".35" filter="url(#mc-soft)"/>
+      <!-- 옆머리: 얼굴을 감싸고 어깨 앞으로 -->
+      <path d="M48 150c-12 64-6 120-14 190 14 8 30 6 38-4-2-70 0-128-6-178z" fill="url(#mc-hair)"/>
+      <path d="M252 150c12 64 6 120 14 190-14 8-30 6-38-4 2-70 0-128 6-178z" fill="url(#mc-hair)"/>
+      <path d="M44 170c-6 56-4 110-8 160M256 170c6 56 4 110 8 160" fill="none" stroke="#a57a64" stroke-width="2" stroke-linecap="round" opacity=".45"/>
     </g>
-    <g class="mc-body">
-      <path d="M160 86c-66 0-100 50-98 116 2 58-16 110-8 160 4 30 22 50 40 50h132c18 0 36-20 40-50 8-50-10-102-8-160 2-66-32-116-98-116z" fill="url(#mc-hair)"/>
-      <path d="M74 400c2-70 30-112 86-116 56 4 84 46 86 116z" fill="url(#mc-knit)"/>
-      <rect x="147" y="232" width="26" height="40" rx="12" fill="#efc2ab"/>
-      <path d="M136 284l24 50 24-50-10-6-14 22-14-22z" fill="url(#mc-stripe)"/>
-      <path d="M146 278l-16 18 22 6zM174 278l16 18-22 6z" fill="#fbfbfd" stroke="#d5dbe8" stroke-width="1"/>
-      <path d="M132 286l28 56 28-56" fill="none" stroke="#4a5a84" stroke-width="5" stroke-linejoin="round"/>
-      <g transform="translate(0 12)">
-        <ellipse cx="160" cy="168" rx="66" ry="72" fill="url(#mc-skin)"/>
-        <ellipse cx="140" cy="132" rx="22" ry="12" fill="#fff" opacity=".35"/>
-        <g class="mc-eyes">
-          <ellipse cx="134" cy="184" rx="8.5" ry="10.5" fill="#3a2418"/><ellipse cx="186" cy="184" rx="8.5" ry="10.5" fill="#3a2418"/>
-          <circle cx="131" cy="180" r="3.2" fill="#fff"/><circle cx="183" cy="180" r="3.2" fill="#fff"/>
-          <circle cx="137" cy="189" r="1.4" fill="#fff" opacity=".8"/><circle cx="189" cy="189" r="1.4" fill="#fff" opacity=".8"/>
-          <path d="M124 182q9-12 20-3M176 179q11-9 20 3" fill="none" stroke="#2a1810" stroke-width="2.6" stroke-linecap="round"/>
-        </g>
-        <ellipse cx="120" cy="207" rx="12" ry="6.5" fill="#f3a39b" opacity=".45"/><ellipse cx="200" cy="207" rx="12" ry="6.5" fill="#f3a39b" opacity=".45"/>
-        <path d="M160 196q3 7-2 10" fill="none" stroke="#e0a58c" stroke-width="2" stroke-linecap="round"/>
-        <path d="M147 218q13 12 26 0q-13 5-26 0z" fill="#e57f76"/>
-        <path d="M95 186C88 128 116 90 160 90S232 128 225 186Q217 174 214 178Q210 156 206 154Q201 164 198 168Q194 152 190 150Q184 166 181 170Q177 154 173 152Q167 163 164 167Q160 152 156 150Q150 166 147 170Q143 154 139 152Q133 164 130 168Q126 156 122 154Q117 168 114 172Q111 162 108 160Q105 176 102 180Q98 168 95 186Z" fill="url(#mc-hairtop)"/>
-        <path d="M128 112c-8 14-12 28-12 42M160 104v46M192 112c8 14 12 28 12 42" fill="none" stroke="#2a1810" stroke-width="1.5" opacity=".35"/>
-        <path d="M118 104c18-10 50-12 72-2" fill="none" stroke="#8a6656" stroke-width="3" stroke-linecap="round" opacity=".55"/>
-      </g>
-      <path d="M96 172c-10 52-4 92-16 128-8 28 2 60-4 92 18-18 24-48 26-76 4-40-2-84 4-130z" fill="url(#mc-hair)"/>
-      <path d="M224 172c10 52 4 92 16 128 8 28-2 60 4 92-18-18-24-48-26-76-4-40 2-84-4-130z" fill="url(#mc-hair)"/>
-      <path d="M86 240c-4 30 0 60-6 90M234 240c4 30 0 60 6 90" fill="none" stroke="#6b4a3c" stroke-width="2" stroke-linecap="round" opacity=".6"/>
-      <path d="M96 314q-10 40 30 40" fill="none" stroke="url(#mc-sleeve)" stroke-width="28" stroke-linecap="round"/>
-      <g transform="rotate(-10 128 360)"><rect x="94" y="322" width="64" height="80" rx="4" fill="url(#mc-book)"/><rect x="94" y="322" width="9" height="80" rx="3" fill="#1d3a32"/><path d="M112 344h34M112 352h26" stroke="#d6b47b" stroke-width="2.5" stroke-linecap="round"/></g>
-      <ellipse cx="141" cy="350" rx="13" ry="11" fill="url(#mc-hand)"/><path d="M134 344v10M140 342v12M146 344v9" stroke="#e2a98f" stroke-width="1.4" stroke-linecap="round"/>
-    </g>
-    <g class="mc-wave">
-      <path d="M226 306q36-24 40-84" fill="none" stroke="url(#mc-sleeve)" stroke-width="28" stroke-linecap="round"/>
-      <ellipse cx="266" cy="218" rx="13" ry="6" fill="#fbfbfd"/>
-      <g fill="url(#mc-hand)">
-        <ellipse cx="267" cy="196" rx="16" ry="18"/>
-        <rect x="252" y="166" width="8" height="24" rx="4"/><rect x="261" y="160" width="8" height="26" rx="4"/><rect x="270" y="161" width="8" height="25" rx="4"/><rect x="279" y="168" width="7.5" height="21" rx="3.7"/>
-        <rect x="242" y="190" width="18" height="8" rx="4" transform="rotate(-30 251 194)"/>
-      </g>
-      <path d="M290 160q8 6 8 16M294 150q14 10 14 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="mc-motion"/>
-    </g>
+    <rect x=".5" y=".5" width="299" height="359" rx="21.5" fill="none" class="mc-edge"/>
   </svg>`;
 }
 function heroIllustration() {
