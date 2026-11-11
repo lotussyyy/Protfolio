@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#fff}canvas{display:block}</style>
+<!-- 사용법: three.js 저장소를 이 파일 옆 three/ 폴더에 두고 로컬 서버로 연 뒤 캔버스를 저장 -->
+<script type="importmap">{"imports":{"three":"./three/build/three.module.js","three/addons/":"./three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const W = 1200, H = 1500;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#f4f2ef');
+const pm = new THREE.PMREMGenerator(renderer);
+scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.4;
+
+const cam = new THREE.PerspectiveCamera(24, W / H, 0.1, 100);
+cam.position.set(0, 1.45, 10.5);
+cam.lookAt(0, 1.08, 0);
+
+// ---------- lights ----------
+const key = new THREE.DirectionalLight('#fff3e8', 2.0);
+key.position.set(-3.5, 4.5, 4.5); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+Object.assign(key.shadow.camera, { left: -3, right: 3, top: 4, bottom: -2, near: 1, far: 20 });
+scene.add(key);
+const fill = new THREE.DirectionalLight('#eef2ff', 0.35); fill.position.set(4, 2, 5); scene.add(fill);
+const rim = new THREE.DirectionalLight('#ffffff', 1.4); rim.position.set(0, 4, -6); scene.add(rim);
+scene.add(new THREE.HemisphereLight('#ffffff', '#c9b8ad', 0.35));
+
+// ---------- materials ----------
+const skinMat = new THREE.MeshPhysicalMaterial({ color: '#ffffff', vertexColors: true, roughness: 0.55, sheen: 0.4, sheenColor: new THREE.Color('#ffd9c9'), sheenRoughness: 0.6, clearcoat: 0.08, clearcoatRoughness: 0.6 });
+const hairMat = new THREE.MeshPhysicalMaterial({ color: '#3b2219', roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.12, sheen: 0.6, sheenColor: new THREE.Color('#8a5a44'), sheenRoughness: 0.35, emissive: new THREE.Color('#1c0b05'), emissiveIntensity: 0.35, side: THREE.DoubleSide });
+const knitMat = new THREE.MeshPhysicalMaterial({ color: '#1e2a4e', roughness: 0.4, clearcoat: 0.6, clearcoatRoughness: 0.3 });
+const shirtMat = new THREE.MeshPhysicalMaterial({ color: '#f7f7f5', roughness: 0.35, clearcoat: 0.7, clearcoatRoughness: 0.2 });
+const lipMat = new THREE.MeshPhysicalMaterial({ color: '#e59b8c', roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.25 });
+
+const HEAD = new THREE.Vector3(0, 1.5, 0);
+const HS = new THREE.Vector3(1.08, 0.98, 0.94);   // head ellipsoid scale
+
+// ---------- head (chubby cheeks, small chin) ----------
+function deformHead(v) {
+  let { x, y, z } = v;
+  const cheek = Math.exp(-(((y + 0.38) / 0.32) ** 2));
+  x *= 1 + 0.07 * cheek;
+  if (z > 0) z *= 1 + 0.06 * cheek;
+  if (y < -0.4) { const u = -y - 0.4, t = u / 0.6; y = -0.4 - (u - 0.2 * u * u / 0.6); x *= 1 - 0.2 * t * t; z *= 1 - 0.08 * t * t; }
+  v.set(x * HS.x, y * HS.y, z * HS.z);
+}
+const hg = new THREE.SphereGeometry(1, 160, 120);
+{
+  const p = hg.attributes.position, v = new THREE.Vector3(), col = [];
+  const skin = new THREE.Color('#f0c4ad'), blush = new THREE.Color('#ee9f92'), shade = new THREE.Color('#e3b39d');
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i); deformHead(v); p.setXYZ(i, v.x, v.y, v.z);
+    const c = skin.clone();
+    for (const sx of [-1, 1]) {
+      const d = Math.hypot(v.x - sx * 0.62, v.y + 0.42) ;
+      if (v.z > 0.3) c.lerp(blush, 0.45 * Math.exp(-((d / 0.2) ** 2)));
+    }
+    if (v.y < -0.7) c.lerp(shade, Math.min(1, (-v.y - 0.7) * 1.2) * 0.4);
+    col.push(c.r, c.g, c.b);
+  }
+  hg.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  hg.computeVertexNormals();
+}
+const head = new THREE.Mesh(hg, skinMat); head.position.copy(HEAD); head.castShadow = head.receiveShadow = true; scene.add(head);
+
+// point on face surface (local x,y) -> world, plus normal
+function surf(x, y, out = 0) {
+  // approximate: march along +z
+  const v = new THREE.Vector3();
+  let lo = 0, hi = 1.4;
+  for (let k = 0; k < 40; k++) {
+    const m = (lo + hi) / 2; v.set(x, y, m);
+    // inside test against deformed head: invert approx by sampling sphere dir
+    const dir = new THREE.Vector3(x, y, m).normalize(); const sp = dir.clone(); deformHead(sp);
+    if (new THREE.Vector3(x, y, m).length() < sp.length()) lo = m; else hi = m;
+  }
+  const pt = new THREE.Vector3(x, y, lo);
+  const n = new THREE.Vector3(x / HS.x ** 2, y / HS.y ** 2, lo / HS.z ** 2).normalize();
+  return { p: pt.add(n.clone().multiplyScalar(out)).add(HEAD), n };
+}
+
+// ---------- eyes ----------
+function eyeTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  g.fillStyle = '#f4efea'; g.fillRect(0, 0, 512, 512);
+  const cx = 256, cy = 262, R = 222;
+  const ir = g.createRadialGradient(cx, cy + 10, 20, cx, cy, R);
+  ir.addColorStop(0, '#8a5634'); ir.addColorStop(0.45, '#5e3620'); ir.addColorStop(0.85, '#3a1f12'); ir.addColorStop(1, '#1d0f08');
+  g.fillStyle = ir; g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fill();
+  // fine radial fibers
+  g.globalAlpha = 0.12; g.strokeStyle = '#c08a5c'; g.lineWidth = 2;
+  for (let a = 0; a < Math.PI * 2; a += 0.09) { g.beginPath(); g.moveTo(cx + Math.cos(a) * 92, cy + Math.sin(a) * 92); g.lineTo(cx + Math.cos(a) * 180, cy + Math.sin(a) * 180); g.stroke(); }
+  g.globalAlpha = 1;
+  g.fillStyle = '#0c0604'; g.beginPath(); g.arc(cx, cy, 84, 0, Math.PI * 2); g.fill();
+  // top shadow from lid
+  const sh = g.createLinearGradient(0, 40, 0, 230); sh.addColorStop(0, 'rgba(40,20,10,.55)'); sh.addColorStop(1, 'rgba(40,20,10,0)');
+  g.fillStyle = sh; g.fillRect(0, 0, 512, 260);
+  // highlights
+  g.fillStyle = 'rgba(255,255,255,.95)'; g.beginPath(); g.ellipse(cx - 70, cy - 78, 46, 52, -0.3, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,255,255,.75)'; g.beginPath(); g.arc(cx + 78, cy + 92, 18, 0, Math.PI * 2); g.fill();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
+const eyeTex = eyeTexture();
+const eyeMat = new THREE.MeshPhysicalMaterial({ map: eyeTex, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.03 });
+function makeEye(sx) {
+  const R = 0.36, th = 0.92;
+  const g = new THREE.SphereGeometry(R, 64, 32, 0, Math.PI * 2, 0, th);
+  g.rotateX(Math.PI / 2);
+  const p = g.attributes.position, uv = g.attributes.uv, rr = R * Math.sin(th);
+  for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / rr * 0.5 + 0.5, p.getY(i) / rr * 0.5 + 0.5);
+  g.scale(1, 1.08, 0.55);
+  const m = new THREE.Mesh(g, eyeMat);
+  const s = surf(sx * 0.4, -0.16, 0);
+  m.position.copy(s.p).add(new THREE.Vector3(0, 0, -R * Math.cos(th) * 0.55 - 0.06));
+  m.lookAt(m.position.clone().add(new THREE.Vector3(sx * 0.18, 0, 1)));
+  m.receiveShadow = true;
+  scene.add(m);
+  // upper lid: soft skin ridge that casts shadow on the eye
+  const lid = new THREE.Mesh(new THREE.TorusGeometry(0.31, 0.045, 16, 64, Math.PI * 0.9), skinMat.clone());
+  lid.material.vertexColors = false; lid.material.color = new THREE.Color('#f3cfbd');
+  lid.rotation.z = Math.PI * 0.05;
+  lid.position.copy(m.position).add(new THREE.Vector3(0, 0.0, 0.12));
+  lid.scale.set(1.02, 1.05, 1);
+  lid.lookAt(lid.position.clone().add(new THREE.Vector3(sx * 0.18, 0, 1)));
+  lid.rotateZ(Math.PI * 0.05);
+  lid.castShadow = true; scene.add(lid);
+}
+makeEye(-1); makeEye(1);
+
+// nose & lips
+{ const s = surf(0, -0.47, -0.01); const n = new THREE.Mesh(new THREE.SphereGeometry(0.06, 32, 16), skinMat.clone()); n.material.vertexColors = false; n.material.color = new THREE.Color('#f5d2c0'); n.scale.set(1.1, 0.8, 0.7); n.position.copy(s.p); n.castShadow = true; scene.add(n); }
+{ const s = surf(0, -0.66, -0.02);
+  const up = new THREE.Mesh(new THREE.SphereGeometry(0.1, 32, 16), lipMat); up.scale.set(1.15, 0.32, 0.45); up.position.copy(s.p).add(new THREE.Vector3(0, 0.022, 0)); scene.add(up);
+  const lo = new THREE.Mesh(new THREE.SphereGeometry(0.1, 32, 16), lipMat); lo.scale.set(1.0, 0.36, 0.5); lo.position.copy(s.p).add(new THREE.Vector3(0, -0.03, 0)); scene.add(lo); }
+
+// ---------- neck & body ----------
+const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.29, 0.7, 48), skinMat.clone());
+neck.material.vertexColors = false; neck.material.color = new THREE.Color('#e8b9a2');
+neck.position.set(0, 0.38, -0.05); neck.receiveShadow = true; scene.add(neck);
+const torsoG = new THREE.SphereGeometry(1, 96, 64);
+torsoG.scale(1.18, 0.58, 0.6);
+const torso = new THREE.Mesh(torsoG, knitMat); torso.position.set(0, -0.22, -0.08); torso.receiveShadow = torso.castShadow = true; scene.add(torso);
+// V-neck: white shirt wedge + collar points + navy rim
+function tri(a, b, c, mat, depth = 0.04) {
+  const sh = new THREE.Shape([new THREE.Vector2(...a), new THREE.Vector2(...b), new THREE.Vector2(...c)]);
+  return new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015, bevelSegments: 3 }), mat);
+}
+{ const v = tri([-0.3, 0.02], [0.3, 0.02], [0, -0.48], shirtMat); v.position.set(0, 0.3, 0.44); v.rotation.x = -0.28; v.receiveShadow = true; scene.add(v);
+  const cl = tri([0, 0], [-0.24, -0.2], [0.02, -0.26], shirtMat, 0.03); cl.position.set(-0.08, 0.32, 0.5); cl.rotation.x = -0.3; cl.castShadow = true; scene.add(cl);
+  const cr = tri([0, 0], [0.24, -0.2], [-0.02, -0.26], shirtMat, 0.03); cr.position.set(0.08, 0.32, 0.5); cr.rotation.x = -0.3; cr.castShadow = true; scene.add(cr);
+  const rimMat = new THREE.MeshPhysicalMaterial({ color: '#2b3b6b', roughness: 0.3, clearcoat: 1 });
+  for (const sx of [-1, 1]) {
+    const c = new THREE.CatmullRomCurve3([new THREE.Vector3(sx * 0.34, 0.34, 0.42), new THREE.Vector3(sx * 0.15, 0.06, 0.53), new THREE.Vector3(0, -0.18, 0.56)]);
+    const r = new THREE.Mesh(new THREE.TubeGeometry(c, 40, 0.045, 12), rimMat); r.castShadow = true; scene.add(r);
+  }
+}
+
+// ---------- hair ----------
+// tapered, slightly flattened strand along a curve
+function strand(points, w0, w1, flat = 0.45, seg = 64, rad = 14) {
+  const curve = new THREE.CatmullRomCurve3(points, false, 'centripetal');
+  const frames = curve.computeFrenetFrames(seg, false);
+  const pos = [], idx = [];
+  for (let i = 0; i <= seg; i++) {
+    const t = i / seg, P = curve.getPointAt(t);
+    const T = curve.getTangentAt(t);
+    // binormal: across the strand (perpendicular to view-ish); normal: thickness
+    let N = new THREE.Vector3().subVectors(P, HEAD).normalize(); // outward from head
+    N.sub(T.clone().multiplyScalar(N.dot(T))).normalize();
+    const B = new THREE.Vector3().crossVectors(T, N).normalize();
+    const w = (w0 * (1 - t) ** 0.7 + w1 * t) * (t > 0.9 ? Math.sqrt(Math.max(0.0, 1 - ((t - 0.9) / 0.1) ** 2)) * 0.9 + 0.1 : 1) * (t < 0.04 ? 0.6 + t * 10 : 1);
+    for (let j = 0; j < rad; j++) {
+      const a = (j / rad) * Math.PI * 2;
+      const q = P.clone().add(B.clone().multiplyScalar(Math.cos(a) * w)).add(N.clone().multiplyScalar(Math.sin(a) * w * flat));
+      pos.push(q.x, q.y, q.z);
+    }
+  }
+  for (let i = 0; i < seg; i++) for (let j = 0; j < rad; j++) {
+    const a = i * rad + j, b = i * rad + (j + 1) % rad, c = (i + 1) * rad + j, d = (i + 1) * rad + (j + 1) % rad;
+    idx.push(a, c, b, b, c, d);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+  const m = new THREE.Mesh(g, hairMat); m.castShadow = true; m.receiveShadow = true; scene.add(m); return m;
+}
+// point on hair shell (sphere dir -> deformed head scaled up)
+const OFF = 1.07;
+function shell(theta, phi, off = OFF) { // theta: polar from top, phi: azimuth (0 = front +z, + to right(+x))
+  const d = new THREE.Vector3(Math.sin(theta) * Math.sin(phi), Math.cos(theta), Math.sin(theta) * Math.cos(phi));
+  const v = d.clone(); deformHead(v); return v.multiplyScalar(off).add(HEAD);
+}
+// hair cap
+{
+  const g = new THREE.SphereGeometry(1, 128, 64, 0, Math.PI * 2, 0, 1.08);
+  const p = g.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); const yy = v.y; deformHead(v); v.multiplyScalar(1.055); p.setXYZ(i, v.x, v.y, v.z); }
+  g.computeVertexNormals();
+  const cap = new THREE.Mesh(g, hairMat); cap.position.copy(HEAD); cap.castShadow = cap.receiveShadow = true; scene.add(cap);
+}
+// back hair volume behind shoulders
+{
+  const g = new THREE.SphereGeometry(1, 96, 64); g.scale(1.12, 1.55, 0.55);
+  const m = new THREE.Mesh(g, hairMat); m.position.set(0, 0.75, -0.62); m.receiveShadow = true; scene.add(m);
+}
+// long strands from center part flowing down both sides
+const rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+for (const side of [-1, 1]) {
+  for (let k = 0; k < 7; k++) {
+    const phi = side * (0.95 + k * 0.26);                 // from near-front side to back
+    const pts = [];
+    for (let th = 0.05; th <= 1.5; th += 0.16) pts.push(shell(th, phi * Math.min(1, 0.25 + th), 1.075 + 0.01 * (k % 2)));
+    const last = pts[pts.length - 1];
+    const front = Math.cos(phi) > 0.2;
+    const out = side * (front ? 0.12 : 0.18);
+    const endY = front ? -0.55 - rnd() * 0.25 : -0.4 - rnd() * 0.3;
+    pts.push(new THREE.Vector3(last.x + out * 0.6, last.y - 0.7, last.z + (front ? 0.05 : -0.05)));
+    pts.push(new THREE.Vector3(last.x + out, (last.y + endY) / 2 - 0.3, last.z + (front ? 0.12 : -0.08)));
+    pts.push(new THREE.Vector3(last.x + out * 0.8 - side * 0.05 * rnd(), endY, last.z + (front ? 0.16 : -0.1)));
+    strand(pts, 0.24 + rnd() * 0.05, 0.09, 0.45);
+  }
+}
+// side locks framing the face (in front of the shoulders)
+for (const side of [-1, 1]) {
+  for (const [dx, endY, w] of [[0, -0.75, 0.15], [0.1, -0.6, 0.12]]) {
+    const top = shell(0.75, side * 0.95, 1.08);
+    const pts = [top, shell(1.2, side * 1.0, 1.09), shell(1.55, side * 1.02, 1.1),
+      new THREE.Vector3(side * (1.02 + dx), 0.5, 0.3), new THREE.Vector3(side * (1.0 + dx), -0.1, 0.42), new THREE.Vector3(side * (0.96 + dx), endY, 0.46)];
+    strand(pts, w, 0.03, 0.5);
+  }
+}
+// see-through bangs
+const bangs = [[-0.76, 0.1], [-0.52, 0.02], [-0.27, 0.06], [-0.06, 0.0], [0.15, 0.05], [0.38, 0.0], [0.62, 0.07], [0.8, 0.12]];
+bangs.forEach(([x, dy], i) => {
+  const phiTop = x * 0.25, phiEnd = x * 0.95;
+  const pts = [];
+  for (let th = 0.12; th <= 0.98; th += 0.12) pts.push(shell(th, phiTop + (phiEnd - phiTop) * (th / 0.98), 1.085));
+  const endY = 0.08 + dy;                                // tip just above the eyes (local y)
+  const tipLocal = new THREE.Vector3(x * 0.98, endY, 0); const s = surf(tipLocal.x, tipLocal.y, 0.09);
+  pts.push(s.p);
+  strand(pts, 0.19, 0.07, 0.4);
+});
+
+renderer.render(scene, cam);
+window.__done = true;
+</script>
+</body></html>

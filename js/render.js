@@ -78,63 +78,9 @@ function heroBackdrop() {
     <path d="M20 460h200M680 460h130"/>
   </svg>`;
 }
-// 소개 옆 캐릭터: 3D 토이 피규어 스타일 정면 흉상(치비 비율, 무표정, 눈썹·아이라인 없음).
-// 사진 기준: 흰 단색 배경, 밝은 피부, 흑갈색 긴 생머리·시스루 앞머리(젤리 레진 질감), 남색 V넥 니트 + 흰 셔츠 깃(무늬 없음, 래커 광택). 글자 없음
+// 소개 옆 캐릭터: three.js로 실제 3D 렌더링한 토이 피규어 스타일 초상(만든 장면: tools/character-3d.html)
 function aboutCharacter() {
-  return `<svg class="me-char" viewBox="0 0 300 360" role="img" aria-label="정면을 바라보는 3D 토이 피규어 스타일의 캐릭터 초상">
-    <defs>
-      <radialGradient id="mc-skin" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#fbe6da"/><stop offset=".7" stop-color="#f6d6c5"/><stop offset="1" stop-color="#ecc2ad"/></radialGradient>
-      <linearGradient id="mc-hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f2a22"/><stop offset=".55" stop-color="#2f1d16"/><stop offset="1" stop-color="#22140e"/></linearGradient>
-      <radialGradient id="mc-hairglow" cx="50%" cy="30%" r="55%"><stop offset="0" stop-color="#8a604d" stop-opacity=".55"/><stop offset="1" stop-color="#8a604d" stop-opacity="0"/></radialGradient>
-      <linearGradient id="mc-knit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c3d66"/><stop offset="1" stop-color="#1b2645"/></linearGradient>
-      <radialGradient id="mc-iris" cx="50%" cy="55%" r="50%"><stop offset="0" stop-color="#7a4a30"/><stop offset=".6" stop-color="#4a2a1a"/><stop offset="1" stop-color="#24130b"/></radialGradient>
-      <radialGradient id="mc-ao" cx="50%" cy="0%" r="60%"><stop offset="0" stop-color="#b98a74" stop-opacity=".35"/><stop offset="1" stop-color="#b98a74" stop-opacity="0"/></radialGradient>
-      <filter id="mc-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
-      <clipPath id="mc-frame"><rect x="0" y="0" width="300" height="360" rx="22"/></clipPath>
-    </defs>
-    <g clip-path="url(#mc-frame)">
-      <rect width="300" height="360" fill="#ffffff"/>
-      <ellipse cx="150" cy="352" rx="120" ry="14" fill="#000" opacity=".05"/>
-      <!-- 뒷머리 -->
-      <path d="M150 34C68 34 30 96 32 172c2 70-6 120 2 188h232c8-68 0-118 2-188 2-76-36-138-118-138z" fill="url(#mc-hair)"/>
-      <!-- 어깨·니트(무늬 없는 래커 광택) -->
-      <path d="M62 360c2-50 28-80 88-82 60 2 86 32 88 82z" fill="url(#mc-knit)"/>
-      <ellipse cx="100" cy="306" rx="22" ry="9" fill="#fff" opacity=".16" filter="url(#mc-soft)"/>
-      <ellipse cx="200" cy="306" rx="22" ry="9" fill="#fff" opacity=".16" filter="url(#mc-soft)"/>
-      <rect x="138" y="258" width="24" height="30" rx="10" fill="#e9bba5"/>
-      <path d="M134 282l16 30 16-30z" fill="#ffffff"/>
-      <path d="M138 279l-14 14 22 4zM162 279l14 14-22 4z" fill="#ffffff" stroke="#e4e7ee" stroke-width="1"/>
-      <path d="M131 284l19 36 19-36" fill="none" stroke="#3a4c7a" stroke-width="4" stroke-linejoin="round"/>
-      <!-- 큰 둥근 얼굴(볼이 통통한 넓은 얼굴, 작은 턱) -->
-      <path d="M150 66c74 0 106 52 104 112-2 56-44 92-104 92S48 234 46 178C44 118 76 66 150 66z" fill="url(#mc-skin)"/>
-      <ellipse cx="150" cy="150" rx="100" ry="26" fill="url(#mc-ao)"/>
-      <!-- 볼: 사진처럼 아주 옅게 -->
-      <ellipse cx="88" cy="226" rx="16" ry="9" fill="#f2a99b" opacity=".22"/><ellipse cx="212" cy="226" rx="16" ry="9" fill="#f2a99b" opacity=".22"/>
-      <!-- 큰 눈: 흰자 + 갈색 홍채(바깥이 짙고 가운데가 밝은 그라디언트) + 광택. 아이라인 없음 -->
-      ${[108, 192].map(x => `<g>
-        <ellipse cx="${x}" cy="196" rx="25" ry="27" fill="#ffffff"/>
-        <circle cx="${x}" cy="198" r="21.5" fill="url(#mc-iris)"/>
-        <circle cx="${x}" cy="199" r="9" fill="#140a06"/>
-        <ellipse cx="${x - 8}" cy="188" rx="7" ry="8" fill="#fff" opacity=".95"/>
-        <circle cx="${x + 9}" cy="209" r="3" fill="#fff" opacity=".7"/>
-        <path d="M${x - 19} 186a26 24 0 0 1 38 0" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>
-        <path d="M${x - 20} 166q20-10 40 0" fill="none" stroke="#e2b29c" stroke-width="1.2" opacity=".6"/>
-      </g>`).join('')}
-      <!-- 코: 아주 작은 홈 / 입: 거의 보이지 않는 선 -->
-      <path d="M147 230q3 3 6 0" fill="none" stroke="#dca58f" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M142 247h16" stroke="#d8a591" stroke-width="1.6" stroke-linecap="round" opacity=".75"/>
-      <!-- 앞머리(시스루, 젤리 레진: 속이 은은히 밝고 가장자리에 빛) -->
-      <path d="M46 176C42 98 90 46 150 46S258 98 254 176C250 168 242 160 232 156Q229 158 218 166Q207 158 204 150Q201 162 190 170Q179 162 176 146Q173 158 162 166Q153 158 150 142Q147 158 138 166Q127 158 124 146Q121 162 110 170Q99 162 96 150Q93 158 82 166Q71 158 68 156C58 160 50 168 46 176Z" fill="url(#mc-hair)"/>
-      <path d="M46 176C42 98 90 46 150 46S258 98 254 176C250 168 242 160 232 156Q229 158 218 166Q207 158 204 150Q201 162 190 170Q179 162 176 146Q173 158 162 166Q153 158 150 142Q147 158 138 166Q127 158 124 146Q121 162 110 170Q99 162 96 150Q93 158 82 166Q71 158 68 156C58 160 50 168 46 176Z" fill="url(#mc-hairglow)"/>
-      <path d="M150 48v40M118 56c-10 22-16 46-18 74M182 56c10 22 16 46 18 74" fill="none" stroke="#1a0f0a" stroke-width="1.4" opacity=".35"/>
-      <path d="M86 84c18-22 42-32 64-32s46 10 64 32" fill="none" stroke="#c99a84" stroke-width="5" stroke-linecap="round" opacity=".35" filter="url(#mc-soft)"/>
-      <!-- 옆머리: 얼굴을 감싸고 어깨 앞으로 -->
-      <path d="M48 150c-12 64-6 120-14 190 14 8 30 6 38-4-2-70 0-128-6-178z" fill="url(#mc-hair)"/>
-      <path d="M252 150c12 64 6 120 14 190-14 8-30 6-38-4 2-70 0-128 6-178z" fill="url(#mc-hair)"/>
-      <path d="M44 170c-6 56-4 110-8 160M256 170c6 56 4 110 8 160" fill="none" stroke="#a57a64" stroke-width="2" stroke-linecap="round" opacity=".45"/>
-    </g>
-    <rect x=".5" y=".5" width="299" height="359" rx="21.5" fill="none" class="mc-edge"/>
-  </svg>`;
+  return `<img class="me-char" src="assets/me-3d.webp" width="1020" height="1290" alt="흑갈색 긴 생머리에 앞머리, 남색 V넥 니트를 입은 3D 토이 피규어 스타일 캐릭터" loading="lazy" decoding="async">`;
 }
 function heroIllustration() {
   const books = [[40, 70, 24], [68, 52, 18], [90, 82, 26], [120, 60, 20], [144, 74, 16], [164, 48, 22], [190, 66, 18], [212, 88, 24], [240, 58, 20]];
