@@ -704,7 +704,7 @@ a:hover { color: var(--accent-text); }
 /* ---------- 소개 옆 캐릭터: 3D 토이 피규어 스타일 정면 흉상 ---------- */
 .about-intro { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 28px; align-items: center; }
 .me-wrap { margin: 0; }
-.me-char { width: 100%; height: auto; display: block; border-radius: 22px; border: 1px solid var(--line); background: #f1d9dc; box-shadow: 0 10px 28px var(--shadow); }
+.me-char { width: 100%; height: auto; display: block; border-radius: 22px; border: 1px solid var(--line); background: #cfe1f2; box-shadow: 0 10px 28px var(--shadow); }
 @media (max-width: 767px) { .about-intro { grid-template-columns: 1fr; gap: 12px; } .me-wrap { order: -1; width: 160px; justify-self: center; } }
 @media print { .me-wrap { display: none; } .about-intro { display: block; } }
 

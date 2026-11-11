@@ -80,7 +80,7 @@ function heroBackdrop() {
 }
 // 소개 옆 캐릭터: three.js로 실제 3D 렌더링한 토이 피규어 스타일 초상(만든 장면: tools/character-3d.html)
 function aboutCharacter() {
-  return `<img class="me-char" src="assets/me-3d.webp" width="1080" height="1350" alt="흑갈색 긴 머리에 둥근 앞머리, 큰 갈색 눈, 남색 V넥 니트를 입은 귀여운 3D 캐릭터" loading="lazy" decoding="async">`;
+  return `<img class="me-char" src="assets/me-3d.webp" width="930" height="1162" alt="흑갈색 긴 머리에 둥근 앞머리, 큰 갈색 눈, 흰 민소매 상의를 입은 귀여운 3D 치비 캐릭터" loading="lazy" decoding="async">`;
 }
 function heroIllustration() {
   const books = [[40, 70, 24], [68, 52, 18], [90, 82, 26], [120, 60, 20], [144, 74, 16], [164, 48, 22], [190, 66, 18], [212, 88, 24], [240, 58, 20]];
