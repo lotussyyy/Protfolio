@@ -810,3 +810,25 @@ html[data-theme='dark'] .pf-view { --dots-o: .28; }
 .cert-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .cert-head .cert-name { min-width: 0; }
 .cert .cert-badge { position: static; flex: none; margin-top: 1px; white-space: nowrap; }
+
+/* ---------- 이력 세로 탭 + Sticky ---------- */
+.rlayout { display: grid; grid-template-columns: 168px minmax(0, 1fr); gap: 28px; align-items: start; }
+.rlayout > * { min-width: 0; }
+.rtabs-wrap { position: sticky; top: 72px; z-index: 5; margin: 0; padding: 8px; border-radius: 14px; border: 1px solid transparent;
+  background: transparent; transition: box-shadow .3s var(--ease-out), background-color .3s, border-color .3s; }
+.rtabs-wrap.stuck { background: var(--glass); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-color: var(--line); box-shadow: 0 10px 24px var(--shadow-hover); }
+.rtabs[aria-orientation] { flex-direction: column; gap: 2px; border-bottom: 0; border-left: 1px solid var(--line); overflow: visible; margin: 0; }
+.rlayout .rtabs [role="tab"] { text-align: left; padding: 10px 12px 10px 16px; border-radius: 0 8px 8px 0; display: flex; align-items: center; gap: 8px; }
+.rlayout .rtabs [role="tab"][aria-selected="true"] { background: var(--accent-soft); }
+.rlayout .rtabs .btab-ink { top: 0; bottom: auto; left: -1px; width: 3px; height: 0; border-radius: 3px; background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  transition: transform .35s var(--ease-out), height .35s var(--ease-out); }
+@media (max-width: 767px) {
+  .rlayout { grid-template-columns: 1fr; gap: 12px; }
+  .rtabs-wrap { top: 52px; border-radius: 0; margin: 0 -16px; padding: 0 16px; }
+  .rtabs-wrap.stuck { border-color: transparent; border-bottom-color: var(--line); }
+  .rtabs[aria-orientation] { flex-direction: row; border-left: 0; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .rlayout .rtabs [role="tab"] { border-radius: 6px 6px 0 0; padding: 9px 12px 11px; }
+  .rlayout .rtabs [role="tab"][aria-selected="true"] { background: transparent; }
+  .rlayout .rtabs .btab-ink { top: auto; bottom: -1px; left: 0; height: 2.5px; width: 0; background: var(--grad-line); transition: transform .35s var(--ease-out), width .35s var(--ease-out); }
+}
+@media print { .rlayout { display: block; } }

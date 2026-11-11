@@ -398,21 +398,32 @@ export function mountPortfolio(root, items, opts = {}) {
       }).join('')}</ul><p class="small muted">막대 길이 = 그 스킬을 쓴 공개 프로젝트 수</p>` : '';
   // 이력 Tabs: 선택한 탭 아래 표시 막대가 미끄러지고, 내용은 서서히 바뀐다
   const RTABS = [['edu', '🎓', '학력', eduHTML], ['cert', '📜', '자격증·어학', certHTML], ['skill', '🛠️', '스킬', skillsHTML], ['exp', '💼', '경력', expHTML], ['act', '🤝', '활동', actHTML], ['award', '🏆', '수상', awHTML]].filter(t => t[3]);
-  const resumeBody = RTABS.length ? `<div class="rtabs-wrap" data-reveal><div class="btabs rtabs" role="tablist" aria-label="이력 항목">
+  const resumeBody = RTABS.length ? `<div class="rlayout"><div class="rtabs-wrap" data-reveal><div class="btabs rtabs" role="tablist" aria-label="이력 항목" aria-orientation="vertical">
       ${RTABS.map(([k, ic, l], j) => `<button type="button" role="tab" id="rt-${k}" aria-controls="rp-${k}" aria-selected="${j === 0}" tabindex="${j === 0 ? 0 : -1}"><span aria-hidden="true">${ic}</span> ${l}</button>`).join('')}
       <span class="btab-ink" aria-hidden="true"></span></div></div>
-    <div class="rpanels">${RTABS.map(([k, , , html], j) => `<div class="rpanel${j === 0 ? ' on' : ''}" role="tabpanel" id="rp-${k}" aria-labelledby="rt-${k}" tabindex="-1"${j ? ' aria-hidden="true" inert' : ''}>${html}</div>`).join('')}</div>` : '';
+    <div class="rpanels">${RTABS.map(([k, , , html], j) => `<div class="rpanel${j === 0 ? ' on' : ''}" role="tabpanel" id="rp-${k}" aria-labelledby="rt-${k}" tabindex="-1"${j ? ' aria-hidden="true" inert' : ''}>${html}</div>`).join('')}</div></div>` : '';
   $('#sec-resume').innerHTML = resumeBody ? `<h2 class="sec-title" id="h-resume" data-reveal><span class="ico" aria-hidden="true">🗂️</span>이력</h2>${resumeBody}` : '';
   if (!resumeBody) $('#sec-resume').hidden = true;
   const rsec = $('#sec-resume'), rtl = rsec.querySelector('.rtabs'), rwrap = rsec.querySelector('.rpanels');
-  const rInk = () => { const on = rtl?.querySelector('[aria-selected="true"]'), ink = rtl?.querySelector('.btab-ink'); if (on && ink && on.offsetWidth) { ink.style.width = on.offsetWidth + 'px'; ink.style.transform = `translateX(${on.offsetLeft}px)`; } };
+  const rVertical = () => rtl && getComputedStyle(rtl).flexDirection === 'column';
+  const rInk = () => {
+    const on = rtl?.querySelector('[aria-selected="true"]'), ink = rtl?.querySelector('.btab-ink'); if (!on || !ink || !on.offsetWidth) return;
+    rtl.setAttribute('aria-orientation', rVertical() ? 'vertical' : 'horizontal');
+    if (rVertical()) { ink.style.width = ''; ink.style.height = on.offsetHeight + 'px'; ink.style.transform = `translateY(${on.offsetTop}px)`; }
+    else { ink.style.height = ''; ink.style.width = on.offsetWidth + 'px'; ink.style.transform = `translateX(${on.offsetLeft}px)`; }
+  };
+  // Sticky: 스크롤해 내비게이션이 위에 붙으면 그림자
+  const rStick = () => { const w = rsec.querySelector('.rtabs-wrap'); if (!w || rsec.hidden || !rsec.offsetParent) return; const top = parseFloat(getComputedStyle(w).top) || 0; const t = w.getBoundingClientRect().top; w.classList.toggle('stuck', Math.abs(t - top) < 2 && rsec.getBoundingClientRect().top < top); };
+  window.addEventListener('scroll', () => requestAnimationFrame(rStick), { passive: true });
   const rHeight = () => { const on = rwrap?.querySelector('.rpanel.on'); if (on) rwrap.style.height = on.offsetHeight + 'px'; };
   function selectResumeTab(btn, focus) {
     if (!btn || !rtl) return;
     rtl.querySelectorAll('[role="tab"]').forEach(t => { const on = t === btn; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
     rwrap.querySelectorAll('.rpanel').forEach(pn => { const on = pn.id === btn.getAttribute('aria-controls'); pn.classList.toggle('on', on); pn.setAttribute('aria-hidden', String(!on)); pn.toggleAttribute('inert', !on); if (on) reveal(pn); });
     rInk(); rHeight();
-    btn.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: motionOn() ? 'smooth' : 'auto' });
+    if (!rVertical()) btn.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: motionOn() ? 'smooth' : 'auto' });
+    const lay = rsec.querySelector('.rlayout'), off = 90;
+    if (lay && lay.getBoundingClientRect().top < off) window.scrollTo({ top: window.scrollY + lay.getBoundingClientRect().top - off, behavior: motionOn() ? 'smooth' : 'auto' });
     if (focus) btn.focus({ preventScroll: true });
   }
   if (rtl) {
@@ -420,7 +431,7 @@ export function mountPortfolio(root, items, opts = {}) {
     rtl.addEventListener('keydown', e => {
       const t = e.target.closest('[role="tab"]'); if (!t) return;
       const tabs = [...rtl.querySelectorAll('[role="tab"]')], k = tabs.indexOf(t);
-      const next = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: tabs.length - 1 }[e.key];
+      const next = { ArrowRight: k + 1, ArrowLeft: k - 1, ArrowDown: k + 1, ArrowUp: k - 1, Home: 0, End: tabs.length - 1 }[e.key];
       if (next === undefined) return;
       e.preventDefault(); selectResumeTab(tabs[(next + tabs.length) % tabs.length], true);
     });
