@@ -78,6 +78,66 @@ function heroBackdrop() {
     <path d="M20 460h200M680 460h130"/>
   </svg>`;
 }
+// 소개 옆 캐릭터: 긴 흑갈색 웨이브 머리·앞머리, 남색 V넥 니트 + 줄무늬 셔츠. 책을 안고 손을 흔들며 인사(3D 느낌 음영)
+function aboutCharacter() {
+  return `<svg class="me-char" viewBox="0 30 320 370" role="img" aria-label="책을 안고 손을 흔들며 인사하는 캐릭터 그림">
+    <defs>
+      <radialGradient id="mc-skin" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#fff1e8"/><stop offset=".55" stop-color="#fbdccb"/><stop offset="1" stop-color="#eebda6"/></radialGradient>
+      <radialGradient id="mc-hand" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#ffece2"/><stop offset="1" stop-color="#efc0a9"/></radialGradient>
+      <linearGradient id="mc-hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3128"/><stop offset=".5" stop-color="#3a251d"/><stop offset="1" stop-color="#26170f"/></linearGradient>
+      <radialGradient id="mc-hairtop" cx="40%" cy="20%" r="80%"><stop offset="0" stop-color="#6b4a3c"/><stop offset=".45" stop-color="#432b21"/><stop offset="1" stop-color="#2b1a12"/></radialGradient>
+      <linearGradient id="mc-knit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a4a72"/><stop offset=".6" stop-color="#26335a"/><stop offset="1" stop-color="#1a2443"/></linearGradient>
+      <linearGradient id="mc-sleeve" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1f2a4c"/><stop offset=".5" stop-color="#3a4a72"/><stop offset="1" stop-color="#1f2a4c"/></linearGradient>
+      <linearGradient id="mc-book" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3f7a68"/><stop offset="1" stop-color="#244a3f"/></linearGradient>
+      <pattern id="mc-stripe" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#fbfbfd"/><rect width="1.4" height="5" fill="#c9d3e6"/></pattern>
+    </defs>
+    <ellipse cx="160" cy="250" rx="140" ry="140" class="mc-halo"/>
+    <g class="mc-bubble">
+      <path d="M22 42h104a14 14 0 0 1 14 14v14a14 14 0 0 1-14 14H70l-12 12 2-12H22a14 14 0 0 1-14-14V56a14 14 0 0 1 14-14z" class="mc-bub"/>
+      <text x="74" y="69" text-anchor="middle" class="mc-bub-t">안녕하세요!</text>
+    </g>
+    <g class="mc-body">
+      <path d="M160 86c-66 0-100 50-98 116 2 58-16 110-8 160 4 30 22 50 40 50h132c18 0 36-20 40-50 8-50-10-102-8-160 2-66-32-116-98-116z" fill="url(#mc-hair)"/>
+      <path d="M74 400c2-70 30-112 86-116 56 4 84 46 86 116z" fill="url(#mc-knit)"/>
+      <rect x="147" y="232" width="26" height="40" rx="12" fill="#efc2ab"/>
+      <path d="M136 284l24 50 24-50-10-6-14 22-14-22z" fill="url(#mc-stripe)"/>
+      <path d="M146 278l-16 18 22 6zM174 278l16 18-22 6z" fill="#fbfbfd" stroke="#d5dbe8" stroke-width="1"/>
+      <path d="M132 286l28 56 28-56" fill="none" stroke="#4a5a84" stroke-width="5" stroke-linejoin="round"/>
+      <g transform="translate(0 12)">
+        <ellipse cx="160" cy="168" rx="66" ry="72" fill="url(#mc-skin)"/>
+        <ellipse cx="140" cy="132" rx="22" ry="12" fill="#fff" opacity=".35"/>
+        <g class="mc-eyes">
+          <ellipse cx="134" cy="184" rx="8.5" ry="10.5" fill="#3a2418"/><ellipse cx="186" cy="184" rx="8.5" ry="10.5" fill="#3a2418"/>
+          <circle cx="131" cy="180" r="3.2" fill="#fff"/><circle cx="183" cy="180" r="3.2" fill="#fff"/>
+          <circle cx="137" cy="189" r="1.4" fill="#fff" opacity=".8"/><circle cx="189" cy="189" r="1.4" fill="#fff" opacity=".8"/>
+          <path d="M124 182q9-12 20-3M176 179q11-9 20 3" fill="none" stroke="#2a1810" stroke-width="2.6" stroke-linecap="round"/>
+        </g>
+        <ellipse cx="120" cy="207" rx="12" ry="6.5" fill="#f3a39b" opacity=".45"/><ellipse cx="200" cy="207" rx="12" ry="6.5" fill="#f3a39b" opacity=".45"/>
+        <path d="M160 196q3 7-2 10" fill="none" stroke="#e0a58c" stroke-width="2" stroke-linecap="round"/>
+        <path d="M147 218q13 12 26 0q-13 5-26 0z" fill="#e57f76"/>
+        <path d="M95 186C88 128 116 90 160 90S232 128 225 186Q217 174 214 178Q210 156 206 154Q201 164 198 168Q194 152 190 150Q184 166 181 170Q177 154 173 152Q167 163 164 167Q160 152 156 150Q150 166 147 170Q143 154 139 152Q133 164 130 168Q126 156 122 154Q117 168 114 172Q111 162 108 160Q105 176 102 180Q98 168 95 186Z" fill="url(#mc-hairtop)"/>
+        <path d="M128 112c-8 14-12 28-12 42M160 104v46M192 112c8 14 12 28 12 42" fill="none" stroke="#2a1810" stroke-width="1.5" opacity=".35"/>
+        <path d="M118 104c18-10 50-12 72-2" fill="none" stroke="#8a6656" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+      </g>
+      <path d="M96 172c-10 52-4 92-16 128-8 28 2 60-4 92 18-18 24-48 26-76 4-40-2-84 4-130z" fill="url(#mc-hair)"/>
+      <path d="M224 172c10 52 4 92 16 128 8 28-2 60 4 92-18-18-24-48-26-76-4-40 2-84-4-130z" fill="url(#mc-hair)"/>
+      <path d="M86 240c-4 30 0 60-6 90M234 240c4 30 0 60 6 90" fill="none" stroke="#6b4a3c" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <path d="M96 314q-10 40 30 40" fill="none" stroke="url(#mc-sleeve)" stroke-width="28" stroke-linecap="round"/>
+      <g transform="rotate(-10 128 360)"><rect x="94" y="322" width="64" height="80" rx="4" fill="url(#mc-book)"/><rect x="94" y="322" width="9" height="80" rx="3" fill="#1d3a32"/><path d="M112 344h34M112 352h26" stroke="#d6b47b" stroke-width="2.5" stroke-linecap="round"/></g>
+      <ellipse cx="141" cy="350" rx="13" ry="11" fill="url(#mc-hand)"/><path d="M134 344v10M140 342v12M146 344v9" stroke="#e2a98f" stroke-width="1.4" stroke-linecap="round"/>
+    </g>
+    <g class="mc-wave">
+      <path d="M226 306q36-24 40-84" fill="none" stroke="url(#mc-sleeve)" stroke-width="28" stroke-linecap="round"/>
+      <ellipse cx="266" cy="218" rx="13" ry="6" fill="#fbfbfd"/>
+      <g fill="url(#mc-hand)">
+        <ellipse cx="267" cy="196" rx="16" ry="18"/>
+        <rect x="252" y="166" width="8" height="24" rx="4"/><rect x="261" y="160" width="8" height="26" rx="4"/><rect x="270" y="161" width="8" height="25" rx="4"/><rect x="279" y="168" width="7.5" height="21" rx="3.7"/>
+        <rect x="242" y="190" width="18" height="8" rx="4" transform="rotate(-30 251 194)"/>
+      </g>
+      <path d="M290 160q8 6 8 16M294 150q14 10 14 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="mc-motion"/>
+    </g>
+  </svg>`;
+}
 function heroIllustration() {
   const books = [[40, 70, 24], [68, 52, 18], [90, 82, 26], [120, 60, 20], [144, 74, 16], [164, 48, 22], [190, 66, 18], [212, 88, 24], [240, 58, 20]];
   const d = i => `style="--d:${(0.6 + i * 0.07).toFixed(2)}s"`;
@@ -160,7 +220,10 @@ export function mountPortfolio(root, items, opts = {}) {
       </div>
       <section id="sec-about" aria-labelledby="h-about">
         <h2 class="sec-title" id="h-about" data-reveal><span class="ico" aria-hidden="true">👋</span>소개</h2>
-        <div data-reveal>${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}</div>
+        <div class="about-intro">
+          <div data-reveal>${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}</div>
+          <figure class="me-wrap" data-reveal style="--d:.15s">${aboutCharacter()}</figure>
+        </div>
               <div class="cols profile-block" data-reveal>
         <div>
           <h2>연락처</h2>

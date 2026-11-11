@@ -700,3 +700,28 @@ a:hover { color: var(--accent-text); }
 
 /* 토스트·스켈레톤 */
 .ptoast { background: var(--ink); }
+
+/* ---------- 소개 옆 캐릭터: 손 흔들며 인사 ---------- */
+.about-intro { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 28px; align-items: center; }
+.me-wrap { margin: 0; }
+.me-char { width: 100%; height: auto; display: block; color: var(--accent); overflow: visible; }
+.mc-halo { fill: var(--accent-soft); }
+.mc-bub { fill: var(--surface); stroke: color-mix(in srgb, var(--accent) 30%, var(--line)); stroke-width: 1.5; }
+.mc-bub-t { font: 700 15px var(--font); fill: var(--accent-text); }
+.mc-wave, .mc-eyes, .mc-body, .mc-bubble { transform-box: view-box; }
+.mc-wave { transform-origin: 226px 306px; }
+.mc-eyes { transform-origin: 160px 196px; }
+.mc-bubble { transform-origin: 60px 96px; }
+.motion .mc-wave { animation: mc-wave 2.8s ease-in-out .8s infinite; }
+.motion .mc-eyes { animation: mc-blink 4.6s ease-in-out 2s infinite; }
+.motion .mc-body { animation: mc-bob 3.4s ease-in-out infinite; }
+.motion .mc-motion { animation: mc-fade 2.8s ease-in-out .8s infinite; }
+.motion .me-wrap.in .mc-bubble { animation: mc-pop .5s var(--ease-back) .5s both; }
+@keyframes mc-wave { 0%, 62%, 100% { transform: rotate(0); } 10% { transform: rotate(-14deg); } 22% { transform: rotate(9deg); } 34% { transform: rotate(-14deg); } 46% { transform: rotate(9deg); } 55% { transform: rotate(-3deg); } }
+@keyframes mc-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+@keyframes mc-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes mc-pop { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: none; } }
+@keyframes mc-fade { 0%, 62%, 100% { opacity: 0; } 15%, 45% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .mc-motion { opacity: 0; } }
+@media (max-width: 767px) { .about-intro { grid-template-columns: 1fr; gap: 8px; } .me-wrap { order: -1; width: 150px; justify-self: center; } }
+@media print { .me-wrap { display: none; } .about-intro { display: block; } }
