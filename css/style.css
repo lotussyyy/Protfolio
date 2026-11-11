@@ -756,3 +756,11 @@ html[data-theme='dark'] .pf-view { --dots-o: .28; }
 .me-char { background: #8cbbea; }
 @media (max-width: 767px) { .pf-view::before { left: -16px; right: -16px; height: 620px; } }
 @media print { .pf-view::before { display: none; } }
+
+/* ---------- 섹션 Scroll Reveal: 30% 보이면 아래에서 20px 올라오며 한 번 나타남 ---------- */
+.motion [data-sec-reveal] { opacity: 0; translate: 0 20px; transition: opacity .7s var(--ease-out), translate .7s var(--ease-out); }
+.motion [data-sec-reveal].sec-in { opacity: 1; translate: none; }
+/* 섹션 안의 작은 요소들은 위치 이동 없이 차례로 서서히만(이중으로 움직이지 않게) */
+.motion [data-sec-reveal] [data-reveal] { translate: none; }
+@media (prefers-reduced-motion: reduce) { [data-sec-reveal] { opacity: 1 !important; translate: none !important; } }
+@media print { [data-sec-reveal] { opacity: 1 !important; translate: none !important; } }

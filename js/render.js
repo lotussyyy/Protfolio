@@ -243,6 +243,25 @@ export function mountPortfolio(root, items, opts = {}) {
     els.forEach(el => revealIO.observe(el));
   }
 
+  // ----- 섹션 Scroll Reveal: 화면에 30% 들어오면 아래에서 20px 올라오며 나타남(한 번만) -----
+  let secIO = null;
+  function revealSections() {
+    const els = [...root.querySelectorAll('.pf-view > section, .pf-view > .topic-head, .pf-view > .topic-grid')].filter(el => !el.classList.contains('sec-in'));
+    els.forEach(el => el.setAttribute('data-sec-reveal', ''));
+    if (!motionOn() || !('IntersectionObserver' in window)) { els.forEach(el => el.classList.add('sec-in')); return; }
+    if (!secIO) {
+      secIO = new IntersectionObserver(entries => entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        // 30% 이상 보이면 실행. 화면보다 아주 긴 섹션은 화면 높이의 30%를 채우면 실행
+        const vh = en.rootBounds ? en.rootBounds.height : innerHeight;
+        if (en.intersectionRatio >= 0.3 || en.intersectionRect.height >= vh * 0.3) {
+          en.target.classList.add('sec-in'); secIO.unobserve(en.target);
+        }
+      }), { threshold: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3] });
+    }
+    els.forEach(el => secIO.observe(el));
+  }
+
   // ----- 3D Tilt: 대표 프로젝트 카드가 마우스를 따라 살짝 기운다(최대 5도) -----
   const tiltOn = () => motionOn() && matchMedia('(hover: hover) and (pointer: fine)').matches;
   root.addEventListener('pointermove', e => {
@@ -919,6 +938,7 @@ export function mountPortfolio(root, items, opts = {}) {
   setView(opts.initialView || (h0 ? 'portfolio' : 'landing'));
 
   reveal(root);
+  revealSections();
 
   // ----- Parallax Scrolling: 첫 화면 배경은 천천히(0.35배 늦게), 앞쪽 이미지는 더 빠르게 -----
   const pxBg = $('[data-px="bg"]'), pxFg = $('[data-px="fg"]'), heroEl = $('.hero');
