@@ -753,6 +753,6 @@ a:hover { color: var(--accent-text); }
 .motion .pf-view::before { animation: dots-in 1.2s var(--ease-out) both; }
 @keyframes dots-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: var(--dots-o, 1); transform: none; } }
 html[data-theme='dark'] .pf-view { --dots-o: .28; }
-.me-char { background: #a6c9ee; }
+.me-char { background: #8cbbea; }
 @media (max-width: 767px) { .pf-view::before { left: -16px; right: -16px; height: 620px; } }
 @media print { .pf-view::before { display: none; } }

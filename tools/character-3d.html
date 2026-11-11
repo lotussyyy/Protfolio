@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
 <!-- 소개 캐릭터 3D 장면(아트 토이 인형). 사용법: three.js 저장소를 이 파일 옆 three/ 폴더에 두고 로컬 서버로 연 뒤 캔버스를 저장 -->
-<style>html,body{margin:0;background:#cfe0f0}canvas{display:block}</style>
+<style>html,body{margin:0;background:#9ec3e6}canvas{display:block}</style>
 <script type="importmap">{"imports":{"three":"./three/build/three.module.js","three/addons/":"./three/examples/jsm/"}}</script>
 </head><body>
 <script type="module">
@@ -22,142 +22,145 @@ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.VSMShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-// 파스텔 블루 배경(아래로 갈수록 살짝 밝게)
-{
+{ // 파스텔 블루 배경
   const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d');
-  const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#86b8f0'); gr.addColorStop(1, '#a9cdf5');
+  const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#7fb2e6'); gr.addColorStop(1, '#9cc4ec');
   g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; scene.background = t;
 }
 const pm = new THREE.PMREMGenerator(renderer);
-scene.environment = pm.fromScene(new RoomEnvironment(), 0.06).texture;
-scene.environmentIntensity = 0.5;
+scene.environment = pm.fromScene(new RoomEnvironment(), 0.08).texture;
+scene.environmentIntensity = 0.55;
 
-const cam = new THREE.PerspectiveCamera(22, W / H, 0.1, 100);
-cam.position.set(0, 1.3, 10.0); cam.lookAt(0, 1.05, 0);
+const cam = new THREE.PerspectiveCamera(21, W / H, 0.1, 100);
+cam.position.set(0, 1.3, 10.4); cam.lookAt(0, 1.0, 0);
 
-// 크고 부드러운 조명
-const key = new THREE.DirectionalLight('#fff3e6', 1.75);
-key.position.set(-3, 4.5, 5); key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 14; key.shadow.blurSamples = 24; key.shadow.bias = -0.0006;
-Object.assign(key.shadow.camera, { left: -2.6, right: 2.6, top: 3.6, bottom: -1.6, near: 1, far: 20 });
+// 크고 부드러운 스튜디오 조명
+const key = new THREE.DirectionalLight('#fff4ea', 1.6);
+key.position.set(-2.4, 4.4, 6); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 16; key.shadow.blurSamples = 25; key.shadow.bias = -0.0006;
+Object.assign(key.shadow.camera, { left: -2.6, right: 2.6, top: 3.6, bottom: -1.8, near: 1, far: 20 });
 scene.add(key);
-const fill = new THREE.DirectionalLight('#eaf2ff', 0.55); fill.position.set(3.5, 1.5, 5); scene.add(fill);
-const rim = new THREE.DirectionalLight('#ffffff', 0.9); rim.position.set(-1, 3, -5); scene.add(rim);
-scene.add(new THREE.HemisphereLight('#ffffff', '#cfdcea', 0.55));
+const fill = new THREE.DirectionalLight('#eaf2ff', 0.6); fill.position.set(3.5, 1.2, 5); scene.add(fill);
+const rim = new THREE.DirectionalLight('#ffffff', 0.9); rim.position.set(1.5, 3, -5); scene.add(rim);
+scene.add(new THREE.HemisphereLight('#ffffff', '#cbd9e8', 0.6));
 
 // ---------- 재질 ----------
-const skinBase = { roughness: 0.78, sheen: 0.7, sheenColor: new THREE.Color('#ffcbb8'), sheenRoughness: 0.7, clearcoat: 0.12, clearcoatRoughness: 0.55, emissive: new THREE.Color('#6a2414'), emissiveIntensity: 0.07 };
+const skinBase = { roughness: 0.78, sheen: 0.7, sheenColor: new THREE.Color('#ffcab6'), sheenRoughness: 0.7, clearcoat: 0.1, clearcoatRoughness: 0.6, emissive: new THREE.Color('#702816'), emissiveIntensity: 0.06 };
 const skinMat = new THREE.MeshPhysicalMaterial({ color: '#ffffff', vertexColors: true, ...skinBase });
 const skin = c => new THREE.MeshPhysicalMaterial({ color: c, ...skinBase });
-const hairMat = new THREE.MeshPhysicalMaterial({ color: '#40251a', roughness: 0.46, clearcoat: 0.18, clearcoatRoughness: 0.45, sheen: 1, sheenColor: new THREE.Color('#a8775c'), sheenRoughness: 0.5, envMapIntensity: 0.6, transmission: 0.12, thickness: 0.4, ior: 1.45, attenuationColor: new THREE.Color('#5a2c18'), attenuationDistance: 0.4, side: THREE.DoubleSide });
-const topMat = new THREE.MeshPhysicalMaterial({ color: '#fbfbfb', roughness: 0.62, sheen: 0.5, sheenColor: new THREE.Color('#ffffff'), clearcoat: 0.08, clearcoatRoughness: 0.6 });
+// 부드러운 초콜릿 브라운, 새틴 레진(은은한 투명감)
+const hairMat = new THREE.MeshPhysicalMaterial({ color: '#6a3b29', roughness: 0.36, clearcoat: 0.25, clearcoatRoughness: 0.35, sheen: 0.9, sheenColor: new THREE.Color('#c08a6a'), sheenRoughness: 0.45, transmission: 0.28, thickness: 0.5, ior: 1.42, attenuationColor: new THREE.Color('#7a3e22'), attenuationDistance: 0.45, envMapIntensity: 0.6, side: THREE.DoubleSide });
+const topMat = new THREE.MeshPhysicalMaterial({ color: '#fbfbfb', roughness: 0.6, sheen: 0.4, sheenColor: new THREE.Color('#ffffff'), clearcoat: 0.1, clearcoatRoughness: 0.5 });
 
-const HEAD = new THREE.Vector3(0, 1.38, 0);
+const HEAD = new THREE.Vector3(0, 1.42, 0);
 const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const gauss = (d, w) => Math.exp(-((d / w) ** 2));
+const EYE = [{ x: -0.37, y: -0.15 }, { x: 0.37, y: -0.15 }];
 
-// ---------- 머리(얼굴): 둥근 이마, 통통한 볼, 작고 둥근 턱 ----------
-function headShape(d) {           // d: 단위 방향 → 얼굴 표면 점(로컬)
-  let { x, y, z } = d;
+// ---------- 머리(얼굴): 계란형에 가까운 둥근 머리, 아래쪽에 도톰한 볼, 좁은 턱 ----------
+function headShape(d) {
+  const { x, y, z } = d;
   let r = 1;
-  const cheek = Math.exp(-(((y + 0.42) / 0.3) ** 2)) * smooth(-0.1, 0.6, z) * (0.55 + 0.45 * smooth(0.1, 0.6, Math.abs(x)));
-  r *= 1 + 0.1 * cheek;                                         // 볼살
-  const jaw = smooth(-0.35, -0.95, y);
-  r *= 1 - 0.13 * jaw * (0.6 + 0.4 * Math.abs(x));               // 아래로 갈수록 부드럽게 좁아짐
-  r *= 1 + 0.03 * smooth(0.2, 0.9, y);                           // 둥근 이마
-  return new THREE.Vector3(x * 1.08, y * 0.97, z * 0.98).multiplyScalar(r);
+  const front = smooth(-0.1, 0.55, z);
+  for (const sx of [-1, 1]) r += 0.11 * gauss(Math.hypot((x - sx * 0.52) * 1.1, (y + 0.42) * 1.25), 0.36) * front;   // 도톰한 볼
+  const jaw = smooth(-0.5, -1.0, y);
+  r *= 1 - 0.09 * jaw * smooth(0.0, 0.7, Math.abs(x) + 0.2 * (1 - front));
+  r *= 1 - 0.05 * smooth(-0.7, -1.0, y);                                           // 좁고 둥근 턱
+  for (const e of EYE) r -= 0.028 * gauss(Math.hypot(x - e.x * 0.95, y - e.y), 0.2) * front;                          // 눈 주변 얕은 오목함
+  r *= 1 + 0.02 * smooth(0.3, 0.9, y);
+  return new THREE.Vector3(x * 1.0, y * 1.03, z * 0.98).multiplyScalar(r);
 }
-const hg = new THREE.SphereGeometry(1, 200, 150);
+const hg = new THREE.SphereGeometry(1, 220, 170);
 {
   const p = hg.attributes.position, v = new THREE.Vector3(), col = [];
-  const base = new THREE.Color('#f5c2a8'), blush = new THREE.Color('#f0928a'), warm = new THREE.Color('#eeb39b');
+  const base = new THREE.Color('#f8d3c0'), blush = new THREE.Color('#f29a90'), lid = new THREE.Color('#eab4a0');
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i).normalize(); const s = headShape(v); p.setXYZ(i, s.x, s.y, s.z);
     const c = base.clone();
-    for (const sx of [-1, 1]) { const d = Math.hypot((s.x - sx * 0.58) / 1.25, s.y + 0.46); if (s.z > 0.2) c.lerp(blush, 0.55 * Math.exp(-((d / 0.2) ** 2))); }
-    if (s.y < -0.75) c.lerp(warm, smooth(-0.75, -1.0, s.y) * 0.5);
+    if (s.z > 0.2) {
+      for (const sx of [-1, 1]) c.lerp(blush, 0.6 * gauss(Math.hypot((s.x - sx * 0.5) / 1.3, s.y + 0.44), 0.2));
+      for (const e of EYE) c.lerp(lid, 0.35 * gauss(Math.hypot((s.x - e.x) / 1.2, s.y - e.y - 0.13), 0.1));
+    }
     col.push(c.r, c.g, c.b);
   }
   hg.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); hg.computeVertexNormals();
 }
 const head = new THREE.Mesh(hg, skinMat); head.position.copy(HEAD); head.castShadow = head.receiveShadow = true; scene.add(head);
 
-// 표면 점·법선(로컬 방향 기준)
 function dirOf(theta, phi) { return new THREE.Vector3(Math.sin(theta) * Math.sin(phi), Math.cos(theta), Math.sin(theta) * Math.cos(phi)); }
 function surfAt(d, off = 0) {
-  const p = headShape(d.clone().normalize());
-  const e = 1e-3, t1 = new THREE.Vector3(), t2 = new THREE.Vector3();
-  const a = Math.abs(d.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+  d = d.clone().normalize(); const p = headShape(d);
+  const e = 1e-3, a = Math.abs(d.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
   const u = new THREE.Vector3().crossVectors(d, a).normalize(), w = new THREE.Vector3().crossVectors(d, u).normalize();
-  t1.copy(headShape(d.clone().addScaledVector(u, e).normalize())).sub(p);
-  t2.copy(headShape(d.clone().addScaledVector(w, e).normalize())).sub(p);
+  const t1 = headShape(d.clone().addScaledVector(u, e).normalize()).sub(p), t2 = headShape(d.clone().addScaledVector(w, e).normalize()).sub(p);
   const n = new THREE.Vector3().crossVectors(t1, t2).normalize(); if (n.dot(d) < 0) n.negate();
   return { p: p.addScaledVector(n, off).add(HEAD), n };
 }
-// 얼굴 앞쪽의 (x, y) 지점
-function faceAt(x, y, off = 0) { const d = new THREE.Vector3(x / 1.08, y / 0.97, 0); d.z = Math.sqrt(Math.max(0.02, 1 - d.x * d.x - d.y * d.y)); return surfAt(d.normalize(), off); }
+function faceAt(x, y, off = 0) { const d = new THREE.Vector3(x, y / 1.03, 0); d.z = Math.sqrt(Math.max(0.02, 1 - d.x * d.x - d.y * d.y)); return surfAt(d, off); }
 
-// ---------- 눈: 둥글고 맑은 유리구슬 ----------
+// ---------- 눈: 부드러운 타원, 크고 따뜻한 갈색 홍채, 유리 같은 반사 ----------
 function eyeTex() {
   const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
-  g.fillStyle = '#f6f1ee'; g.fillRect(0, 0, 512, 512);
-  const cx = 256, cy = 256, R = 236;
-  const ir = g.createRadialGradient(cx, cy + 20, 8, cx, cy, R);
-  ir.addColorStop(0, '#b98458'); ir.addColorStop(0.42, '#8a5634'); ir.addColorStop(0.8, '#55301b'); ir.addColorStop(1, '#3a2012');
+  const sc = g.createRadialGradient(256, 256, 120, 256, 256, 300); sc.addColorStop(0, '#fbf7f4'); sc.addColorStop(1, '#e9dcd6');
+  g.fillStyle = sc; g.fillRect(0, 0, 512, 512);
+  const cx = 256, cy = 262, R = 176;
+  const ir = g.createRadialGradient(cx, cy + 40, 6, cx, cy, R);
+  ir.addColorStop(0, '#c99266'); ir.addColorStop(0.35, '#9a643d'); ir.addColorStop(0.75, '#64391f'); ir.addColorStop(1, '#3c2112');
   g.fillStyle = ir; g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fill();
-  g.globalAlpha = 0.18; g.strokeStyle = '#d9a777'; g.lineWidth = 3;
-  for (let a = 0; a < Math.PI * 2; a += 0.12) { g.beginPath(); g.moveTo(cx + Math.cos(a) * 70, cy + Math.sin(a) * 70); g.lineTo(cx + Math.cos(a) * 150, cy + Math.sin(a) * 150); g.stroke(); }
+  g.globalAlpha = 0.15; g.strokeStyle = '#e2b385'; g.lineWidth = 3;
+  for (let a = 0; a < Math.PI * 2; a += 0.1) { g.beginPath(); g.moveTo(cx + Math.cos(a) * 66, cy + Math.sin(a) * 66); g.lineTo(cx + Math.cos(a) * 160, cy + Math.sin(a) * 160); g.stroke(); }
   g.globalAlpha = 1;
-  g.fillStyle = '#20110a'; g.beginPath(); g.arc(cx, cy + 4, 84, 0, Math.PI * 2); g.fill();
-  const lo = g.createRadialGradient(cx, cy + 120, 5, cx, cy + 120, 110); lo.addColorStop(0, 'rgba(255,214,170,.5)'); lo.addColorStop(1, 'rgba(255,214,170,0)');
+  g.fillStyle = '#26140b'; g.beginPath(); g.arc(cx, cy + 4, 70, 0, Math.PI * 2); g.fill();
+  const lo = g.createRadialGradient(cx, cy + 120, 4, cx, cy + 120, 110); lo.addColorStop(0, 'rgba(255,210,165,.55)'); lo.addColorStop(1, 'rgba(255,210,165,0)');
   g.fillStyle = lo; g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fill();
+  const sh = g.createLinearGradient(0, 60, 0, 220); sh.addColorStop(0, 'rgba(90,50,35,.45)'); sh.addColorStop(1, 'rgba(90,50,35,0)');
+  g.fillStyle = sh; g.fillRect(0, 0, 512, 230);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
 }
-const irisMat = new THREE.MeshPhysicalMaterial({ map: eyeTex(), roughness: 0.2, clearcoat: 0.8, clearcoatRoughness: 0.06, envMapIntensity: 0.7 });
-const corneaMat = new THREE.MeshPhysicalMaterial({ color: '#ffffff', roughness: 0.02, transmission: 1, thickness: 0.05, ior: 1.38, clearcoat: 1, clearcoatRoughness: 0.02, transparent: true, opacity: 1 });
-const lashMat = new THREE.MeshPhysicalMaterial({ color: '#6b4636', roughness: 0.6 });
-function eye(sx) {
-  const R = 0.25;
-  const at = faceAt(sx * 0.39, -0.17, 0);
-  const dirOut = at.n.clone().lerp(new THREE.Vector3(0, 0, 1), 0.55).normalize();
-  const center = at.p.clone().addScaledVector(dirOut, -0.175);
-  const g = new THREE.SphereGeometry(R, 96, 64); g.rotateX(Math.PI / 2);      // 극점을 +z로
+const eyeMat = new THREE.MeshPhysicalMaterial({ map: eyeTex(), roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 0.9 });
+for (const e of EYE) {
+  const R = 0.27, sx = Math.sign(e.x);
+  const at = faceAt(e.x, e.y, 0);
+  const out = at.n.clone().lerp(new THREE.Vector3(0, 0, 1), 0.6).normalize();
+  const center = at.p.clone().addScaledVector(out, -0.16);
+  const g = new THREE.SphereGeometry(R, 96, 64); g.rotateX(Math.PI / 2);
   const p = g.attributes.position, uv = g.attributes.uv;
   for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / R * 0.5 + 0.5, p.getY(i) / R * 0.5 + 0.5);
-  const ball = new THREE.Mesh(g, irisMat); ball.position.copy(center); ball.lookAt(center.clone().add(dirOut)); ball.receiveShadow = true; scene.add(ball);
-
-  // 아주 얇은 윗눈꺼풀(피부) + 옅은 갈색 속눈썹 선 하나
-  // 눈 주변: 부드러운 윗눈꺼풀 주름(피부) + 아래 눈두덩, 옅은 갈색 속눈썹 선
-  const open = Math.sqrt(R * R - 0.175 * 0.175);
-  const ring = (r0, tube, a0, a1, mat, z) => { const t = new THREE.Mesh(new THREE.TorusGeometry(r0, tube, 20, 64, (a1 - a0) * Math.PI), mat); t.rotation.z = a0 * Math.PI; const g = new THREE.Group(); g.add(t); t.position.z = z; g.position.copy(center); g.lookAt(center.clone().add(dirOut)); scene.add(g); t.castShadow = true; return t; };
-  ring(open * 1.05, 0.045, 0.1, 0.9, skin('#f4c4ad'), 0.15);
-  ring(open * 1.0, 0.007, 0.16, 0.84, lashMat, 0.183);
+  g.scale(1.1, 1.0, 1.0);
+  const ball = new THREE.Mesh(g, eyeMat); ball.position.copy(center); ball.lookAt(center.clone().add(out)); ball.rotateZ(sx * 0.05); ball.receiveShadow = true; scene.add(ball);
+  const hl = new THREE.Mesh(new THREE.SphereGeometry(0.028, 24, 16), new THREE.MeshBasicMaterial({ color: '#ffffff' }));
+  hl.position.copy(center).add(new THREE.Vector3(-0.07, 0.08, R * 0.97)); hl.scale.set(1, 1.15, 0.3); scene.add(hl);
+  const hl2 = hl.clone(); hl2.scale.set(0.45, 0.45, 0.2); hl2.position.copy(center).add(new THREE.Vector3(0.06, -0.075, R * 0.98)); scene.add(hl2);
+  const lid = new THREE.Mesh(new THREE.SphereGeometry(R * 1.035, 96, 48, 0, Math.PI * 2, 0, Math.PI * 0.32), skin('#f2c5b0'));
+  lid.scale.set(1.1, 1, 1); lid.position.copy(center); lid.lookAt(center.clone().add(new THREE.Vector3(0, 1, 0.45)));
+  lid.castShadow = true; scene.add(lid);
 }
-eye(-1); eye(1);
-
-// 코: 작고 낮게 / 입: 작고 부드러운 입술
-{ const n = faceAt(0, -0.45, -0.03); const m = new THREE.Mesh(new THREE.SphereGeometry(0.062, 48, 32), skin('#f6c9b4')); m.scale.set(1.05, 0.72, 0.75); m.position.copy(n.p); m.castShadow = true; scene.add(m); }
-{ const lipMat = new THREE.MeshPhysicalMaterial({ color: '#e39a90', roughness: 0.5, sheen: 0.5, sheenColor: new THREE.Color('#ffc2b5') });
-  const m = faceAt(0, -0.64, -0.03);
-  for (const sx of [-1, 1]) { const u = new THREE.Mesh(new THREE.SphereGeometry(0.06, 48, 32), lipMat); u.scale.set(0.95, 0.42, 0.55); u.position.copy(m.p).add(new THREE.Vector3(sx * 0.035, 0.016, 0)); scene.add(u); }
-  const l = new THREE.Mesh(new THREE.SphereGeometry(0.06, 48, 32), lipMat); l.scale.set(1.35, 0.5, 0.6); l.position.copy(m.p).add(new THREE.Vector3(0, -0.026, 0.004)); scene.add(l); }
-// 귀(옆머리에 대부분 가려짐)
-for (const sx of [-1, 1]) { const e = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), skin('#f3c6b1')); e.scale.set(0.11, 0.19, 0.09); e.position.set(sx * 1.13, HEAD.y - 0.2, -0.06); scene.add(e); }
+{ const n = faceAt(0, -0.43, -0.035); const m = new THREE.Mesh(new THREE.SphereGeometry(0.06, 48, 32), skin('#f6cab6')); m.scale.set(1.0, 0.75, 0.8); m.position.copy(n.p); m.castShadow = true; scene.add(m); }
+{ const lip = new THREE.MeshPhysicalMaterial({ color: '#d98276', roughness: 0.55, sheen: 0.5, sheenColor: new THREE.Color('#ffc3b4') });
+  const m = faceAt(0, -0.6, -0.025);
+  for (const sx of [-1, 1]) { const u = new THREE.Mesh(new THREE.SphereGeometry(0.05, 48, 32), lip); u.scale.set(0.9, 0.38, 0.5); u.position.copy(m.p).add(new THREE.Vector3(sx * 0.028, 0.012, 0)); scene.add(u); }
+  const l = new THREE.Mesh(new THREE.SphereGeometry(0.05, 48, 32), lip); l.scale.set(1.15, 0.45, 0.55); l.position.copy(m.p).add(new THREE.Vector3(0, -0.02, 0.004)); scene.add(l); }
+for (const sx of [-1, 1]) {
+  const e = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), skin('#f4c6b0'));
+  e.scale.set(0.12, 0.2, 0.1); e.position.set(sx * 1.0, HEAD.y - 0.12, -0.02); e.rotation.y = sx * 0.5; e.castShadow = e.receiveShadow = true; scene.add(e);
+  const inner = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), skin('#eeb4a0')); inner.scale.set(0.06, 0.12, 0.05); inner.position.set(sx * 1.05, HEAD.y - 0.12, 0.03); scene.add(inner);
+}
 
 // ---------- 목·어깨·흰 민소매 ----------
 function lathe(prof, zs, mat, y = 0) {
   const g = new THREE.LatheGeometry(new THREE.SplineCurve(prof.map(([a, b]) => new THREE.Vector2(a, b))).getPoints(120).reverse(), 160);
   g.scale(1, 1, zs); const m = new THREE.Mesh(g, mat); m.position.y = y; m.castShadow = m.receiveShadow = true; scene.add(m); return m;
 }
-lathe([[0.0, 1.0], [0.19, 0.98], [0.2, 0.75], [0.22, 0.62], [0.32, 0.53], [0.54, 0.46], [0.72, 0.36], [0.82, 0.2], [0.84, 0.0], [0.82, -0.8]], 0.64, skin('#f4c4ad'), -0.02);
-lathe([[0.0, 0.2], [0.3, 0.215], [0.55, 0.2], [0.73, 0.12], [0.84, 0.0], [0.86, -0.3], [0.84, -0.85]], 0.68, topMat, -0.02);
+lathe([[0.0, 1.0], [0.17, 0.98], [0.17, 0.72], [0.19, 0.6], [0.28, 0.52], [0.46, 0.46], [0.6, 0.37], [0.68, 0.22], [0.7, 0.02], [0.68, -0.9]], 0.68, skin('#f3c7b1'), 0);
+lathe([[0.0, 0.16], [0.28, 0.17], [0.48, 0.15], [0.62, 0.08], [0.715, -0.06], [0.72, -0.4], [0.7, -0.9]], 0.72, topMat, 0);
 for (const sx of [-1, 1]) {
-  const c = new THREE.CatmullRomCurve3([new THREE.Vector3(sx * 0.3, 0.16, 0.53), new THREE.Vector3(sx * 0.36, 0.38, 0.33), new THREE.Vector3(sx * 0.4, 0.44, 0.0), new THREE.Vector3(sx * 0.38, 0.34, -0.3)]);
-  const st = new THREE.Mesh(new THREE.TubeGeometry(c, 48, 0.04, 16), topMat); st.scale.z = 1; st.castShadow = true; scene.add(st);
+  const c = new THREE.CatmullRomCurve3([new THREE.Vector3(sx * 0.3, 0.14, 0.46), new THREE.Vector3(sx * 0.34, 0.36, 0.3), new THREE.Vector3(sx * 0.37, 0.46, 0.0), new THREE.Vector3(sx * 0.35, 0.36, -0.3)]);
+  const st = new THREE.Mesh(new THREE.TubeGeometry(c, 48, 0.05, 16), topMat); st.scale.set(1.25, 1, 1); st.position.x = sx * -0.08; st.castShadow = true; scene.add(st);
 }
+for (const sx of [-1, 1]) { const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 0.7, 12, 32), skin('#f3c5ae')); arm.position.set(sx * 0.75, -0.25, -0.04); arm.rotation.z = sx * 0.1; arm.castShadow = arm.receiveShadow = true; scene.add(arm); }
 
-// ---------- 머리카락: 부드럽게 이어진 큰 덩어리 ----------
-// P(u,v): 중심면, N(u,v): 바깥 방향, T(u,v): 두께(가장자리로 갈수록 0 → 둥근 끝)
+// ---------- 머리카락 ----------
 function sheet(nu, nv, fn) {
   const outer = [], inner = [], idx = [];
   for (let i = 0; i <= nu; i++) for (let j = 0; j <= nv; j++) {
@@ -169,104 +172,82 @@ function sheet(nu, nv, fn) {
   for (const q of inner) pos.push(q.x, q.y, q.z);
   for (let i = 0; i < nu; i++) for (let j = 0; j < nv; j++) {
     const a = i * row + j, b = a + 1, c = a + row, d = c + 1;
-    idx.push(a, c, b, b, c, d);
-    idx.push(half + a, half + b, half + c, half + b, half + d, half + c);
+    idx.push(a, c, b, b, c, d); idx.push(half + a, half + b, half + c, half + b, half + d, half + c);
   }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
   const m = new THREE.Mesh(g, hairMat); m.castShadow = m.receiveShadow = true; scene.add(m); return m;
 }
-const edge = (x, w) => Math.sqrt(Math.max(0, Math.min(1, x / w)));     // 가장자리 둥글게
-let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const edge = (x, w) => Math.sqrt(Math.max(0, Math.min(1, x / w)));
 
-// 1) 정수리·뒤통수: 가운데 가르마, 아주 은은한 결
+// 1) 머리 전체 덩어리, 가운데 가르마
 sheet(90, 240, (u, v) => {
-  const phi = (v - 0.5) * Math.PI * 2;                       // 0 = 앞
-  const front = Math.cos(phi);
-  const thMax = 0.72 + (1 - front) * 0.6;                     // 앞은 이마 위까지, 뒤는 길게
+  const phi = (v - 0.5) * Math.PI * 2, front = Math.cos(phi);
+  const thMax = 0.7 + (1 - front) * 0.62;
   const th = 0.001 + u * thMax;
-  const d = dirOf(th, phi);
-  const s = surfAt(d);
-  const part = 0.03 * Math.exp(-((phi / 0.05) ** 2)) * smooth(0.6, 0.0, th);
-  const flow = 0.003 * Math.sin(phi * 7 + th * 2);
-  const off = 0.075 + 0.03 * smooth(0.6, 0.0, th) - part + flow;
+  const s = surfAt(dirOf(th, phi));
+  const part = 0.035 * gauss(phi, 0.06) * smooth(0.65, 0.0, th);
+  const off = 0.08 + 0.035 * smooth(0.7, 0.0, th) - part + 0.004 * Math.sin(phi * 6 + th * 3);
   return { p: s.p.addScaledVector(s.n, off), n: s.n, t: 0.06 * edge(1 - u, 0.08) };
 });
-
-// 2) 앞머리: 크기가 다른 큰 덩어리 여러 개가 두 층으로 겹쳐짐(끝은 둥글게 안으로 말림)
-function bangMass(c, w, len, lift, sweep, thick) {
-  sheet(56, 64, (u, v) => {
-    const s = 2 * v - 1;                                   // -1..1 (덩어리 가로)
-    const phi = c + s * w + sweep * u * (0.6 + 0.4 * s * Math.sign(sweep || 1));
-    const bot = len - 0.07 * s * s;                        // 아래 끝: 둥근 U자
-    const top = 0.12 + 0.05 * Math.abs(c);
+// 2) 앞머리: 가르마에서 바깥으로 휘어 내려오는 물방울형 곡선 덩어리(길이·폭 제각각, 비대칭)
+function bang(c, w, len, lift, sweep, thick, tilt = 0) {
+  sheet(64, 48, (u, v) => {
+    const s = 2 * v - 1;
+    const taper = 1 - 0.32 * smooth(0.5, 1, u);
+    const phi = c + s * w * taper + sweep * u * u + tilt * s * u;
+    const bot = len - 0.09 * s * s;
+    const top = 0.1 + 0.05 * Math.abs(c);
     const th = top + u * (bot - top);
-    const d = dirOf(th, phi); const sp = surfAt(d);
-    const curl = 0.05 * smooth(0.78, 1, u);              // 끝이 얼굴 쪽으로 살짝 말림
-    const belly = 0.03 * (1 - s * s) * Math.sin(Math.PI * u); // 가운데가 도톰
-    const t = thick * edge(1 - u, 0.16) * edge(1 - Math.abs(s), 0.35);
+    const sp = surfAt(dirOf(th, phi));
+    const curl = 0.055 * smooth(0.75, 1, u);
+    const belly = 0.035 * (1 - s * s) * Math.sin(Math.PI * Math.min(1, u * 1.1));
+    const t = thick * edge(1 - u, 0.22) * edge(1 - Math.abs(s), 0.45);
     return { p: sp.p.addScaledVector(sp.n, lift + belly - curl), n: sp.n, t };
   });
 }
-// 뒷층(넓게)
-bangMass(-0.55, 0.42, 1.36, 0.075, -0.1, 0.1);
-bangMass(0.52, 0.42, 1.34, 0.075, 0.1, 0.1);
-bangMass(0.0, 0.3, 1.28, 0.07, 0.0, 0.09);
-// 앞층(겹쳐 올라오는 덩어리)
-bangMass(-0.24, 0.27, 1.41, 0.115, -0.12, 0.1);
-bangMass(0.26, 0.24, 1.37, 0.115, 0.14, 0.1);
-bangMass(-0.8, 0.24, 1.52, 0.105, -0.06, 0.11);
-bangMass(0.83, 0.23, 1.55, 0.105, 0.06, 0.11);
-// 정수리에서 양옆으로 쓸리는 큰 덩어리(단조로운 결을 깨 줌)
-for (const sx of [-1, 1]) sheet(70, 60, (u, v) => {
-  const s = 2 * v - 1, phi = sx * (0.55 + 0.5 * u) + s * 0.32 * (0.6 + u * 0.4);
-  const th = 0.08 + u * 1.0; const sp = surfAt(dirOf(th, phi));
-  return { p: sp.p.addScaledVector(sp.n, 0.1 + 0.02 * Math.sin(Math.PI * u)), n: sp.n, t: 0.07 * edge(1 - u, 0.2) * edge(1 - Math.abs(s), 0.4) };
-});
-
-// 3) 옆머리: 볼을 부드럽게 감싸며 어깨 앞으로
-function sideHair(sx) {
-  sheet(110, 60, (u, v) => {
-    const phi = sx * (0.9 + v * 0.75);
-    const A = surfAt(dirOf(0.85, phi)).p, B = surfAt(dirOf(1.4, phi)).p, C = surfAt(dirOf(1.9, phi)).p;
+bang(-0.5, 0.38, 1.3, 0.075, -0.16, 0.09);
+bang(0.46, 0.36, 1.27, 0.075, 0.18, 0.09);
+bang(-0.04, 0.26, 1.22, 0.07, 0.04, 0.08);
+bang(-0.2, 0.2, 1.38, 0.112, -0.2, 0.09, -0.05);
+bang(0.15, 0.17, 1.33, 0.112, 0.22, 0.085, 0.05);
+bang(0.38, 0.15, 1.43, 0.105, 0.26, 0.085);
+bang(-0.62, 0.19, 1.47, 0.1, -0.24, 0.09);
+bang(-0.88, 0.17, 1.56, 0.095, -0.12, 0.09);
+bang(0.74, 0.2, 1.52, 0.1, 0.18, 0.09);
+// 3) 옆머리: 귀 뒤로 넘어가 어깨 앞으로 S자로 흐르는 덩어리
+function lock(sx, phi0, width, drop, front, thick, wobble) {
+  sheet(120, 40, (u, v) => {
+    const s = 2 * v - 1;
+    const phi = sx * (phi0 + s * width * (1 - 0.6 * smooth(0.5, 1, u)));
+    const A = surfAt(dirOf(0.8, phi)).p, B = surfAt(dirOf(1.35, phi)).p, C = surfAt(dirOf(1.85, phi)).p;
     const out = new THREE.Vector3(Math.sin(phi), 0, Math.cos(phi)).normalize();
-    const len = 1.25 + 0.18 * Math.sin(v * 5 + sx) - 0.12 * v;
-    const D = C.clone().addScaledVector(out, 0.1).add(new THREE.Vector3(0, -len * 0.5, 0.18 * (1 - v)));
-    const E = C.clone().addScaledVector(out, 0.04).add(new THREE.Vector3(-sx * 0.05, -len, 0.22 * (1 - v) + 0.05));
-    const curve = new THREE.CatmullRomCurve3([A.addScaledVector(out, 0.06), B.addScaledVector(out, 0.08), C.addScaledVector(out, 0.1), D, E]);
-    const P = curve.getPointAt(u);
-    const wave = 0.02 * Math.sin(u * 7 + v * 3);
-    const t = 0.2 * edge(1 - u, 0.12) * edge(v, 0.15) * edge(1 - v, 0.1);
-    return { p: P.addScaledVector(out, wave), n: out, t };
+    const D = C.clone().addScaledVector(out, 0.12).add(new THREE.Vector3(sx * 0.06, -drop * 0.4, front * 0.6));
+    const E = C.clone().addScaledVector(out, 0.04).add(new THREE.Vector3(-sx * wobble, -drop * 0.75, front));
+    const F = C.clone().add(new THREE.Vector3(sx * (0.03 + wobble * 0.5), -drop, front * 1.05));
+    const P = new THREE.CatmullRomCurve3([A.addScaledVector(out, 0.09), B.addScaledVector(out, 0.11), C.addScaledVector(out, 0.12), D, E, F]).getPointAt(u);
+    const t = thick * edge(1 - u, 0.12) * edge(1 - Math.abs(s), 0.5);
+    return { p: P, n: out, t };
   });
 }
-sideHair(-1); sideHair(1);
-// 볼 옆 앞쪽 덩어리(옆머리 위에 겹침)
-for (const sx of [-1, 1]) sheet(90, 40, (u, v) => {
-  const s = 2 * v - 1, phi = sx * (0.98 + s * 0.13);
-  const A = surfAt(dirOf(0.75, phi)).p, B = surfAt(dirOf(1.35, phi)).p, C = surfAt(dirOf(1.85, phi)).p;
-  const out = new THREE.Vector3(Math.sin(phi), 0, Math.cos(phi)).normalize();
-  const D = C.clone().addScaledVector(out, 0.12).add(new THREE.Vector3(sx * 0.02, -0.45, 0.2));
-  const E = C.clone().addScaledVector(out, 0.06).add(new THREE.Vector3(-sx * 0.06, -0.85, 0.28));
-  const P = new THREE.CatmullRomCurve3([A.addScaledVector(out, 0.12), B.addScaledVector(out, 0.13), C.addScaledVector(out, 0.15), D, E]).getPointAt(u);
-  return { p: P, n: out, t: 0.16 * edge(1 - u, 0.14) * edge(1 - Math.abs(s), 0.4) };
-});
-// 4) 뒷머리: 등 뒤로 넓게
+lock(-1, 1.12, 0.2, 1.25, 0.32, 0.17, 0.1);
+lock(1, 1.1, 0.19, 1.15, 0.3, 0.16, 0.13);
+lock(-1, 1.5, 0.26, 1.45, 0.22, 0.2, 0.06);
+lock(1, 1.52, 0.27, 1.5, 0.2, 0.2, 0.08);
+// 4) 뒷머리
 sheet(90, 160, (u, v) => {
-  const phi = Math.PI + (v - 0.5) * 3.4;
+  const phi = Math.PI + (v - 0.5) * 3.3;
   const A = surfAt(dirOf(1.3, phi)).p, C = surfAt(dirOf(2.1, phi)).p;
   const out = new THREE.Vector3(Math.sin(phi), 0, Math.cos(phi)).normalize();
-  const D = C.clone().addScaledVector(out, 0.12).add(new THREE.Vector3(0, -0.8, 0));
-  const E = C.clone().addScaledVector(out, 0.08).add(new THREE.Vector3(0, -1.6, 0));
+  const D = C.clone().addScaledVector(out, 0.12).add(new THREE.Vector3(0, -0.8, 0)), E = C.clone().addScaledVector(out, 0.08).add(new THREE.Vector3(0, -1.6, 0));
   const P = new THREE.CatmullRomCurve3([A.addScaledVector(out, 0.07), C.addScaledVector(out, 0.1), D, E]).getPointAt(u);
   return { p: P, n: out, t: 0.14 * edge(1 - u, 0.08) };
 });
 
-// ---------- 렌더(부드러운 주변 차폐 포함) ----------
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, cam));
 const ao = new GTAOPass(scene, cam, W, H);
 ao.updateGtaoMaterial({ radius: 0.25, distanceExponent: 1.5, thickness: 1, scale: 1.1, samples: 16 });
-ao.blendIntensity = 0.55;
+ao.blendIntensity = 0.5;
 composer.addPass(ao);
 composer.addPass(new OutputPass());
 composer.render();
