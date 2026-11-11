@@ -577,3 +577,36 @@ html { scrollbar-gutter: stable; }
 .motion .landing-contact.out { animation: contact-out .2s var(--ease-out) forwards; }
 @keyframes contact-in { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes contact-out { to { opacity: 0; transform: translateY(10px); } }
+
+/* ---------- 포트폴리오 보기 방식: 간단히 보기(주제 카드) / 한 눈에 보기(긴 스크롤) ---------- */
+.pf-switch { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); margin: 4px 0 24px; }
+.pf-switch button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--ink-2); font: inherit; font-size: 14px; font-weight: 600; padding: 7px 14px; border-radius: 999px; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s; }
+.pf-switch button:hover { color: var(--ink); }
+.pf-switch button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px var(--shadow); }
+.topic-bar, .topic-grid { display: none; }
+.pf-view[data-pf-mode="cards"] > section { display: none; }
+.pf-view[data-pf-mode="cards"] > section.topic-on:not([hidden]) { display: block; }
+.pf-view[data-pf-mode="cards"]:not([data-pf-topic]) > .topic-grid { display: grid; }
+.pf-view[data-pf-mode="cards"][data-pf-topic] > .topic-bar { display: flex; }
+.topic-bar { align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin: -8px 0 8px; }
+.topic-bar [data-topics] svg { transform: rotate(180deg); }
+.tb-pager { display: flex; gap: 8px; flex-wrap: wrap; }
+.topic-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tc-cell { display: flex; min-width: 0; }
+.topic-card { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; padding: 20px; min-height: 210px; color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.topic-card:hover { border-color: var(--ink-2); background: var(--surface); }
+.tc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
+.tc-ico { width: 44px; height: 44px; border-radius: 12px; background: var(--tag); display: grid; place-items: center; transition: background-color .2s, color .2s; }
+.topic-card:hover .tc-ico { background: var(--ink); color: var(--on-ink); }
+.tc-n { font-size: 13px; color: var(--ink-2); } .tc-n b { font-size: 22px; color: var(--ink); margin-right: 2px; }
+.tc-title { font-size: 18px; font-weight: 700; }
+.tc-desc { font-size: 14.5px; color: var(--ink-2); line-height: 1.55; }
+.tc-chips { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.tc-chips .tag { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tc-go { margin-top: auto; padding-top: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 600; }
+.tc-go svg { transition: transform .2s var(--ease-out); }
+.topic-card:hover .tc-go svg { transform: translateX(4px); }
+.motion .pf-view > section.enter, .motion .topic-grid.enter { animation: pf-in .45s var(--ease-out); }
+@media (max-width: 1023px) { .topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .topic-grid { grid-template-columns: 1fr; } .topic-card { min-height: 0; } .pf-switch { width: 100%; } .pf-switch button { flex: 1; justify-content: center; } }
+@media print { .pf-switch, .topic-bar, .topic-grid { display: none !important; } .pf-view > section:not([hidden]) { display: block !important; } }

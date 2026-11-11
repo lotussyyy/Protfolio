@@ -37,7 +37,9 @@ async function start() {
     const h = decodeURIComponent(location.hash.slice(1));
     app.setView(h ? 'portfolio' : 'landing', { fromHash: true });
     const isDetail = /^[pb]-/.test(h);
-    if (h && !isDetail && h !== 'portfolio') document.getElementById(h)?.scrollIntoView();
+    if (h.startsWith('s-')) app.openTopic(h.slice(2), { fromHash: true });
+    else if (h === 'portfolio') app.closeTopic({ fromHash: true });
+    else if (h && !isDetail) app.goToTarget(h);
     if (h.startsWith('p-')) app.openProject(h.slice(2), { fromHash: true });
     else if (h.startsWith('b-')) app.openBook(h.slice(2), { fromHash: true });
     else app.closeDetail({ fromHash: true });

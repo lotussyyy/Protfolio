@@ -9,7 +9,7 @@ export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;'
 const sample = it => (it?.isSample ? '<span class="badge" title="예시 데이터">예시</span>' : '');
 const icons = { file: '📄', image: '🖼️', link: '🔗' };
 const SEC = [
-  ['sec-about', '소개', 'user'], ['sec-skills', '할 수 있는 일', 'target'], ['sec-summary', '한눈에 보기', 'grid'], ['sec-resume', '이력', 'timeline'],
+  ['sec-about', '소개', 'user'], ['sec-skills', '할 수 있는 일', 'target'], ['sec-summary', '핵심 요약', 'grid'], ['sec-resume', '이력', 'timeline'],
   ['sec-featured', '대표 프로젝트', 'star'], ['projects', '전체 프로젝트', 'folder'], ['sec-books', '추천 도서', 'book'],
 ];
 
@@ -150,6 +150,15 @@ export function mountPortfolio(root, items, opts = {}) {
       </section>
       </div>
       <div data-view="portfolio" class="pf-view">
+      <div class="pf-switch" role="group" aria-label="보기 방식">
+        <button type="button" data-mode="cards">${icon('grid', 16)} 간단히 보기</button>
+        <button type="button" data-mode="all">${icon('timeline', 16)} 한 눈에 보기</button>
+      </div>
+      <div class="topic-bar">
+        <button type="button" class="btn small" data-topics>${icon('arrow', 16)} 모든 주제</button>
+        <span class="tb-pager"></span>
+      </div>
+      <div class="topic-grid" id="topic-cards" role="list" aria-label="포트폴리오 주제"></div>
       <section id="sec-about" aria-labelledby="h-about">
         <h2 class="sec-title" id="h-about" data-reveal><span class="ico" aria-hidden="true">👋</span>소개</h2>
         <div data-reveal>${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}</div>
@@ -298,7 +307,7 @@ export function mountPortfolio(root, items, opts = {}) {
   }
   const cards = summaryCards(items);
   const hasSampleResume = items.some(i => i.isSample && ['education', 'experience', 'activity', 'award', 'certificate', 'language', 'tool'].includes(i.kind));
-  $('#sec-summary').innerHTML = `<h2 class="sec-title" id="h-summary" data-reveal><span class="ico" aria-hidden="true">📌</span>한눈에 보기</h2>
+  $('#sec-summary').innerHTML = `<h2 class="sec-title" id="h-summary" data-reveal><span class="ico" aria-hidden="true">📌</span>핵심 요약</h2>
     ${cards.length ? `<div class="bento">${cards.map((c, i) => {
         const size = bentoSize(i, cards.length);
         return `<a class="card${size}" href="#${c.target}" data-scroll="${c.target}" data-reveal style="--d:${(i * 0.06).toFixed(2)}s">
@@ -439,7 +448,7 @@ export function mountPortfolio(root, items, opts = {}) {
 
   // ----- 상세 (F-5) -----
   const detail = $('#detail');
-  let lastFocus = null, lastSource = null, pushedDetail = false, openKey = '';
+  let lastFocus = null, lastSource = null, pushedDetail = false, openKey = '', detailBackHash = '#portfolio';
   let bookGoTo = () => {};
 
   function evidenceHTML(ev, slug) {
@@ -471,7 +480,7 @@ export function mountPortfolio(root, items, opts = {}) {
     detail.scrollTop = 0;
     if (src && target) flyBetween(src, target);
     detail.querySelector('#d-title').focus({ preventScroll: true });
-    if (opts.useHash && !fromHash && location.hash !== '#' + hash) { history.pushState({ detail: true }, '', '#' + hash); pushedDetail = true; }
+    if (opts.useHash && !fromHash && location.hash !== '#' + hash) { if (!/^#[pb]-/.test(location.hash)) detailBackHash = location.hash || '#portfolio'; history.pushState({ detail: true }, '', '#' + hash); pushedDetail = true; }
   }
 
   function openProject(slug, { fromHash = false } = {}) {
@@ -555,7 +564,7 @@ export function mountPortfolio(root, items, opts = {}) {
     const finish = () => {
       detail.hidden = true; detail.innerHTML = ''; detail.classList.remove('closing', 'shared');
       document.body.style.overflow = '';
-      if (opts.useHash && !fromHash && /^#[pb]-/.test(location.hash)) history.pushState(null, '', location.pathname + location.search + '#portfolio');
+      if (opts.useHash && !fromHash && /^#[pb]-/.test(location.hash)) history.pushState(null, '', location.pathname + location.search + detailBackHash);
       lastFocus?.focus?.({ preventScroll: true });
     };
     if (src && target && motionOn()) {
@@ -598,8 +607,7 @@ export function mountPortfolio(root, items, opts = {}) {
     const sc = e.target.closest('[data-scroll]');
     if (sc) {
       e.preventDefault();
-      root.querySelector('#' + CSS.escape(sc.dataset.scroll))?.scrollIntoView({ behavior: 'smooth' });
-      if (sc.dataset.nav) setActive(sc.dataset.nav);
+      goToTarget(sc.dataset.scroll, { push: true });
       setDrawer(false);
       return;
     }
@@ -616,13 +624,17 @@ export function mountPortfolio(root, items, opts = {}) {
       drawList(); return;
     }
     if (e.target.closest('[data-theme-toggle]')) { toggleTheme(); return; }
+    const mb = e.target.closest('[data-mode]');
+    if (mb) { setMode(mb.dataset.mode); return; }
+    const tp = e.target.closest('[data-topic]');
+    if (tp) { e.preventDefault(); openTopic(tp.dataset.topic, { push: true }); return; }
+    if (e.target.closest('[data-topics]')) { e.preventDefault(); closeTopic({ push: true }); return; }
     const svc = e.target.closest('[data-comp]');
     if (svc) {
       Object.assign(st, { tab: svc.dataset.comp, type: '', year: '', q: '' });
       $('#f-type').value = ''; $('#f-year').value = ''; $('#f-q').value = '';
       drawList();
-      root.querySelector('#projects').scrollIntoView({ behavior: 'smooth' });
-      setActive('projects');
+      goToTarget('projects', { push: true });
       return;
     }
     if (e.target.closest('[data-evidence]')) track('evidence', e.target.closest('[data-evidence]').dataset.evidence);
@@ -754,7 +766,7 @@ export function mountPortfolio(root, items, opts = {}) {
     io = new IntersectionObserver(entries => {
       entries.forEach(en => seen.set(en.target.id, en.isIntersecting));
       const cur = secEls.find(el => seen.get(el.id));
-      if (cur) setActive(cur.id);
+      if (cur && mode === 'all') setActive(cur.id);
     }, { rootMargin: '-15% 0px -70% 0px' });
     secEls.forEach(el => io.observe(el));
   }
@@ -767,6 +779,89 @@ export function mountPortfolio(root, items, opts = {}) {
     try { localStorage.setItem('lis-theme', dark ? 'dark' : 'light'); } catch { /* 없음 */ }
     $('[data-theme-toggle]')?.setAttribute('aria-pressed', String(dark));
   }
+  // ----- 포트폴리오 보기 방식: 간단히 보기(주제 카드 → 주제 페이지) / 한 눈에 보기(긴 스크롤) -----
+  const pv = $('.pf-view');
+  let mode = 'cards', topic = null;
+  try { if (localStorage.getItem('lis-pf-mode') === 'all') mode = 'all'; } catch { /* 없음 */ }
+  const counts = k => items.filter(i => i.kind === k).length;
+  const txt = sel => [...root.querySelectorAll(sel)].map(e => e.textContent.replace(/예시$/, '').trim()).filter(Boolean);
+  const uniq = a => [...new Set(a)];
+  const TOPIC = {
+    'sec-about': () => ({ desc: p.headline || p.tagline || '자기소개와 연락처', chips: (p.interests || []).map(i => i.label).slice(0, 3) }),
+    'sec-skills': () => ({ desc: '희망 직무에 맞춘 역량과 관련 프로젝트', chips: txt('#sec-skills .svc-title').map(t => t.replace('핵심 역량', '').trim()).slice(0, 3), n: root.querySelectorAll('#sec-skills .svc-card').length, unit: '개 역량' }),
+    'sec-summary': () => ({ desc: '학력·경력·활동·수상·자격·스킬을 숫자로 요약', chips: txt('#sec-summary .bento .label').slice(0, 4) }),
+    'sec-resume': () => ({ desc: '학력부터 자격·어학까지 시간순 이력', chips: [['education', '학력'], ['experience', '경력'], ['activity', '활동'], ['award', '수상'], ['certificate', '자격']].filter(([k]) => counts(k)).map(([k, l]) => `${l} ${counts(k)}`).slice(0, 4) }),
+    'sec-featured': () => ({ desc: '역할·과정·결과·증빙을 갖춘 대표작', chips: uniq(txt('#sec-featured .ptitle')).slice(0, 3), n: root.querySelectorAll('#sec-featured .pcard').length, unit: '개' }),
+    'projects': () => ({ desc: '역량·유형·연도로 찾아보는 모든 프로젝트', chips: uniq(projects.map(x => x.data.type).filter(Boolean)).slice(0, 3), n: projects.length, unit: '건' }),
+    'sec-books': () => ({ desc: '읽고 추천하는 책과 서평', chips: books.map(b => b.data.title).filter(Boolean).slice(0, 3), n: books.length, unit: '권' }),
+  };
+  const topicIds = () => SEC.map(x => x[0]).filter(id => { const el = root.querySelector('#' + id); return el && !el.hidden; });
+  function drawTopicCards() {
+    $('#topic-cards').innerHTML = topicIds().map((id, i) => {
+      const [, label, ic] = SEC.find(x => x[0] === id), t = TOPIC[id]?.() || { desc: '' };
+      return `<div role="listitem" class="tc-cell" data-reveal style="--d:${(i * 0.05).toFixed(2)}s"><a class="card topic-card" href="#s-${id}" data-topic="${id}">
+        <span class="tc-top"><span class="tc-ico">${icon(ic, 22)}</span>${t.n ? `<span class="tc-n"><b>${t.n}</b>${esc(t.unit)}</span>` : ''}</span>
+        <span class="tc-title">${esc(label)}</span>
+        <span class="tc-desc">${esc(t.desc)}</span>
+        ${(t.chips || []).length ? `<span class="tc-chips">${t.chips.map(c => `<span class="tag">${esc(c)}</span>`).join('')}</span>` : ''}
+        <span class="tc-go">자세히 보기 ${icon('arrow', 16)}</span>
+      </a></div>`;
+    }).join('');
+  }
+  function applyMode() {
+    pv.dataset.pfMode = mode;
+    if (topic) pv.dataset.pfTopic = topic; else delete pv.dataset.pfTopic;
+    root.querySelectorAll('.pf-view > section').forEach(sec => sec.classList.toggle('topic-on', sec.id === topic));
+    root.querySelectorAll('.pf-switch [data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+    const ids = topicIds(), k = ids.indexOf(topic);
+    const lab = id => SEC.find(x => x[0] === id)?.[1] || '';
+    $('.tb-pager').innerHTML = topic ? `${ids[k - 1] ? `<a class="btn small" href="#s-${ids[k - 1]}" data-topic="${ids[k - 1]}">← ${esc(lab(ids[k - 1]))}</a>` : ''}${ids[k + 1] ? `<a class="btn small" href="#s-${ids[k + 1]}" data-topic="${ids[k + 1]}">${esc(lab(ids[k + 1]))} →</a>` : ''}` : '';
+    setActive(mode === 'all' ? (secEls.find(el => seen.get(el.id)) || secEls[0])?.id : topic);
+    if (mode === 'cards' && !topic) { const cur = $('#mcur'); if (cur) cur.textContent = '모든 주제'; }
+  }
+  function enterAnim(el) { if (motionOn() && el) { el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); } }
+  function setMode(m) {
+    if (m === mode) return;
+    mode = m; topic = null;
+    try { localStorage.setItem('lis-pf-mode', m); } catch { /* 없음 */ }
+    if (opts.useHash && /^#s-/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#portfolio');
+    applyMode(); enterAnim(pv); reveal(pv);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  function openTopic(id, { push = false, fromHash = false } = {}) {
+    if (!topicIds().includes(id)) return false;
+    if (view !== 'portfolio') setView('portfolio', { fromHash: true });
+    if (mode !== 'cards') { mode = 'cards'; try { localStorage.setItem('lis-pf-mode', 'cards'); } catch { /* 없음 */ } }
+    const same = topic === id;
+    topic = id; applyMode();
+    if (!same) { window.scrollTo({ top: 0, behavior: 'instant' }); enterAnim(root.querySelector('#' + id)); reveal(root.querySelector('#' + id)); }
+    const h = root.querySelector('#' + id + ' .sec-title'); if (h && !same) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+    if (opts.useHash && push && !fromHash && location.hash !== '#s-' + id) history.pushState(null, '', location.pathname + location.search + '#s-' + id);
+    return true;
+  }
+  function closeTopic({ push = false, fromHash = false } = {}) {
+    if (!topic) return;
+    const was = topic;
+    topic = null; applyMode(); enterAnim($('#topic-cards')); reveal($('#topic-cards'));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    $(`#topic-cards [data-topic="${was}"]`)?.focus({ preventScroll: true });
+    if (opts.useHash && push && !fromHash) history.pushState(null, '', location.pathname + location.search + '#portfolio');
+  }
+  // 섹션 안의 대상(예: 요약 카드 → 이력의 활동)으로 이동. 간단히 보기면 그 주제 페이지를 먼저 연다
+  function goToTarget(id, { push = false } = {}) {
+    const el = root.querySelector('#' + CSS.escape(id)); if (!el) return;
+    const sec = el.closest('.pf-view > section');
+    if (mode === 'cards' && sec) {
+      openTopic(sec.id, { push });
+      if (el !== sec) requestAnimationFrame(() => el.scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto' }));
+    } else {
+      el.scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto' });
+      if (sec) setActive(sec.id);
+    }
+  }
+  drawTopicCards();
+  applyMode();
+
   // ----- 첫 화면(간단한 프로필 + 연락하기) ↔ 포트폴리오(세부 내용) -----
   let view = '';
   function setView(v, { push = false, fromHash = false } = {}) {
@@ -778,12 +873,11 @@ export function mountPortfolio(root, items, opts = {}) {
     if (first) return;
     setDrawer(false);
     window.scrollTo({ top: 0, behavior: 'instant' });
-    const pv = $('.pf-view');
     if (v === 'portfolio') {
       if (motionOn()) { pv.classList.remove('enter'); void pv.offsetWidth; pv.classList.add('enter'); }
       reveal(pv);
       $('#h-about')?.setAttribute('tabindex', '-1'); $('#h-about')?.focus({ preventScroll: true });
-      if (secEls[0]) setActive(secEls[0].id);
+      setActive(mode === 'all' ? secEls[0]?.id : topic);
       opts.track?.('view', 'portfolio');
     } else $('[data-enter]')?.focus({ preventScroll: true });
   }
@@ -811,7 +905,7 @@ export function mountPortfolio(root, items, opts = {}) {
     requestAnimationFrame(() => {
       topbar.classList.toggle('scrolled', window.scrollY > 4); parallax();
       // 맨 아래까지 내리면 마지막 섹션(서평 등)을 강조
-      if (secEls.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) setActive(secEls[secEls.length - 1].id);
+      if (mode === 'all' && secEls.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) setActive(secEls[secEls.length - 1].id);
       ticking = false;
     });
   };
@@ -828,7 +922,7 @@ export function mountPortfolio(root, items, opts = {}) {
   window.addEventListener('beforeprint', beforePrint);
 
   return {
-    openProject, openBook, closeDetail, setView, get view() { return view; },
+    openProject, openBook, closeDetail, setView, openTopic, closeTopic, goToTarget, get mode() { return mode; }, get view() { return view; },
     destroy() { io?.disconnect(); revealIO?.disconnect(); window.removeEventListener('scroll', onScroll); document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
   };
 }

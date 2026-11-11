@@ -11,7 +11,7 @@ export const ROLES = [
   { id: 'archives', name: '기록연구사·기록관리' },
 ];
 
-export const PROJECT_TYPES = ['수업', '실습', '대외활동', '개인'];
+export const PROJECT_TYPES = ['수업', '실습', '교내 활동', '대외활동', '개인'];
 export const METRIC_KEYS = [
   { key: '', label: '(표준 key 없음)' },
   { key: 'records_cataloged', label: '정리한 목록 레코드(건)' },
@@ -62,7 +62,7 @@ export const KINDS = {
     fields: [
       { key: 'title', label: '활동명', type: 'text', required: true },
       { key: 'organization', label: '기관', type: 'text' },
-      { key: 'type', label: '유형', type: 'select', options: ['대외활동', '동아리', '봉사', '현장실습'], custom: true },
+      { key: 'type', label: '유형', type: 'select', options: ['교내 활동', '대외활동', '동아리', '봉사', '현장실습'], custom: true },
       { key: 'role', label: '역할', type: 'text' },
       monthField('startDate', '시작', true), monthField('endDate', '종료'),
       { key: 'hours', label: '활동 시간', type: 'number' },
