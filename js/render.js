@@ -158,7 +158,6 @@ export function mountPortfolio(root, items, opts = {}) {
         <button type="button" class="btn small" data-topics>${icon('arrow', 16)} 모든 주제</button>
         <span class="tb-pager"></span>
       </div>
-      <div class="topic-grid" id="topic-cards" role="list" aria-label="포트폴리오 주제"></div>
       <section id="sec-about" aria-labelledby="h-about">
         <h2 class="sec-title" id="h-about" data-reveal><span class="ico" aria-hidden="true">👋</span>소개</h2>
         <div data-reveal>${(p.bio || '').split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('') || '<p class="muted">자기소개를 입력하세요.</p>'}</div>
@@ -176,6 +175,8 @@ export function mountPortfolio(root, items, opts = {}) {
         </div>
       </div>
       </section>
+      <h2 class="sec-title topic-head" id="h-topics"><span class="ico" aria-hidden="true">🗂️</span>주제별로 살펴보기</h2>
+      <div class="topic-grid" id="topic-cards" role="list" aria-labelledby="h-topics"></div>
       <section id="sec-skills" aria-labelledby="h-skills"></section>
       <section id="sec-summary" aria-labelledby="h-summary"></section>
       <section id="sec-resume" aria-labelledby="h-resume"></section>
@@ -795,7 +796,8 @@ export function mountPortfolio(root, items, opts = {}) {
     'projects': () => ({ desc: '역량·유형·연도로 찾아보는 모든 프로젝트', chips: uniq(projects.map(x => x.data.type).filter(Boolean)).slice(0, 3), n: projects.length, unit: '건' }),
     'sec-books': () => ({ desc: '읽고 추천하는 책과 서평', chips: books.map(b => b.data.title).filter(Boolean).slice(0, 3), n: books.length, unit: '권' }),
   };
-  const topicIds = () => SEC.map(x => x[0]).filter(id => { const el = root.querySelector('#' + id); return el && !el.hidden; });
+  // 소개는 '간단히 보기' 첫 화면에 바로 보이므로 주제 카드에서는 뺀다
+  const topicIds = () => SEC.map(x => x[0]).filter(id => { const el = root.querySelector('#' + id); return id !== 'sec-about' && el && !el.hidden; });
   function drawTopicCards() {
     $('#topic-cards').innerHTML = topicIds().map((id, i) => {
       const [, label, ic] = SEC.find(x => x[0] === id), t = TOPIC[id]?.() || { desc: '' };
@@ -816,8 +818,7 @@ export function mountPortfolio(root, items, opts = {}) {
     const ids = topicIds(), k = ids.indexOf(topic);
     const lab = id => SEC.find(x => x[0] === id)?.[1] || '';
     $('.tb-pager').innerHTML = topic ? `${ids[k - 1] ? `<a class="btn small" href="#s-${ids[k - 1]}" data-topic="${ids[k - 1]}">← ${esc(lab(ids[k - 1]))}</a>` : ''}${ids[k + 1] ? `<a class="btn small" href="#s-${ids[k + 1]}" data-topic="${ids[k + 1]}">${esc(lab(ids[k + 1]))} →</a>` : ''}` : '';
-    setActive(mode === 'all' ? (secEls.find(el => seen.get(el.id)) || secEls[0])?.id : topic);
-    if (mode === 'cards' && !topic) { const cur = $('#mcur'); if (cur) cur.textContent = '모든 주제'; }
+    setActive(mode === 'all' ? (secEls.find(el => seen.get(el.id)) || secEls[0])?.id : (topic || 'sec-about'));
   }
   function enterAnim(el) { if (motionOn() && el) { el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); } }
   function setMode(m) {
@@ -829,6 +830,12 @@ export function mountPortfolio(root, items, opts = {}) {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
   function openTopic(id, { push = false, fromHash = false } = {}) {
+    if (id === 'sec-about') {   // 소개는 주제 카드 화면 맨 위에 있다
+      if (view !== 'portfolio') setView('portfolio', { fromHash: true });
+      if (mode !== 'cards') { mode = 'cards'; try { localStorage.setItem('lis-pf-mode', 'cards'); } catch { /* 없음 */ } }
+      if (topic) closeTopic({ push, fromHash }); else { applyMode(); window.scrollTo({ top: 0, behavior: motionOn() ? 'smooth' : 'auto' }); }
+      return true;
+    }
     if (!topicIds().includes(id)) return false;
     if (view !== 'portfolio') setView('portfolio', { fromHash: true });
     if (mode !== 'cards') { mode = 'cards'; try { localStorage.setItem('lis-pf-mode', 'cards'); } catch { /* 없음 */ } }
@@ -842,7 +849,7 @@ export function mountPortfolio(root, items, opts = {}) {
   function closeTopic({ push = false, fromHash = false } = {}) {
     if (!topic) return;
     const was = topic;
-    topic = null; applyMode(); enterAnim($('#topic-cards')); reveal($('#topic-cards'));
+    topic = null; applyMode(); enterAnim(pv); reveal(pv);
     window.scrollTo({ top: 0, behavior: 'instant' });
     $(`#topic-cards [data-topic="${was}"]`)?.focus({ preventScroll: true });
     if (opts.useHash && push && !fromHash) history.pushState(null, '', location.pathname + location.search + '#portfolio');
@@ -877,7 +884,7 @@ export function mountPortfolio(root, items, opts = {}) {
       if (motionOn()) { pv.classList.remove('enter'); void pv.offsetWidth; pv.classList.add('enter'); }
       reveal(pv);
       $('#h-about')?.setAttribute('tabindex', '-1'); $('#h-about')?.focus({ preventScroll: true });
-      setActive(mode === 'all' ? secEls[0]?.id : topic);
+      setActive(mode === 'all' ? secEls[0]?.id : (topic || 'sec-about'));
       opts.track?.('view', 'portfolio');
     } else $('[data-enter]')?.focus({ preventScroll: true });
   }
