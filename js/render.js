@@ -10,24 +10,23 @@ const sample = it => (it?.isSample ? '<span class="badge" title="예시 데이�
 const icons = { file: '📄', image: '🖼️', link: '🔗' };
 const SEC = [
   ['sec-about', '소개', 'user'], ['sec-skills', '할 수 있는 일', 'target'], ['sec-summary', '한눈에 보기', 'grid'], ['sec-resume', '이력', 'timeline'],
-  ['sec-featured', '대표 프로젝트', 'star'], ['projects', '전체 프로젝트', 'folder'], ['sec-books', '서평', 'book'],
+  ['sec-featured', '대표 프로젝트', 'star'], ['projects', '전체 프로젝트', 'folder'], ['sec-books', '추천 도서', 'book'],
 ];
 
 // Split Text: 이름을 글자 단위로 나눠 차례로 떠오르게
 const splitChars = (text, start = 0, step = 0.06) =>
   [...text].map((c, i) => `<span class="ch" aria-hidden="true" style="--d:${(start + i * step).toFixed(2)}s">${c === ' ' ? ' ' : esc(c)}</span>`).join('');
 // Count-up: 숫자 부분을 감싸 두었다가 화면에 들어오면 0부터 올라가게
-const wrapNums = html => html.replace(/\d+(?:\.\d+)?/g, m => `<span class="count" data-to="${m}">${m}</span>`);
+const wrapNums = html => html.replace(/\d[\d,]*(?:\.\d+)?/g, m => { const v = m.replace(/,/g, ''); return `<span class="count" data-to="${v}">${Number(v).toLocaleString('ko-KR', { maximumFractionDigits: 6 })}</span>`; });
 const motionOn = () => document.documentElement.classList.contains('motion');
 function countUp(el) {
   const to = Number(el.dataset.to);
   if (!motionOn() || !isFinite(to) || to === 0 || el.dataset.done) return;
   el.dataset.done = '1';
   const dec = (el.dataset.to.split('.')[1] || '').length;
-  const fmt = el.dataset.fmt === 'ko'
-    ? n => n.toLocaleString('ko-KR', { minimumFractionDigits: dec, maximumFractionDigits: dec })
-    : n => n.toFixed(dec);
-  const t0 = performance.now(), dur = 900;
+  // 천 단위 쉼표(1,234). 소수 자릿수는 목표 값에 맞춘다
+  const fmt = n => n.toLocaleString('ko-KR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  const t0 = performance.now(), dur = 2000;   // 0 → 목표 값까지 2초
   const step = now => {
     const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);   // ease-out
     el.textContent = fmt(to * e);
@@ -36,6 +35,25 @@ function countUp(el) {
   el.textContent = fmt(0);
   requestAnimationFrame(step);
 }
+// Shared Element Transition: 목록의 표지(from)가 상세 화면의 큰 표지(to) 자리로 날아간다(뒤로 가면 반대로)
+// 두 요소를 숨긴 채, to의 복제본을 화면에 띄워 위치·크기·모서리를 이어서 바꾼다
+function flyBetween(from, to, { duration = 480, hideTo = true } = {}) {
+  if (!motionOn() || !from || !to || !from.isConnected || !to.isConnected) return Promise.resolve();
+  const a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+  const onScreen = r => r.width > 0 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+  if (!onScreen(a) || !b.width) return Promise.resolve();
+  const ra = getComputedStyle(from).borderRadius, rb = getComputedStyle(to).borderRadius;
+  const ghost = to.cloneNode(true);
+  ghost.removeAttribute('id'); ghost.setAttribute('aria-hidden', 'true');
+  ghost.classList.add('se-ghost');
+  Object.assign(ghost.style, { position: 'fixed', left: 0, top: 0, margin: 0, zIndex: 200, pointerEvents: 'none', boxSizing: 'border-box' });
+  document.body.appendChild(ghost);
+  from.style.visibility = 'hidden'; if (hideTo) to.style.visibility = 'hidden';
+  const box = r => ({ transform: `translate(${r.left}px, ${r.top}px)`, width: r.width + 'px', height: r.height + 'px' });
+  const anim = ghost.animate([{ ...box(a), borderRadius: ra }, { ...box(b), borderRadius: rb }], { duration, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+  return anim.finished.catch(() => {}).then(() => { ghost.remove(); from.style.visibility = ''; to.style.visibility = ''; });
+}
+
 // Toast: 잠깐 떴다 사라지는 알림
 let toastTimer;
 export function showToast(msg) {
@@ -115,7 +133,7 @@ export function mountPortfolio(root, items, opts = {}) {
           ${p.headline ? `<p class="lead" data-rise style="--d:${(nameEnd + 0.1).toFixed(2)}s">${esc(p.headline)}</p>` : ''}
           <div class="cta" data-rise style="--d:${(nameEnd + 0.2).toFixed(2)}s">
             <a class="btn primary" href="#portfolio" data-enter>포트폴리오 살펴보기 ${icon('arrow', 18)}</a>
-            ${contacts.email ? `<a class="btn" href="mailto:${esc(contacts.email)}">${icon('mail', 18)} 연락하기</a>` : ''}
+            <button type="button" class="btn" data-contact-toggle aria-expanded="false" aria-controls="landing-contact">${icon('mail', 18)} 연락하기</button>
             ${p.resumeFile ? `<a class="btn" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>${icon('download', 18)} 이력서 PDF</a>` : ''}
           </div>
         </div>
@@ -123,8 +141,8 @@ export function mountPortfolio(root, items, opts = {}) {
           <div class="px-fg" data-px="fg">${heroImg ? `<img src="${esc(heroImg)}" alt="${esc(p.cover ? (p.name || '') + ' 포트폴리오 대표 이미지' : (p.name || '') + ' 프로필 사진')}">` : heroIllustration()}</div>
         </figure>
       </section>
-      <section class="landing-contact" aria-labelledby="h-contact" data-rise style="--d:${(nameEnd + 0.45).toFixed(2)}s">
-        <h2 id="h-contact">${icon('mail', 18)} 연락하기</h2>
+      <section class="landing-contact" id="landing-contact" aria-labelledby="h-contact" hidden>
+        <div class="lc-head"><h2 id="h-contact" tabindex="-1">${icon('mail', 18)} 연락하기</h2><button type="button" class="btn small ghost" data-contact-toggle aria-label="연락처 닫기">닫기 ✕</button></div>
         <ul class="kv">
           ${contacts.email ? `<li><span class="k">이메일</span> <a href="mailto:${esc(contacts.email)}">${esc(contacts.email)}</a><button type="button" class="copy-btn" data-copy="${esc(contacts.email)}" aria-label="이메일 주소 복사">복사</button></li>` : '<li class="muted">관리 화면에서 이메일을 입력하면 여기에 보입니다.</li>'}
           ${(contacts.links || []).map(l => `<li><span class="k">${esc(l.label)}</span> <a href="${esc(l.url)}" rel="noopener" target="_blank">${esc(l.url.replace(/^https?:\/\//, ''))}</a></li>`).join('')}
@@ -333,7 +351,7 @@ export function mountPortfolio(root, items, opts = {}) {
   if (!resumeBody) $('#sec-resume').hidden = true;
 
   // ----- 프로젝트 카드 -----
-  const cover = (pr, cls = 'pcover') => `<div class="${cls}" ${pr.data.coverImage ? `style="background-image:url('${esc(pr.data.coverImage)}')"` : ''}>${pr.data.coverImage ? '' : `<span class="cv-ico">${icon(COMP_ICON[pr.data.primarySkill] || 'folder', 22)}</span><span class="cv-name">${esc(compName(pr.data.primarySkill) || '프로젝트')}</span>`}</div>`;
+  const cover = (pr, cls = 'pcover') => `<div class="${cls}" data-key="p:${esc(pr.data.slug)}" ${pr.data.coverImage ? `style="background-image:url('${esc(pr.data.coverImage)}')"` : ''}>${pr.data.coverImage ? '' : `<span class="cv-ico">${icon(COMP_ICON[pr.data.primarySkill] || 'folder', 22)}</span><span class="cv-name">${esc(compName(pr.data.primarySkill) || '프로젝트')}</span>`}</div>`;
   const tagList = pr => {
     const ids = [pr.data.primarySkill, ...(pr.data.skills || []).filter(s => s !== pr.data.primarySkill)].filter(Boolean);
     return `<div class="tags">${ids.map((s, i) => `<span class="tag${i === 0 ? ' main' : ''}">${esc(compName(s))}</span>`).join('')}</div>`;
@@ -421,7 +439,8 @@ export function mountPortfolio(root, items, opts = {}) {
 
   // ----- 상세 (F-5) -----
   const detail = $('#detail');
-  let lastFocus = null;
+  let lastFocus = null, lastSource = null, pushedDetail = false, openKey = '';
+  let bookGoTo = () => {};
 
   function evidenceHTML(ev, slug) {
     const meta = [ev.description, ev.size && kb(ev.size), ev.type === 'link' && host(ev.url)].filter(Boolean).map(esc).join(' · ');
@@ -433,6 +452,28 @@ export function mountPortfolio(root, items, opts = {}) {
       : `<div class="ev">${inner}</div>`;
   }
 
+  // 목록에서 이 항목의 표지 찾기(누른 카드 우선, 없으면 화면에 보이는 같은 항목)
+  const sourceFor = key => {
+    if (lastSource?.isConnected && lastSource.dataset.key === key) return lastSource;
+    return [...root.querySelectorAll(`.main [data-key="${CSS.escape(key)}"]`)].find(el => { const r = el.getBoundingClientRect(); return r.width && r.bottom > 0 && r.top < innerHeight; }) || null;
+  };
+  function showDetail(html, key, { fromHash, hash }) {
+    const wasOpen = !detail.hidden;
+    if (!wasOpen) lastFocus = document.activeElement;
+    detail.innerHTML = html;
+    openKey = key;
+    const src = wasOpen ? null : sourceFor(key);
+    const target = detail.querySelector('[data-se-target]');
+    detail.classList.toggle('shared', !!(src && target && motionOn()));
+    detail.classList.remove('closing');
+    detail.hidden = false;
+    document.body.style.overflow = 'hidden';
+    detail.scrollTop = 0;
+    if (src && target) flyBetween(src, target);
+    detail.querySelector('#d-title').focus({ preventScroll: true });
+    if (opts.useHash && !fromHash && location.hash !== '#' + hash) { history.pushState({ detail: true }, '', '#' + hash); pushedDetail = true; }
+  }
+
   function openProject(slug, { fromHash = false } = {}) {
     const pr = bySlug(slug);
     if (!pr) return false;
@@ -440,11 +481,10 @@ export function mountPortfolio(root, items, opts = {}) {
     const idx = projects.indexOf(pr);
     const prev = projects[idx - 1], next = projects[idx + 1];
     const proc = d.process || {};
-    lastFocus = document.activeElement;
-    detail.innerHTML = `<article class="sheet">
+    const html = `<article class="sheet">
       <div class="sheet-bar"><span class="small muted">프로젝트</span><span>
         <button type="button" class="btn small" data-close aria-label="닫기">닫기 ✕</button></span></div>
-      ${cover(pr)}
+      ${cover(pr, 'pcover se-big" data-se-target="1')}
       <div class="sheet-in">
         <h1 id="d-title" tabindex="-1">${esc(d.title || '제목 없음')}${sample(pr)}</h1>
         <p class="muted">${esc(d.summary || '')}</p>
@@ -472,30 +512,88 @@ export function mountPortfolio(root, items, opts = {}) {
           ${next ? `<button type="button" class="btn" data-open="${esc(next.data.slug)}">${esc(next.data.title || '제목 없음')} →</button>` : ''}
         </div>
       </div></article>`;
-    detail.hidden = false;
-    document.body.style.overflow = 'hidden';
-    detail.scrollTop = 0;
-    detail.querySelector('#d-title').focus();
-    setTimeout(() => detail.querySelectorAll('.metric .count').forEach(countUp), 250);
+    showDetail(html, 'p:' + slug, { fromHash, hash: 'p-' + slug });
+    // 결과 숫자: 화면에 보이면 2초 동안 0 → 목표 값
+    const counts = [...detail.querySelectorAll('.metric .count')];
+    if (counts.length && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { countUp(en.target); io.unobserve(en.target); } }), { root: detail, threshold: 0.6 });
+      counts.forEach(c => io.observe(c));
+    } else counts.forEach(countUp);
     track('project', slug);
-    if (opts.useHash && !fromHash && location.hash !== '#p-' + slug) history.pushState(null, '', '#p-' + slug);
+    return true;
+  }
+
+  function openBook(key, { fromHash = false } = {}) {
+    const b = books.find(x => bookKey(x) === key);
+    if (!b) return false;
+    const d = b.data, body = bookBody(d), meta = bookMeta(d);
+    bookGoTo(key, false);
+    const html = `<article class="sheet book-sheet">
+      <div class="sheet-bar"><span class="small muted">추천 도서</span><span>
+        <button type="button" class="btn small" data-close aria-label="닫기">닫기 ✕</button></span></div>
+      <div class="sheet-in book-detail">
+        <div class="bd-cover">${bookCover(b, ' big" data-se-target="1')}</div>
+        <div>
+          <h1 id="d-title" tabindex="-1">${esc(d.title || '제목 없음')}${sample(b)}</h1>
+          ${meta ? `<p class="muted">${meta}</p>` : ''}
+          ${d.kdc ? `<span class="tag">KDC ${esc(d.kdc)}</span>` : ''}
+          <h2><span aria-hidden="true">📖</span>소개</h2>${body.intro}
+          <h2><span aria-hidden="true">🗂️</span>목차</h2>${body.toc}
+          <h2><span aria-hidden="true">✍️</span>서평</h2>${body.review}
+        </div>
+      </div></article>`;
+    showDetail(html, 'b:' + key, { fromHash, hash: 'b-' + key });
     return true;
   }
 
   function closeDetail({ fromHash = false } = {}) {
-    if (detail.hidden) return;
-    detail.hidden = true;
-    detail.innerHTML = '';
-    document.body.style.overflow = '';
-    if (opts.useHash && !fromHash && location.hash.startsWith('#p-')) history.pushState(null, '', location.pathname + location.search + '#portfolio');
-    lastFocus?.focus?.();
+    if (detail.hidden || detail.classList.contains('closing')) return;
+    // 직접 연 상세면 브라우저 '뒤로'와 같게 처리 → popstate에서 다시 불린다
+    if (opts.useHash && !fromHash && pushedDetail && /^#[pb]-/.test(location.hash)) { pushedDetail = false; history.back(); return; }
+    pushedDetail = false;
+    const target = detail.querySelector('[data-se-target]'), src = sourceFor(openKey);
+    const finish = () => {
+      detail.hidden = true; detail.innerHTML = ''; detail.classList.remove('closing', 'shared');
+      document.body.style.overflow = '';
+      if (opts.useHash && !fromHash && /^#[pb]-/.test(location.hash)) history.pushState(null, '', location.pathname + location.search + '#portfolio');
+      lastFocus?.focus?.({ preventScroll: true });
+    };
+    if (src && target && motionOn()) {
+      detail.classList.add('closing');            // 시트는 서서히 사라지고, 큰 표지는 원래 자리로 돌아간다
+      flyBetween(target, src, { duration: 420, hideTo: false }).then(finish);
+      // 날아가는 동안 원래 표지는 숨겨 두었다가 끝나면 보인다
+      src.style.visibility = 'hidden';
+    } else finish();
+  }
+
+  // ----- 첫 화면 연락하기: 버튼을 누르면 아래에 연락 수단 카드가 떠오른다(다시 누르면 접힘) -----
+  function toggleContact(force) {
+    const box = $('#landing-contact'), btn = $('.cta [data-contact-toggle]');
+    if (!box) return;
+    const open = force ?? box.hidden;
+    btn?.setAttribute('aria-expanded', String(open));
+    if (open) {
+      box.classList.remove('out'); box.hidden = false;
+      box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
+      const r = box.getBoundingClientRect();
+      if (r.bottom > innerHeight) window.scrollBy({ top: r.bottom - innerHeight + 24, behavior: motionOn() ? 'smooth' : 'auto' });
+      $('#h-contact').focus({ preventScroll: true });
+    } else if (!box.hidden) {
+      if (!motionOn()) { box.hidden = true; return; }
+      box.classList.add('out');
+      setTimeout(() => { if (box.classList.contains('out')) { box.hidden = true; box.classList.remove('out', 'pop'); } }, 220);
+      btn?.focus({ preventScroll: true });
+    }
   }
 
   // ----- 이벤트 연결 -----
   root.addEventListener('click', e => {
     const open = e.target.closest('[data-open]');
-    if (open) { e.preventDefault(); openProject(open.dataset.open); return; }
+    if (open) { e.preventDefault(); lastSource = open.querySelector('[data-key]') || null; openProject(open.dataset.open); return; }
+    const bk = e.target.closest('[data-book]');
+    if (bk) { e.preventDefault(); lastSource = bk.querySelector('[data-key]'); openBook(bk.dataset.book); return; }
     if (e.target.closest('[data-enter]')) { e.preventDefault(); setView('portfolio', { push: true }); return; }
+    if (e.target.closest('[data-contact-toggle]')) { e.preventDefault(); toggleContact(); return; }
     if (e.target.closest('[data-home]')) { e.preventDefault(); setView('landing', { push: true }); return; }
     const sc = e.target.closest('[data-scroll]');
     if (sc) {
@@ -557,34 +655,73 @@ export function mountPortfolio(root, items, opts = {}) {
     const label = SEC.find(x => x[0] === id)?.[1] || '';
     const cur = $('#mcur'); if (cur) cur.textContent = label;
   }
-  // ----- 서평: 책마다 소개 · 목차 · 서평 Tabs (표시 막대가 미끄러지고 내용은 서서히 바뀜) -----
+  // ----- 추천 도서: Carousel(좌우 버튼 · 위치 점 · 손가락으로 밀기) + 책마다 소개 · 목차 · 서평 Tabs -----
   const books = items.filter(i => i.kind === 'book').sort((a, b) => (b.data.readDate || '').localeCompare(a.data.readDate || '') || (a.sort || 0) - (b.sort || 0));
+  const shade = t => { let h = 0; for (const ch of t || '') h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h % 4; };
+  const bookCover = (b, cls = '') => `<div class="book-cover s${shade(b.data.title)}${cls}" data-key="b:${esc(String(b.id))}"><span class="bc-t">${esc(b.data.title || '')}</span>${b.data.author ? `<span class="bc-a">${esc(b.data.author)}</span>` : ''}</div>`;
+  const bookMeta = d => [d.author, d.publisher, d.year].filter(Boolean).map(esc).join(' · ');
+  const bookBody = d => ({
+    intro: d.intro ? `<p>${esc(d.intro)}</p>` : '<p class="muted">소개가 없습니다.</p>',
+    toc: (d.toc || []).length ? `<ol class="toc">${d.toc.map(t => `<li>${esc(t)}</li>`).join('')}</ol>` : '<p class="muted">목차가 없습니다.</p>',
+    review: d.review ? `${d.review.split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('')}${d.readDate ? `<p class="muted small">${esc(fmtMonth(d.readDate))} 읽음</p>` : ''}` : '<p class="muted">서평이 없습니다.</p>',
+  });
+  const bookKey = b => String(b.id);
   if (books.length) {
-    const shade = t => { let h = 0; for (const ch of t || '') h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h % 4; };
     const TAB = [['intro', '소개'], ['toc', '목차'], ['review', '서평']];
-    $('#sec-books').innerHTML = `<h2 class="sec-title" id="h-books" data-reveal><span class="ico" aria-hidden="true">📚</span>서평</h2>
-      <div class="books">${books.map((b, i) => {
-        const d = b.data, meta = [d.author, d.publisher, d.year].filter(Boolean).map(esc).join(' · ');
-        const body = {
-          intro: d.intro ? `<p>${esc(d.intro)}</p>` : '<p class="muted">소개가 없습니다.</p>',
-          toc: (d.toc || []).length ? `<ol class="toc">${d.toc.map(t => `<li>${esc(t)}</li>`).join('')}</ol>` : '<p class="muted">목차가 없습니다.</p>',
-          review: d.review ? `${d.review.split(/\n+/).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join('')}${d.readDate ? `<p class="muted small">${esc(fmtMonth(d.readDate))} 읽음</p>` : ''}` : '<p class="muted">서평이 없습니다.</p>',
-        };
-        return `<article class="book" data-reveal style="--d:${(i % 3 * 0.08).toFixed(2)}s">
-          <div class="book-head">
-            <div class="book-cover s${shade(d.title)}" aria-hidden="true"><span>${esc(d.title || '')}</span></div>
-            <div class="book-meta"><h3>${esc(d.title || '제목 없음')}${sample(b)}</h3>${meta ? `<p class="muted">${meta}</p>` : ''}${d.kdc ? `<span class="tag">KDC ${esc(d.kdc)}</span>` : ''}</div>
-          </div>
-          <div class="btabs" role="tablist" aria-label="${esc(d.title || '책')} 정보">
-            ${TAB.map(([k, l], j) => `<button type="button" role="tab" id="bt-${i}-${k}" aria-controls="bp-${i}-${k}" aria-selected="${j === 0}" tabindex="${j === 0 ? 0 : -1}">${l}</button>`).join('')}
-            <span class="btab-ink" aria-hidden="true"></span>
-          </div>
-          <div class="bpanels">${TAB.map(([k], j) => `<div class="bpanel${j === 0 ? ' on' : ''}" role="tabpanel" id="bp-${i}-${k}" aria-labelledby="bt-${i}-${k}" tabindex="0"${j ? ' aria-hidden="true"' : ''}>${body[k]}</div>`).join('')}</div>
-        </article>`;
-      }).join('')}</div>`;
+    $('#sec-books').innerHTML = `<h2 class="sec-title" id="h-books" data-reveal><span class="ico" aria-hidden="true">📚</span>추천 도서</h2>
+      <div class="carousel" role="region" aria-roledescription="carousel" aria-label="추천 도서" data-reveal>
+        <div class="car-track" tabindex="0" aria-label="추천 도서 목록. 좌우 방향키로 넘길 수 있습니다">
+        ${books.map((b, i) => {
+          const d = b.data, meta = bookMeta(d), body = bookBody(d);
+          return `<article class="book slide" role="group" aria-roledescription="slide" aria-label="${i + 1} / ${books.length}: ${esc(d.title || '')}">
+            <button type="button" class="cover-btn" data-book="${esc(bookKey(b))}" aria-label="${esc(d.title || '책')} 크게 보기">${bookCover(b)}</button>
+            <div class="book-main">
+              <div class="book-meta"><h3>${esc(d.title || '제목 없음')}${sample(b)}</h3>${meta ? `<p class="muted">${meta}</p>` : ''}${d.kdc ? `<span class="tag">KDC ${esc(d.kdc)}</span>` : ''}</div>
+              <div class="btabs" role="tablist" aria-label="${esc(d.title || '책')} 정보">
+                ${TAB.map(([k, l], j) => `<button type="button" role="tab" id="bt-${i}-${k}" aria-controls="bp-${i}-${k}" aria-selected="${j === 0}" tabindex="${j === 0 ? 0 : -1}">${l}</button>`).join('')}
+                <span class="btab-ink" aria-hidden="true"></span>
+              </div>
+              <div class="bpanels">${TAB.map(([k], j) => `<div class="bpanel${j === 0 ? ' on' : ''}" role="tabpanel" id="bp-${i}-${k}" aria-labelledby="bt-${i}-${k}" tabindex="0"${j ? ' aria-hidden="true"' : ''}>${body[k]}</div>`).join('')}</div>
+            </div>
+          </article>`;
+        }).join('')}
+        </div>
+        ${books.length > 1 ? `<div class="car-ctrl">
+          <button type="button" class="car-btn" data-car="-1" aria-label="이전 책">${icon('arrow', 18)}</button>
+          <div class="car-dots" role="group" aria-label="책 위치">${books.map((b, i) => `<button type="button" class="car-dot" data-dot="${i}" aria-label="${i + 1}번째 책: ${esc(b.data.title || '')}"${i === 0 ? ' aria-current="true"' : ''}></button>`).join('')}</div>
+          <button type="button" class="car-btn" data-car="1" aria-label="다음 책">${icon('arrow', 18)}</button>
+          <span class="car-count small muted" aria-live="polite">1 / ${books.length}</span>
+        </div>` : ''}
+      </div>`;
+    const sb = $('#sec-books'), track = sb.querySelector('.car-track'), slides = [...sb.querySelectorAll('.slide')];
+    const curIdx = () => Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+    const goTo = (i, smooth = true) => { i = Math.max(0, Math.min(slides.length - 1, i)); track.scrollTo({ left: slides[i].offsetLeft - track.offsetLeft, behavior: smooth && motionOn() ? 'smooth' : 'auto' }); };
+    const sync = () => {
+      const i = curIdx();
+      sb.querySelectorAll('.car-dot').forEach((d, j) => d.toggleAttribute('aria-current', j === i));
+      const prevB = sb.querySelector('[data-car="-1"]'), nextB = sb.querySelector('[data-car="1"]');
+      if (prevB) prevB.disabled = i === 0;
+      if (nextB) nextB.disabled = i === slides.length - 1;
+      const c = sb.querySelector('.car-count'); if (c) c.textContent = `${i + 1} / ${slides.length}`;
+      slides.forEach((sl, j) => sl.toggleAttribute('inert', j !== i));   // 화면 밖 슬라이드는 Tab 이동에서 뺀다
+    };
+    let syncT; track.addEventListener('scroll', () => { cancelAnimationFrame(syncT); syncT = requestAnimationFrame(sync); }, { passive: true });
+    sb.addEventListener('click', e => {
+      const btn = e.target.closest('[data-car]'); if (btn) goTo(curIdx() + Number(btn.dataset.car));
+      const dot = e.target.closest('[data-dot]'); if (dot) goTo(Number(dot.dataset.dot));
+    });
+    track.addEventListener('keydown', e => {
+      if (e.target !== track) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); goTo(curIdx() + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(curIdx() - 1); }
+    });
+    sync();
+    bookGoTo = (key, smooth) => { const i = books.findIndex(b => bookKey(b) === key); if (i >= 0) goTo(i, smooth); };
+
+    // Tabs: 표시 막대가 미끄러지고 내용은 서서히 바뀐다
     const placeInk = tl => {
       const on = tl.querySelector('[aria-selected="true"]'), ink = tl.querySelector('.btab-ink');
-      if (on && ink) { ink.style.width = on.offsetWidth + 'px'; ink.style.transform = `translateX(${on.offsetLeft}px)`; }
+      if (on && ink && on.offsetWidth) { ink.style.width = on.offsetWidth + 'px'; ink.style.transform = `translateX(${on.offsetLeft}px)`; }
     };
     const selectTab = (btn, focus) => {
       const tl = btn.closest('.btabs'), card = tl.closest('.book');
@@ -593,18 +730,17 @@ export function mountPortfolio(root, items, opts = {}) {
       placeInk(tl);
       if (focus) btn.focus();
     };
-    const sb = $('#sec-books');
     sb.addEventListener('click', e => { const t = e.target.closest('[role="tab"]'); if (t) selectTab(t); });
     sb.addEventListener('keydown', e => {
       const t = e.target.closest('[role="tab"]'); if (!t) return;
       const tabs = [...t.parentElement.querySelectorAll('[role="tab"]')], k = tabs.indexOf(t);
       const next = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: tabs.length - 1 }[e.key];
       if (next === undefined) return;
-      e.preventDefault(); selectTab(tabs[(next + tabs.length) % tabs.length], true);
+      e.preventDefault(); e.stopPropagation(); selectTab(tabs[(next + tabs.length) % tabs.length], true);
     });
     const tls = [...sb.querySelectorAll('.btabs')];
     requestAnimationFrame(() => tls.forEach(placeInk));
-    if ('ResizeObserver' in window) { const ro = new ResizeObserver(() => tls.forEach(placeInk)); tls.forEach(t => ro.observe(t)); }
+    if ('ResizeObserver' in window) { const ro = new ResizeObserver(() => { tls.forEach(placeInk); sync(); }); tls.forEach(t => ro.observe(t)); ro.observe(track); }
     document.fonts?.ready.then(() => tls.forEach(placeInk));
   } else $('#sec-books').hidden = true;
 
@@ -692,7 +828,7 @@ export function mountPortfolio(root, items, opts = {}) {
   window.addEventListener('beforeprint', beforePrint);
 
   return {
-    openProject, closeDetail, setView, get view() { return view; },
+    openProject, openBook, closeDetail, setView, get view() { return view; },
     destroy() { io?.disconnect(); revealIO?.disconnect(); window.removeEventListener('scroll', onScroll); document.removeEventListener('keydown', onKey); window.removeEventListener('beforeprint', beforePrint); document.body.style.overflow = ''; },
   };
 }
