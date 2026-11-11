@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "exportedAt": "2026-11-10T23:57:51.037Z",
-  "checkedAt": "2026-11-10T23:57:51.037Z",
+  "exportedAt": "2026-11-11T04:48:00.278Z",
+  "checkedAt": "2026-11-11T04:48:00.278Z",
   "items": [
     {
       "id": "a8c23f0c-e424-4f4e-9e4c-5ac1459018ab",
@@ -521,70 +521,6 @@
       "updatedAt": "2026-11-09T01:32:48.660728+00:00"
     },
     {
-      "id": "a72af7a4-6a52-45c9-b139-3c5a77c4920b",
-      "kind": "project",
-      "data": {
-        "role": [
-          "데이터 정제와 KDC 주류별 집계",
-          "이용률 대비 장서 비율 비교",
-          "결과 보고서 작성"
-        ],
-        "slug": "loan-analysis",
-        "type": "개인",
-        "hours": 50,
-        "title": "대출 데이터로 본 장서 이용 분석",
-        "tools": [
-          "파이썬(pandas)",
-          "엑셀"
-        ],
-        "skills": [
-          "digital",
-          "collection"
-        ],
-        "endDate": "2025-11",
-        "learned": "데이터로 장서개발 근거를 만드는 방법을 익혔습니다.",
-        "metrics": [
-          {
-            "key": "items_digitized",
-            "unit": "건",
-            "label": "분석한 대출 기록",
-            "value": 12000
-          }
-        ],
-        "outcome": "이용 대비 장서가 많은 주제와 부족한 주제를 표로 정리했습니다.",
-        "process": {
-          "steps": [
-            "공공데이터 대출 기록 내려받기",
-            "KDC 주류별로 정리",
-            "장서 비율과 대출 비율 비교",
-            "결과를 그래프와 보고서로 정리"
-          ],
-          "problem": "장서 구성과 실제 이용이 얼마나 맞는지 숫자로 확인하고 싶었습니다.",
-          "challenge": "분류기호가 비어 있는 기록이 있어 ISBN으로 보완했습니다."
-        },
-        "summary": "공개된 도서관 대출 데이터 1만 2천 건으로 주제별 이용률을 분석했습니다.",
-        "evidence": [
-          {
-            "url": "https://example.com/report",
-            "type": "link",
-            "title": "분석 보고서",
-            "public": true,
-            "description": "예시 링크"
-          }
-        ],
-        "teamSize": 1,
-        "startDate": "2025-09",
-        "contribution": 100,
-        "organization": "",
-        "primarySkill": "digital"
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": true,
-      "sort": 12,
-      "updatedAt": "2026-11-09T01:32:48.660728+00:00"
-    },
-    {
       "id": "2b8680d4-71c6-486a-a9d4-50e937f06cd1",
       "kind": "award",
       "data": {
@@ -894,7 +830,86 @@
       "status": "published",
       "isSample": false,
       "sort": 0,
-      "updatedAt": "2026-11-10T17:35:53.025253+00:00"
+      "updatedAt": "2026-11-11T03:23:58.397541+00:00"
+    },
+    {
+      "id": "a72af7a4-6a52-45c9-b139-3c5a77c4920b",
+      "kind": "project",
+      "data": {
+        "role": [
+          "TOPIC 교재를 통해 온/오프라인 한국어 교육",
+          "결과 보고서 작성"
+        ],
+        "slug": "p-cfuhr",
+        "type": "교내 활동",
+        "hours": null,
+        "title": "외국인 유학생 한국어 학습지원 튜터링 프로그램",
+        "tools": [],
+        "skills": [],
+        "endDate": "2024-05",
+        "learned": "그 나라의 언어를 배우려면 그 나라의 문화를 먼저 알아야 한다는 말이 떠올라 매번 수업에 들어가기 전 다양한 주제로 대한민국에 대해 짧게 설명하고, 한국에 대한 서로의 관심사를 공유하며 이야기를 나눈 덕에 학생의 수준을 파악할 수 있었다. 수업 진행 중 이야기 나눈 내용들을 바탕으로 예시를 들면서",
+        "metrics": [],
+        "outcome": "한 문제 차이로 TOPIC 4급 자격증을 취득하지는 못하였으나 그동안의 수업으로 한국어에 대한 자신감이 생기고 자연스러운 말하기와 문법에서 많은 성장을 이룸.",
+        "process": {
+          "steps": [
+            "TOPIC 교재 준비",
+            "한국어 level 확인을 위한 간단한 시험 진행",
+            "온라인 한국어 교육 / 오프라인 보충 수업",
+            "TOPIC 시험 후 결과 보고서 작성"
+          ],
+          "problem": "장서 구성과 실제 이용이 얼마나 맞는지 숫자로 확인하고 싶었습니다.",
+          "challenge": "외국인 유학생에게 유의어가 어떻게 다르고, 어떤 상황에서 각각 쓰이는지 설명하고 이해시키는 데까지 어려움이 있었으나 눈높이에 맞는 예시를 들어 문제 해결"
+        },
+        "summary": "외국인 유학생을 대상으로 한국어 학습 및 토픽  4급 취득 도움",
+        "evidence": [],
+        "featured": false,
+        "teamSize": 2,
+        "startDate": "2024-04",
+        "contribution": 100,
+        "organization": "대구대학교 국제처",
+        "primarySkill": ""
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 12,
+      "updatedAt": "2026-11-11T01:11:36.467295+00:00"
+    },
+    {
+      "id": "6298397a-767e-4a7d-b33b-dedb26f7a72b",
+      "kind": "activity",
+      "data": {
+        "role": "",
+        "type": "",
+        "hours": null,
+        "title": "싱가포르 인턴쉽",
+        "endDate": "2026-08",
+        "startDate": "2025-08",
+        "organization": "",
+        "relatedProjects": []
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 23,
+      "updatedAt": "2026-11-11T04:40:48.034184+00:00"
+    },
+    {
+      "id": "9fa34cef-f5e2-4925-9912-8bab21f468cc",
+      "kind": "experience",
+      "data": {
+        "endDate": "2026-08",
+        "position": "",
+        "startDate": "2025-08",
+        "description": "",
+        "organization": "싱가포르 인턴쉽",
+        "employmentType": "계약직"
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 17,
+      "updatedAt": "2026-11-11T04:44:29.633007+00:00"
     }
   ]
 }
