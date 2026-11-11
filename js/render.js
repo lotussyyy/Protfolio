@@ -373,16 +373,32 @@ export function mountPortfolio(root, items, opts = {}) {
   const maxUse = Math.max(1, ...tools.map(t => usage.get(t.data.name) || 0));
   const certs = byKindRecent(items, 'certificate');
   const langs = byKindRecent(items, 'language');
-  const skillsHTML = (tools.length || certs.length || langs.length) ? `<div class="cols">
-      <div>${tools.length ? `<h3 class="sub" id="sec-tools" data-reveal>🛠️ 스킬</h3><ul class="bars">${tools.map((t, idx) => {
+  // 자격증·어학: 눈에 띄는 자격 카드(학력 바로 아래)
+  const certCard = (c, n) => {
+    const d = c.data, done = d.status !== '예정';
+    return `<li class="cert${done ? ' done' : ' plan'}" data-reveal style="--d:${Math.min(n * 0.06, 0.4).toFixed(2)}s">
+      <span class="cert-ico" aria-hidden="true">${icon('certificate', 24)}</span>
+      <span class="cert-body"><b class="cert-name">${esc(d.name || '자격명 없음')}</b>${sample(c)}
+        <span class="cert-meta">${[d.issuer, fmtMonth(d.date) && `${fmtMonth(d.date)} ${done ? '취득' : '취득 예정'}`].filter(Boolean).map(esc).join(' · ')}</span></span>
+      <span class="cert-badge">${done ? '취득' : '취득 예정'}</span>
+    </li>`;
+  };
+  const langCard = (l, n) => {
+    const d = l.data;
+    return `<li class="cert lang done" data-reveal style="--d:${Math.min((certs.length + n) * 0.06, 0.4).toFixed(2)}s">
+      <span class="cert-ico" aria-hidden="true">${icon('language', 24)}</span>
+      <span class="cert-body"><b class="cert-name">${esc(d.test || '어학 시험')}${d.score ? ` <span class="cert-score">${esc(d.score)}</span>` : ''}</b>${sample(l)}
+        <span class="cert-meta">${fmtMonth(d.date) ? esc(fmtMonth(d.date)) + ' 취득' : ''}</span></span>
+      <span class="cert-badge">어학</span>
+    </li>`;
+  };
+  const certHTML = (certs.length || langs.length) ? `<h3 class="sub" id="sec-certificates" data-reveal>📜 자격증·어학 <span class="sub-count">${certs.filter(c => c.data.status !== '예정').length}개 취득${certs.some(c => c.data.status === '예정') ? ` · ${certs.filter(c => c.data.status === '예정').length}개 준비 중` : ''}</span></h3>
+    <ul class="certs">${certs.map(certCard).join('')}${langs.map(langCard).join('')}</ul>` : '';
+  const skillsHTML = tools.length ? `<h3 class="sub" id="sec-tools" data-reveal>🛠️ 스킬</h3><ul class="bars">${tools.map((t, idx) => {
         const n = usage.get(t.data.name) || 0;
         return `<li data-reveal style="--d:${Math.min(idx * 0.05, 0.4).toFixed(2)}s"><span>${esc(t.data.name)}${sample(t)}</span><span class="n">${n ? `프로젝트 ${n}건` : '연결 전'}</span><span class="bar" aria-hidden="true"><span style="width:${(n / maxUse) * 100}%"></span></span></li>`;
-      }).join('')}</ul><p class="small muted">막대 길이 = 그 스킬을 쓴 공개 프로젝트 수</p>` : ''}</div>
-      <div>${certs.length || langs.length ? `<h3 class="sub" id="sec-certificates" data-reveal>📜 자격·어학</h3>
-        <ul class="list-plain">${certs.map((c, n) => `<li data-reveal style="--d:${Math.min(n * 0.06, 0.4).toFixed(2)}s"><span class="d">${esc(fmtMonth(c.data.date))}</span><span><b>${esc(c.data.name)}</b>${c.data.status === '예정' ? ' <span class="tag">취득 예정</span>' : ''}${sample(c)}<br><span class="small muted">${esc(c.data.issuer || '')}</span></span></li>`).join('')}
-        ${langs.map(l => `<li data-reveal><span class="d">${esc(fmtMonth(l.data.date))}</span><span><b>${esc(l.data.test)}</b>${l.data.score ? ' ' + esc(l.data.score) : ''}${sample(l)}</span></li>`).join('')}</ul>` : ''}</div>
-    </div>` : '';
-  const resumeBody = eduHTML + skillsHTML + expHTML + actHTML + awHTML;
+      }).join('')}</ul><p class="small muted">막대 길이 = 그 스킬을 쓴 공개 프로젝트 수</p>` : '';
+  const resumeBody = eduHTML + certHTML + skillsHTML + expHTML + actHTML + awHTML;
   $('#sec-resume').innerHTML = resumeBody ? `<h2 class="sec-title" id="h-resume" data-reveal><span class="ico" aria-hidden="true">🗂️</span>이력</h2>${resumeBody}` : '';
   if (!resumeBody) $('#sec-resume').hidden = true;
 
