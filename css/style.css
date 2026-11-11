@@ -707,3 +707,16 @@ a:hover { color: var(--accent-text); }
 .me-char { width: 100%; height: auto; display: block; border-radius: 22px; border: 1px solid var(--line); background: #f4f2ef; box-shadow: 0 10px 28px var(--shadow); }
 @media (max-width: 767px) { .about-intro { grid-template-columns: 1fr; gap: 12px; } .me-wrap { order: -1; width: 160px; justify-self: center; } }
 @media print { .me-wrap { display: none; } .about-intro { display: block; } }
+
+/* ---------- 상단 '연락하기' → 연락처 상자 빛남 ---------- */
+.contact-box { position: relative; border: 1px solid transparent; border-radius: 14px; padding: 14px 16px; margin: -15px -17px; background: transparent; transition: background-color .4s, border-color .4s; outline: none; }
+.contact-box.glow { background: color-mix(in srgb, var(--accent) 5%, transparent); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+.motion .contact-box.glow { animation: contact-glow 2.4s var(--ease-out) both; }
+@keyframes contact-glow {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+  18% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 28px 6px color-mix(in srgb, var(--accent-2) 45%, transparent); }
+  45% { box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent), 0 0 18px 2px color-mix(in srgb, var(--accent-2) 25%, transparent); }
+  65% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 28px 6px color-mix(in srgb, var(--accent-2) 45%, transparent); }
+  100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent), 0 0 0 0 transparent; }
+}
+@media (max-width: 767px) { .contact-box { margin: -12px -10px; padding: 12px 10px; } }

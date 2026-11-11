@@ -169,7 +169,7 @@ export function mountPortfolio(root, items, opts = {}) {
           <figure class="me-wrap" data-reveal style="--d:.15s">${aboutCharacter()}</figure>
         </div>
               <div class="cols profile-block" data-reveal>
-        <div>
+        <div class="contact-box" id="pf-contact" tabindex="-1">
           <h2>연락처</h2>
           <ul class="kv">
             ${contacts.email ? `<li><span class="k">이메일</span> <a href="mailto:${esc(contacts.email)}">${esc(contacts.email)}</a><button type="button" class="copy-btn" data-copy="${esc(contacts.email)}" aria-label="이메일 주소 복사">복사</button></li>` : ''}
@@ -218,7 +218,7 @@ export function mountPortfolio(root, items, opts = {}) {
       <div class="crumb"><button type="button" class="tb-name" data-home title="첫 화면으로">${esc(p.name || '')}</button><span class="tb-sep" aria-hidden="true">/</span><span class="tb-cur" id="mcur" aria-live="polite"></span></div>
       <div class="tb-acts">
         ${opts.themeToggle ? `<button type="button" class="theme-btn" data-theme-toggle aria-pressed="${document.documentElement.dataset.theme === 'dark'}" aria-label="다크 모드" title="다크 모드 켜기/끄기"><span class="sun">${icon('moon', 18)}</span><span class="moon">${icon('sun', 18)}</span></button>` : ''}
-        ${contacts.email ? `<a class="btn small" href="mailto:${esc(contacts.email)}" title="${esc(contacts.email)}">연락하기</a>` : ''}
+        <button type="button" class="btn small" data-contact-glow aria-controls="pf-contact">연락하기</button>
         ${p.resumeFile ? `<a class="btn small primary" href="${esc(p.resumeFile)}" target="_blank" rel="noopener" data-resume>이력서</a>` : ''}
       </div>
     </header>`;
@@ -603,6 +603,25 @@ export function mountPortfolio(root, items, opts = {}) {
     }
   }
 
+  // ----- 상단 '연락하기': 맨 위로 올라가며 연락처 상자가 빛난다 -----
+  function glowContact() {
+    setDrawer(false);
+    if (view === 'landing') { toggleContact(true); return; }   // 첫 화면에서는 연락처 카드를 연다
+    if (mode === 'cards' && topic) closeTopic({ push: true });    // 간단히 보기의 주제 페이지에 있으면 소개 화면으로
+    const box = $('#pf-contact'); if (!box) return;
+    const go = () => {
+      box.classList.remove('glow'); void box.offsetWidth; box.classList.add('glow');
+      box.focus({ preventScroll: true });
+      clearTimeout(glowContact.t); glowContact.t = setTimeout(() => box.classList.remove('glow'), 2600);
+    };
+    if (window.scrollY < 4 || !motionOn()) { window.scrollTo({ top: 0, behavior: 'auto' }); go(); return; }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 맨 위에 닿으면 빛나기 시작
+    const t0 = performance.now();
+    const wait = () => (window.scrollY < 4 || performance.now() - t0 > 1200) ? go() : requestAnimationFrame(wait);
+    requestAnimationFrame(wait);
+  }
+
   // ----- 이벤트 연결 -----
   root.addEventListener('click', e => {
     const open = e.target.closest('[data-open]');
@@ -611,6 +630,7 @@ export function mountPortfolio(root, items, opts = {}) {
     if (bk) { e.preventDefault(); lastSource = bk.querySelector('[data-key]'); openBook(bk.dataset.book); return; }
     if (e.target.closest('[data-enter]')) { e.preventDefault(); setView('portfolio', { push: true }); return; }
     if (e.target.closest('[data-contact-toggle]')) { e.preventDefault(); toggleContact(); return; }
+    if (e.target.closest('[data-contact-glow]')) { e.preventDefault(); glowContact(); return; }
     if (e.target.closest('[data-home]')) { e.preventDefault(); setView('landing', { push: true }); return; }
     const sc = e.target.closest('[data-scroll]');
     if (sc) {
