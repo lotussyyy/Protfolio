@@ -788,3 +788,19 @@ html[data-theme='dark'] .pf-view { --dots-o: .28; }
 @media print { .cert { box-shadow: none; break-inside: avoid; } }
 /* 프로그램으로 포커스를 옮긴 제목(tabindex=-1)에는 테두리 표시 안 함 */
 [tabindex="-1"]:focus:not(:focus-visible), h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { outline: none; }
+
+/* ---------- 이력 Tabs ---------- */
+.rtabs-wrap { position: relative; margin: 4px 0 18px; }
+.rtabs { overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+.rtabs::-webkit-scrollbar { display: none; }
+.rtabs [role="tab"] { flex: none; white-space: nowrap; font-size: 15px; padding: 9px 12px 11px; }
+.rtabs .btab-ink { height: 2.5px; }
+.rpanels { display: grid; transition: height .4s var(--ease-out); overflow: hidden; overflow: clip; overflow-clip-margin: 24px; }
+.rpanel { grid-area: 1 / 1; align-self: start; opacity: 0; visibility: hidden; transform: translateY(8px); outline: none;
+  transition: opacity .3s var(--ease-out), transform .3s var(--ease-out), visibility 0s linear .3s; }
+.rpanel.on { opacity: 1; visibility: visible; transform: none; transition: opacity .45s var(--ease-out) .1s, transform .45s var(--ease-out) .1s, visibility 0s; }
+.rpanel .timeline, .rpanel .certs, .rpanel .bars { margin-top: 0; }
+.cert-sum { margin: 0 0 12px; }
+.r-anchor { display: block; position: relative; top: -90px; }
+@media (prefers-reduced-motion: reduce) { .rpanels, .rpanel, .rpanel.on { transition: none; } }
+@media print { .rtabs-wrap { display: none; } .rpanels { height: auto !important; display: block; } .rpanel { opacity: 1 !important; visibility: visible !important; transform: none !important; margin-bottom: 16px; } }

@@ -347,7 +347,7 @@ export function mountPortfolio(root, items, opts = {}) {
   const tl = (kind, row) => {
     const list = byKindRecent(items, kind);
     if (!list.length) return '';
-    return `<h3 class="sub" id="${'sec-' + KINDS[kind].section}" data-reveal>${row.icon} ${KINDS[kind].label}</h3><ol class="timeline">${list.map((it, n) => `
+    return `<span class="r-anchor" id="${'sec-' + KINDS[kind].section}"></span><ol class="timeline">${list.map((it, n) => `
       <li class="tl" data-reveal style="--d:${Math.min(n * 0.08, 0.4).toFixed(2)}s"><div class="when">${row.when(it.data)}</div><div class="rail" aria-hidden="true"></div>
       <div class="what">${row.what(it.data, sample(it))}${kind === 'activity' ? related(it.data) : ''}</div></li>`).join('')}</ol>`;
   };
@@ -392,15 +392,44 @@ export function mountPortfolio(root, items, opts = {}) {
       <span class="cert-badge">어학</span>
     </li>`;
   };
-  const certHTML = (certs.length || langs.length) ? `<h3 class="sub" id="sec-certificates" data-reveal>📜 자격증·어학 <span class="sub-count">${certs.filter(c => c.data.status !== '예정').length}개 취득${certs.some(c => c.data.status === '예정') ? ` · ${certs.filter(c => c.data.status === '예정').length}개 준비 중` : ''}</span></h3>
+  const certHTML = (certs.length || langs.length) ? `<span class="r-anchor" id="sec-certificates"></span>${langs.length ? '<span class="r-anchor" id="sec-languages"></span>' : ''}<p class="cert-sum"><span class="sub-count">${certs.filter(c => c.data.status !== '예정').length}개 취득${certs.some(c => c.data.status === '예정') ? ` · ${certs.filter(c => c.data.status === '예정').length}개 준비 중` : ''}</span></p>
     <ul class="certs">${certs.map(certCard).join('')}${langs.map(langCard).join('')}</ul>` : '';
-  const skillsHTML = tools.length ? `<h3 class="sub" id="sec-tools" data-reveal>🛠️ 스킬</h3><ul class="bars">${tools.map((t, idx) => {
+  const skillsHTML = tools.length ? `<span class="r-anchor" id="sec-tools"></span><ul class="bars">${tools.map((t, idx) => {
         const n = usage.get(t.data.name) || 0;
         return `<li data-reveal style="--d:${Math.min(idx * 0.05, 0.4).toFixed(2)}s"><span>${esc(t.data.name)}${sample(t)}</span><span class="n">${n ? `프로젝트 ${n}건` : '연결 전'}</span><span class="bar" aria-hidden="true"><span style="width:${(n / maxUse) * 100}%"></span></span></li>`;
       }).join('')}</ul><p class="small muted">막대 길이 = 그 스킬을 쓴 공개 프로젝트 수</p>` : '';
-  const resumeBody = eduHTML + certHTML + skillsHTML + expHTML + actHTML + awHTML;
+  // 이력 Tabs: 선택한 탭 아래 표시 막대가 미끄러지고, 내용은 서서히 바뀐다
+  const RTABS = [['edu', '🎓', '학력', eduHTML], ['cert', '📜', '자격증·어학', certHTML], ['skill', '🛠️', '스킬', skillsHTML], ['exp', '💼', '경력', expHTML], ['act', '🤝', '활동', actHTML], ['award', '🏆', '수상', awHTML]].filter(t => t[3]);
+  const resumeBody = RTABS.length ? `<div class="rtabs-wrap" data-reveal><div class="btabs rtabs" role="tablist" aria-label="이력 항목">
+      ${RTABS.map(([k, ic, l], j) => `<button type="button" role="tab" id="rt-${k}" aria-controls="rp-${k}" aria-selected="${j === 0}" tabindex="${j === 0 ? 0 : -1}"><span aria-hidden="true">${ic}</span> ${l}</button>`).join('')}
+      <span class="btab-ink" aria-hidden="true"></span></div></div>
+    <div class="rpanels">${RTABS.map(([k, , , html], j) => `<div class="rpanel${j === 0 ? ' on' : ''}" role="tabpanel" id="rp-${k}" aria-labelledby="rt-${k}" tabindex="-1"${j ? ' aria-hidden="true" inert' : ''}>${html}</div>`).join('')}</div>` : '';
   $('#sec-resume').innerHTML = resumeBody ? `<h2 class="sec-title" id="h-resume" data-reveal><span class="ico" aria-hidden="true">🗂️</span>이력</h2>${resumeBody}` : '';
   if (!resumeBody) $('#sec-resume').hidden = true;
+  const rsec = $('#sec-resume'), rtl = rsec.querySelector('.rtabs'), rwrap = rsec.querySelector('.rpanels');
+  const rInk = () => { const on = rtl?.querySelector('[aria-selected="true"]'), ink = rtl?.querySelector('.btab-ink'); if (on && ink && on.offsetWidth) { ink.style.width = on.offsetWidth + 'px'; ink.style.transform = `translateX(${on.offsetLeft}px)`; } };
+  const rHeight = () => { const on = rwrap?.querySelector('.rpanel.on'); if (on) rwrap.style.height = on.offsetHeight + 'px'; };
+  function selectResumeTab(btn, focus) {
+    if (!btn || !rtl) return;
+    rtl.querySelectorAll('[role="tab"]').forEach(t => { const on = t === btn; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
+    rwrap.querySelectorAll('.rpanel').forEach(pn => { const on = pn.id === btn.getAttribute('aria-controls'); pn.classList.toggle('on', on); pn.setAttribute('aria-hidden', String(!on)); pn.toggleAttribute('inert', !on); if (on) reveal(pn); });
+    rInk(); rHeight();
+    btn.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: motionOn() ? 'smooth' : 'auto' });
+    if (focus) btn.focus({ preventScroll: true });
+  }
+  if (rtl) {
+    rtl.addEventListener('click', e => { const t = e.target.closest('[role="tab"]'); if (t) selectResumeTab(t); });
+    rtl.addEventListener('keydown', e => {
+      const t = e.target.closest('[role="tab"]'); if (!t) return;
+      const tabs = [...rtl.querySelectorAll('[role="tab"]')], k = tabs.indexOf(t);
+      const next = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: tabs.length - 1 }[e.key];
+      if (next === undefined) return;
+      e.preventDefault(); selectResumeTab(tabs[(next + tabs.length) % tabs.length], true);
+    });
+    requestAnimationFrame(() => { rInk(); rHeight(); });
+    if ('ResizeObserver' in window) { const ro = new ResizeObserver(() => { rInk(); rHeight(); }); ro.observe(rtl); rwrap.querySelectorAll('.rpanel').forEach(pn => ro.observe(pn)); }
+    document.fonts?.ready.then(() => { rInk(); rHeight(); });
+  }
 
   // ----- 프로젝트 카드 -----
   const cover = (pr, cls = 'pcover') => `<div class="${cls}" data-key="p:${esc(pr.data.slug)}" ${pr.data.coverImage ? `style="background-image:url('${esc(pr.data.coverImage)}')"` : ''}>${pr.data.coverImage ? '' : `<span class="cv-ico">${icon(COMP_ICON[pr.data.primarySkill] || 'folder', 22)}</span><span class="cv-name">${esc(compName(pr.data.primarySkill) || '프로젝트')}</span>`}</div>`;
@@ -918,8 +947,10 @@ export function mountPortfolio(root, items, opts = {}) {
   }
   // 섹션 안의 대상(예: 요약 카드 → 이력의 활동)으로 이동. 간단히 보기면 그 주제 페이지를 먼저 연다
   function goToTarget(id, { push = false } = {}) {
-    const el = root.querySelector('#' + CSS.escape(id)); if (!el) return;
+    let el = root.querySelector('#' + CSS.escape(id)); if (!el) return;
     const sec = el.closest('.pf-view > section');
+    const rp = el.closest('.rpanel');
+    if (rp) { selectResumeTab(root.querySelector(`[aria-controls="${rp.id}"]`)); el = root.querySelector('.rtabs-wrap') || el; }
     if (mode === 'cards' && sec) {
       openTopic(sec.id, { push });
       if (el !== sec) requestAnimationFrame(() => el.scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto' }));
