@@ -378,18 +378,16 @@ export function mountPortfolio(root, items, opts = {}) {
     const d = c.data, done = d.status !== '예정';
     return `<li class="cert${done ? ' done' : ' plan'}" data-reveal style="--d:${Math.min(n * 0.06, 0.4).toFixed(2)}s">
       <span class="cert-ico" aria-hidden="true">${icon('certificate', 24)}</span>
-      <span class="cert-body"><b class="cert-name">${esc(d.name || '자격명 없음')}</b>${sample(c)}
+      <span class="cert-body"><span class="cert-head"><b class="cert-name">${esc(d.name || '자격명 없음')}${sample(c)}</b><span class="cert-badge">${done ? '취득' : '취득 예정'}</span></span>
         <span class="cert-meta">${[d.issuer, fmtMonth(d.date) && `${fmtMonth(d.date)} ${done ? '취득' : '취득 예정'}`].filter(Boolean).map(esc).join(' · ')}</span></span>
-      <span class="cert-badge">${done ? '취득' : '취득 예정'}</span>
     </li>`;
   };
   const langCard = (l, n) => {
     const d = l.data;
-    return `<li class="cert lang done" data-reveal style="--d:${Math.min((certs.length + n) * 0.06, 0.4).toFixed(2)}s">
-      <span class="cert-ico" aria-hidden="true">${icon('language', 24)}</span>
-      <span class="cert-body"><b class="cert-name">${esc(d.test || '어학 시험')}${d.score ? ` <span class="cert-score">${esc(d.score)}</span>` : ''}</b>${sample(l)}
-        <span class="cert-meta">${fmtMonth(d.date) ? esc(fmtMonth(d.date)) + ' 취득' : ''}</span></span>
-      <span class="cert-badge">어학</span>
+    return `<li class="cert done" data-reveal style="--d:${Math.min((certs.length + n) * 0.06, 0.4).toFixed(2)}s">
+      <span class="cert-ico" aria-hidden="true">${icon('certificate', 24)}</span>
+      <span class="cert-body"><span class="cert-head"><b class="cert-name">${esc(d.test || '어학 시험')}${d.score ? ` <span class="cert-score">${esc(d.score)}</span>` : ''}${sample(l)}</b><span class="cert-badge">취득</span></span>
+        <span class="cert-meta">${['어학', fmtMonth(d.date) && fmtMonth(d.date) + ' 취득'].filter(Boolean).map(esc).join(' · ')}</span></span>
     </li>`;
   };
   const certHTML = (certs.length || langs.length) ? `<span class="r-anchor" id="sec-certificates"></span>${langs.length ? '<span class="r-anchor" id="sec-languages"></span>' : ''}<p class="cert-sum"><span class="sub-count">${certs.filter(c => c.data.status !== '예정').length}개 취득${certs.some(c => c.data.status === '예정') ? ` · ${certs.filter(c => c.data.status === '예정').length}개 준비 중` : ''}</span></p>

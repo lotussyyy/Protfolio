@@ -804,3 +804,9 @@ html[data-theme='dark'] .pf-view { --dots-o: .28; }
 .r-anchor { display: block; position: relative; top: -90px; }
 @media (prefers-reduced-motion: reduce) { .rpanels, .rpanel, .rpanel.on { transition: none; } }
 @media print { .rtabs-wrap { display: none; } .rpanels { height: auto !important; display: block; } .rpanel { opacity: 1 !important; visibility: visible !important; transform: none !important; margin-bottom: 16px; } }
+
+/* 자격 카드: 배지를 이름 옆 흐름에 두어 겹치지 않게 */
+.cert-body { padding-right: 0; }
+.cert-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.cert-head .cert-name { min-width: 0; }
+.cert .cert-badge { position: static; flex: none; margin-top: 1px; white-space: nowrap; }
