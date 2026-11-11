@@ -720,3 +720,39 @@ a:hover { color: var(--accent-text); }
   100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent), 0 0 0 0 transparent; }
 }
 @media (max-width: 767px) { .contact-box { margin: -12px -10px; padding: 12px 10px; } }
+
+/* ---------- 소개 영역 꾸밈: 파스텔 톤 도트 ---------- */
+.pf-view { position: relative; isolation: isolate; }
+.pf-view::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  top: -72px; left: -48px; right: -48px; height: 760px;
+  background:
+    radial-gradient(circle at 8% 14%, #f9c6d3 0 7px, transparent 8px),
+    radial-gradient(circle at 17% 6%, #bfe3d4 0 4px, transparent 5px),
+    radial-gradient(circle at 31% 18%, #fde7a9 0 5px, transparent 6px),
+    radial-gradient(circle at 52% 9%, #c9d8f7 0 9px, transparent 10px),
+    radial-gradient(circle at 63% 22%, #f9c6d3 0 4px, transparent 5px),
+    radial-gradient(circle at 76% 7%, #d9c8f2 0 6px, transparent 7px),
+    radial-gradient(circle at 91% 16%, #bfe3d4 0 8px, transparent 9px),
+    radial-gradient(circle at 96% 40%, #fde7a9 0 5px, transparent 6px),
+    radial-gradient(circle at 4% 46%, #c9d8f7 0 6px, transparent 7px),
+    radial-gradient(circle at 70% 52%, #d9c8f2 0 4px, transparent 5px),
+    radial-gradient(circle at 12% 70%, #f9c6d3 0 5px, transparent 6px),
+    radial-gradient(circle at 88% 74%, #c9d8f7 0 7px, transparent 8px),
+    radial-gradient(42% 38% at 86% 34%, rgba(201,216,247,.55), transparent 70%),
+    radial-gradient(36% 34% at 10% 30%, rgba(249,198,211,.38), transparent 70%),
+    radial-gradient(30% 30% at 50% 4%, rgba(191,227,212,.35), transparent 70%),
+    radial-gradient(rgba(214,196,236,.55) 1.6px, transparent 1.9px) 0 0 / 20px 20px,
+    radial-gradient(rgba(249,198,211,.5) 1.6px, transparent 1.9px) 10px 10px / 20px 20px;
+  opacity: var(--dots-o, 1);
+  -webkit-mask-image: linear-gradient(#000 50%, transparent), linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(#000 50%, transparent), linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-composite: intersect;
+}
+.motion .pf-view::before { animation: dots-in 1.2s var(--ease-out) both; }
+@keyframes dots-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: var(--dots-o, 1); transform: none; } }
+html[data-theme='dark'] .pf-view { --dots-o: .28; }
+.me-char { background: #a6c9ee; }
+@media (max-width: 767px) { .pf-view::before { left: -16px; right: -16px; height: 620px; } }
+@media print { .pf-view::before { display: none; } }
