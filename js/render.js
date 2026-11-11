@@ -80,7 +80,7 @@ function heroBackdrop() {
 }
 // 소개 옆 캐릭터: three.js로 실제 3D 렌더링한 토이 피규어 스타일 초상(만든 장면: tools/character-3d.html)
 function aboutCharacter() {
-  return `<img class="me-char" src="assets/me-3d.webp" width="975" height="1219" alt="눈썹 위로 일자 앞머리를 내린 긴 갈색 생머리, 맑은 갈색 눈과 통통한 볼, 흰 셔츠에 남색 니트 조끼를 입은 3D 아트 토이 캐릭터" loading="lazy" decoding="async">`;
+  return `<img class="me-char" src="assets/me-3d.webp" width="975" height="1219" alt="눈썹 위로 일자 앞머리를 내린 긴 갈색 생머리, 맑은 갈색 눈과 통통한 볼, 물결 깃의 흰 레이스 블라우스를 입은 3D 아트 토이 캐릭터" loading="lazy" decoding="async">`;
 }
 function heroIllustration() {
   const books = [[40, 70, 24], [68, 52, 18], [90, 82, 26], [120, 60, 20], [144, 74, 16], [164, 48, 22], [190, 66, 18], [212, 88, 24], [240, 58, 20]];

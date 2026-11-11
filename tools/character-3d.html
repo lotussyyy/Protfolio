@@ -163,47 +163,59 @@ function lathe(prof, zs, mat, y = 0) {
   const g = new THREE.LatheGeometry(new THREE.SplineCurve(prof.map(([a, b]) => new THREE.Vector2(a, b))).getPoints(120).reverse(), 160);
   g.scale(1, 1, zs); const m = new THREE.Mesh(g, mat); m.position.y = y; m.castShadow = m.receiveShadow = true; scene.add(m); return m;
 }
-const shirtMat = new THREE.MeshPhysicalMaterial({ color: '#fbfbfa', roughness: 0.55, sheen: 0.4, sheenColor: new THREE.Color('#ffffff'), clearcoat: 0.12, clearcoatRoughness: 0.5 });
-const vestMat = new THREE.MeshPhysicalMaterial({ color: '#25325a', roughness: 0.7, sheen: 0.6, sheenColor: new THREE.Color('#5b6c9c'), sheenRoughness: 0.6, clearcoat: 0.08, clearcoatRoughness: 0.7 });
-// 목 + 흰 셔츠 몸통
+// 레이스 무늬(작은 꽃·구멍 무늬) 텍스처: 색과 요철에 함께 사용
+function laceTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, 256, 256);
+  const flower = (x, y, r) => {
+    g.fillStyle = '#d9d3cc';
+    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; g.beginPath(); g.ellipse(x + Math.cos(a) * r, y + Math.sin(a) * r, r * 0.62, r * 0.36, a, 0, Math.PI * 2); g.fill(); }
+    g.fillStyle = '#ffffff'; g.beginPath(); g.arc(x, y, r * 0.42, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#cfc8c0'; g.beginPath(); g.arc(x, y, r * 0.22, 0, Math.PI * 2); g.fill();
+  };
+  for (const [x, y] of [[64, 64], [192, 192], [192, 64], [64, 192]]) flower(x, y, (x + y) % 128 ? 20 : 26);
+  g.strokeStyle = '#e1dbd4'; g.lineWidth = 3;
+  for (const [x, y] of [[128, 0], [0, 128], [128, 128], [128, 256], [256, 128]]) { g.beginPath(); g.arc(x, y, 14, 0, Math.PI * 2); g.stroke(); }
+  g.fillStyle = '#e6e0d9'; for (let i = 0; i < 40; i++) { const x = (i * 53) % 256, y = (i * 97) % 256; g.beginPath(); g.arc(x, y, 2.2, 0, Math.PI * 2); g.fill(); }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
+const lace = laceTex(); lace.repeat.set(14, 9);
+const laceBump = lace.clone(); laceBump.colorSpace = THREE.NoColorSpace; laceBump.repeat.set(14, 9); laceBump.needsUpdate = true;
+const shirtMat = new THREE.MeshPhysicalMaterial({ color: '#fffaf4', map: lace, bumpMap: laceBump, bumpScale: 1.4, roughness: 0.6, sheen: 0.7, sheenColor: new THREE.Color('#ffffff'), sheenRoughness: 0.5, clearcoat: 0.08, clearcoatRoughness: 0.6 });
+const plainLace = new THREE.MeshPhysicalMaterial({ color: '#fffaf4', roughness: 0.55, sheen: 0.7, sheenColor: new THREE.Color('#ffffff'), side: THREE.DoubleSide });
+// 목 + 레이스 블라우스 몸통
 lathe([[0.0, 1.0], [0.17, 0.98], [0.17, 0.72], [0.18, 0.62], [0.2, 0.56]], 0.7, skin('#f3c7b1'), 0);
 lathe([[0.0, 0.62], [0.2, 0.6], [0.3, 0.5], [0.48, 0.45], [0.62, 0.36], [0.7, 0.2], [0.72, 0.0], [0.7, -0.9]], 0.7, shirtMat, 0);
-// 남색 니트 조끼: V넥(앞쪽 V 영역은 셔츠 안으로 숨김), 소매 없음
-{
-  const prof = [[0.0, 0.64], [0.21, 0.62], [0.31, 0.515], [0.495, 0.465], [0.64, 0.372], [0.725, 0.2], [0.745, 0.0], [0.725, -0.9]].map(([a, b]) => new THREE.Vector2(a, b));
-  const g = new THREE.LatheGeometry(new THREE.SplineCurve(prof).getPoints(140).reverse(), 220); g.scale(1, 1, 0.72);
-  const p = g.attributes.position, v = new THREE.Vector3();
-  const vTop = 0.47, vBot = -0.2, vW = 0.27;
-  for (let i = 0; i < p.count; i++) {
-    v.fromBufferAttribute(p, i);
-    const k = smooth(vBot, vTop, v.y), halfW = vW * k;
-    // V넥과 진동둘레: 경계에서 부드럽게 셔츠 안쪽으로 가라앉힘(깔끔한 가장자리)
-    const vIn = v.z > 0 ? smooth(0.0, 0.025, halfW - Math.abs(v.x)) * smooth(vBot - 0.01, vBot + 0.03, v.y) : 0;
-    const armW = 0.42 + Math.max(0, 0.47 - v.y) * 1.6;
-    const aIn = smooth(0.0, 0.03, Math.abs(v.x) - armW) * smooth(0.0, 0.04, v.y + 0.02);
-    const sink = Math.max(vIn, aIn, smooth(0.47, 0.5, v.y));
-    v.x *= 1 - 0.12 * sink; v.z *= 1 - 0.12 * sink;
-    p.setXYZ(i, v.x, v.y, v.z);
-  }
-  g.computeVertexNormals();
-  const vest = new THREE.Mesh(g, vestMat); vest.castShadow = vest.receiveShadow = true; scene.add(vest);
-  // V넥 골지 테두리
-  const rib = new THREE.MeshPhysicalMaterial({ color: '#2e3d6b', roughness: 0.65, sheen: 0.5, sheenColor: new THREE.Color('#6d7fb0') });
-  for (const sx of [-1, 1]) {
-    const pts = [];
-    for (let k = 0; k <= 16; k++) { const y = vTop - (vTop - vBot) * (k / 16); const hw = vW * smooth(vBot, vTop, y); const x = sx * hw;
-      const rr = 0.725; const z = Math.sqrt(Math.max(0, rr * rr - x * x)) * 0.72; pts.push(new THREE.Vector3(x, y, z + 0.012)); }
-    const t = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.03, 12), rib); t.scale.set(1, 1, 1); t.castShadow = true; scene.add(t);
-  }
-}
-// 셔츠 깃(둥근 끝)
+// 물결 레이스 깃(둥근 피터팬 칼라, 가장자리 스캘럽)
 for (const sx of [-1, 1]) {
-  const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(sx * 0.2, -0.04); sh.quadraticCurveTo(sx * 0.2, -0.16, sx * 0.08, -0.2); sh.lineTo(0, -0.05);
-  const g = new THREE.ExtrudeGeometry(sh, { depth: 0.02, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015, bevelSegments: 4, curveSegments: 16 });
-  const c = new THREE.Mesh(g, shirtMat); c.position.set(sx * 0.03, 0.58, 0.38); c.rotation.x = -0.55; c.rotation.y = sx * -0.25; c.castShadow = true; scene.add(c);
+  const sh = new THREE.Shape(); sh.moveTo(0, 0.02);
+  sh.lineTo(sx * 0.22, -0.01);
+  const n = 7, cx = sx * 0.13, cy = -0.12, R = 0.12;
+  for (let k = 0; k <= n; k++) {             // 바깥 테두리를 작은 반원 물결로
+    const a0 = Math.PI * 0.35 - (k / n) * Math.PI * 1.15, a1 = Math.PI * 0.35 - ((k + 1) / n) * Math.PI * 1.15;
+    if (k === n) break;
+    const p0 = [cx + sx * Math.cos(a0) * R, cy + Math.sin(a0) * R], p1 = [cx + sx * Math.cos(a1) * R, cy + Math.sin(a1) * R];
+    const mid = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2], o = [mid[0] - cx, mid[1] - cy], ol = Math.hypot(...o);
+    sh.quadraticCurveTo(mid[0] + o[0] / ol * 0.028, mid[1] + o[1] / ol * 0.028, p1[0], p1[1]);
+  }
+  sh.lineTo(0, -0.04);
+  const g = new THREE.ExtrudeGeometry(sh, { depth: 0.012, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.008, bevelSegments: 3, curveSegments: 12 });
+  const c = new THREE.Mesh(g, plainLace); c.scale.setScalar(1.5); c.position.set(sx * 0.02, 0.56, 0.4); c.rotation.x = -0.95; c.rotation.y = sx * -0.42; c.castShadow = true; scene.add(c);
+  // 깃 안쪽의 레이스 구멍 무늬(작은 점)
+  for (let k = 0; k < 5; k++) { const a = Math.PI * 0.25 - k * 0.42; const d = new THREE.Mesh(new THREE.CircleGeometry(0.008, 12), new THREE.MeshBasicMaterial({ color: '#d8cfc4' })); d.position.set(cx + sx * Math.cos(a) * 0.085, cy + Math.sin(a) * 0.085, 0.026); c.add(d); }
 }
-// 흰 셔츠 소매 팔
-for (const sx of [-1, 1]) { const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.15, 0.7, 12, 32), shirtMat); arm.position.set(sx * 0.76, -0.25, -0.04); arm.rotation.z = sx * 0.1; arm.castShadow = arm.receiveShadow = true; scene.add(arm); }
+// 목 가운데 작은 리본
+{ const bowMat = new THREE.MeshPhysicalMaterial({ color: '#f6d6d6', roughness: 0.45, sheen: 0.8, sheenColor: new THREE.Color('#ffe9ea') });
+  const knot = new THREE.Mesh(new THREE.SphereGeometry(0.03, 24, 16), bowMat); knot.position.set(0, 0.5, 0.53); scene.add(knot);
+  for (const sx of [-1, 1]) { const l = new THREE.Mesh(new THREE.SphereGeometry(0.05, 24, 16), bowMat); l.scale.set(1.2, 0.7, 0.45); l.position.set(sx * 0.065, 0.505, 0.52); l.rotation.z = sx * 0.25; l.castShadow = true; scene.add(l);
+    const tail = new THREE.Mesh(new THREE.CapsuleGeometry(0.016, 0.1, 8, 16), bowMat); tail.position.set(sx * 0.03, 0.43, 0.53); tail.rotation.z = sx * 0.35; scene.add(tail); } }
+// 앞섶 작은 진주 단추
+for (let k = 0; k < 4; k++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.018, 20, 14), new THREE.MeshPhysicalMaterial({ color: '#fffdf8', roughness: 0.15, clearcoat: 1, sheen: 1, sheenColor: new THREE.Color('#f3e6ff') })); const y = 0.42 - k * 0.15; b.position.set(0, y, Math.sqrt(Math.max(0, 0.68 ** 2)) * 0.7 + 0.005); scene.add(b); }
+// 퍼프 소매 + 팔
+for (const sx of [-1, 1]) {
+  const puff = new THREE.Mesh(new THREE.SphereGeometry(0.24, 48, 32), shirtMat); puff.scale.set(1, 1.1, 0.95); puff.position.set(sx * 0.66, 0.24, -0.04); puff.castShadow = puff.receiveShadow = true; scene.add(puff);
+  const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 0.7, 12, 32), shirtMat); arm.position.set(sx * 0.76, -0.25, -0.04); arm.rotation.z = sx * 0.1; arm.castShadow = arm.receiveShadow = true; scene.add(arm);
+}
 
 // ---------- 머리카락 ----------
 function sheet(nu, nv, fn) {
