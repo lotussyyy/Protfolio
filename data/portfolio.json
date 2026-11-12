@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "exportedAt": "2026-11-11T04:48:00.278Z",
-  "checkedAt": "2026-11-11T04:48:00.278Z",
+  "exportedAt": "2026-11-12T01:25:39.261Z",
+  "checkedAt": "2026-11-12T01:25:39.261Z",
   "items": [
     {
       "id": "a8c23f0c-e424-4f4e-9e4c-5ac1459018ab",
@@ -876,25 +876,6 @@
       "updatedAt": "2026-11-11T01:11:36.467295+00:00"
     },
     {
-      "id": "6298397a-767e-4a7d-b33b-dedb26f7a72b",
-      "kind": "activity",
-      "data": {
-        "role": "",
-        "type": "",
-        "hours": null,
-        "title": "싱가포르 인턴쉽",
-        "endDate": "2026-08",
-        "startDate": "2025-08",
-        "organization": "",
-        "relatedProjects": []
-      },
-      "visibility": "public",
-      "status": "published",
-      "isSample": false,
-      "sort": 23,
-      "updatedAt": "2026-11-11T04:40:48.034184+00:00"
-    },
-    {
       "id": "9fa34cef-f5e2-4925-9912-8bab21f468cc",
       "kind": "experience",
       "data": {
@@ -910,6 +891,25 @@
       "isSample": false,
       "sort": 17,
       "updatedAt": "2026-11-11T04:44:29.633007+00:00"
+    },
+    {
+      "id": "6298397a-767e-4a7d-b33b-dedb26f7a72b",
+      "kind": "activity",
+      "data": {
+        "role": "",
+        "type": "",
+        "hours": null,
+        "title": "싱가포르 인턴쉽",
+        "endDate": "2026-08",
+        "startDate": "2025-08",
+        "organization": "대구대학교 취업처",
+        "relatedProjects": []
+      },
+      "visibility": "public",
+      "status": "published",
+      "isSample": false,
+      "sort": 23,
+      "updatedAt": "2026-11-11T05:14:12.362843+00:00"
     }
   ]
 }
